@@ -53,7 +53,7 @@ window.EXTRAS = {
   ],
   // The guessing machine on the plaza. `answers` are the accepted four-letter types.
   mbti: {
-    answers: ['ENFJ'],   // TODO: replace with the real answer(s)
+    answers: ['ENFJ'],   // add more types here if it changes
     name: { en: 'Guess my MBTI', zh: '猜猜我的 MBTI' },
     ask: { en: 'My MBTI keeps changing, but you can have a guess!', zh: '虽然我的 MBTI 经常变，但你可以猜一猜！' },
     right: { en: 'Correct! A new resident heard the news and is moving to the island.', zh: '答对了！有位新居民听到消息，正在搬上岛。' },
