@@ -6,13 +6,15 @@ Nan Yao's portfolio as a small island you can walk around.
 
 A small 3D island. Walk with the arrow keys or WASD (or click / tap where you want to go) and press `E` or `Space` to act.
 
-- **16 places** cover experience, selected work, education, capabilities, life and contact.
-- **Dig** where the ground sparkles, **fish** by the water and **shake fruit trees** to collect 20 fun facts.
+- **17 places** cover experience, selected work, education, capabilities, life and contact. The **Showcase** across the river holds the featured pieces (`showcase` in `js/extras.js`).
+- A river with two bridges splits the island; there is a lake with a plank walk, a pond by the plaza, and a village east of the river where each resident's house is built when they move in.
+- **Dig** where the ground sparkles (the eight spots are random for every visitor), **fish** by the water (wait for the bite, then keep pressing to reel it in) and **shake fruit trees** to collect 20 fun facts.
 - **Guess the MBTI** at the crystal ball on the plaza; the right answer brings a fifth resident. Accepted answers are set in `js/extras.js` (`mbti.answers`).
 - **Residents** move in as visitors find more things, and can be talked to.
-- **To-do list**: thirteen small tasks show every visitor around; an arrow points to the next one.
+- **To-do list**: fourteen small tasks show every visitor around; an arrow points to the next one.
 - **More to do**: shake fruit trees and give the fruit to residents, pet the dog, dance (`Q`), take a postcard of the island.
 - **Sound**: synthesised effects and three short original music loops (day, dusk, night), all generated in the browser with no audio files. The round button above the dance button mutes everything.
+- **Progress is saved** in the visitor's browser, including where they were standing. "Start over" in the backpack (or on the welcome screen) clears it after a confirmation.
 - **Quick view** shows the same content as one plain page. Everything is in English and Chinese.
 - The island follows the visitor's local time (day, dusk, night). Add `?time=day`, `?time=dusk` or `?time=night` to the URL to preview one.
 

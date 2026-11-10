@@ -153,6 +153,14 @@ body[data-mode="night"] {
 .emote:hover { background: #f8a6c2; }
 .emote-2 { bottom: calc(max(24px, env(safe-area-inset-bottom)) + 64px); width: 44px; height: 44px; right: 19px; font-size: 18px; background: var(--cream); }
 .emote-2:hover { background: #fff; }
+.prompt.reel { background: linear-gradient(90deg, var(--yellow) var(--p, 0%), #fff var(--p, 0%)); color: var(--ink); }
+.btn-danger { background: #f0766a; color: #fff; }
+.btn-danger:hover { background: #e2604f; }
+.show { display: flex; gap: 14px; align-items: flex-start; background: var(--cream-2); border-radius: 22px; padding: 16px; margin-bottom: 12px; }
+.show-ico { flex: none; width: 56px; height: 56px; border-radius: 18px; background: #fff; display: grid; place-items: center; font-size: 30px; line-height: 1; }
+.show h3 { margin: 0 0 2px; }
+.show p { margin: 6px 0; }
+.show .links { margin-top: 10px; }
 .mbti { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; max-width: 340px; margin: 14px auto 4px; }
 .mbti div { display: grid; gap: 8px; }
 .mbti button { font: 900 22px/1 var(--font); color: var(--ink); padding: 12px 0; border-radius: 16px; border: 3px solid var(--line); background: #fff; cursor: pointer; }

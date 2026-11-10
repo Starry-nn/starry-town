@@ -43,7 +43,7 @@ window.EXTRAS = {
   tree: [
     { icon: '💃', en: ['Dance shoes', 'I have been dancing for more than ten years, and sometimes choreograph my own pieces. Curious? Have a look at my Xiaohongshu 👀'],
                   zh: ['一双舞鞋', '我跳舞已经十几年了，有时候还会自己编舞。如果你感兴趣，可以看看我的小红书 👀'],
-                  link: { url: 'https://xhslink.cn/o/4Mml1E94GZX', en: 'My Xiaohongshu', zh: '我的小红书' } },
+                  link: { url: 'https://www.xiaohongshu.com/user/profile/59e4a1d04eacab3c568d9726', en: 'My Xiaohongshu', zh: '我的小红书' } },
     { icon: '🎬', en: ['A film ticket', 'My favourite film is Pride & Prejudice.'],
                   zh: ['一张电影票', '最爱的电影是《傲慢与偏见》。'] },
     { icon: '🎭', en: ['A Playbill', 'Lately I have fallen for Broadway shows.'],
@@ -60,8 +60,30 @@ window.EXTRAS = {
     wrong: { en: 'Not quite. {n} of 4 letters are right. Try again!', zh: '还差一点，4 个字母里对了 {n} 个，再猜猜！' },
     solved: { en: 'You already got it: {a}. (For now. It may change again.)', zh: '你已经猜对了：{a}。（暂时是这个，说不定又变了。）' },
   },
+  // The Showcase building: the work I am proudest of. Add an entry here to put another piece on the wall.
+  showcase: {
+    title: { en: 'Showcase', zh: '精选作品' },
+    meta: { en: 'The pieces I would show you first', zh: '我最想先给你看的几件作品' },
+    items: [
+      { icon: '🪐', name: 'Orbit',
+        en: ['Creator partnership workspace · the real product', 'Orbit started as a pitch demo and is now a working product: accounts and private team workspaces, campaign brief import, YouTube creator discovery, Gemini video evidence behind every match score, swipe decisions with undo, side-by-side comparison, Gmail outreach, creator briefs and PDF export.'],
+        zh: ['达人合作工作台 · 正式产品', 'Orbit 从一个路演 Demo 做成了真正能用的产品：账号与团队私有空间、Campaign brief 导入、YouTube 达人发现、每个匹配分背后都有 Gemini 视频证据、可撤销的滑动决策、并排对比、Gmail 触达、达人 brief 和 PDF 导出。'],
+        tags: ['Product', 'Gemini', 'Full-stack'],
+        links: [{ url: 'https://starry-nn.github.io/orbit-creator-match-demo/', en: 'Open the pitch demo', zh: '打开路演 Demo' }] },
+      { icon: '🎁', name: 'GiftSense',
+        en: ['A gift-finding agent · built in 24 hours', 'Describe the person you are shopping for, add a photo of their outfit or room if you have one, and the agent works out who they are, searches stores and comes back with five gifts plus a wild card, each with a reason about the person. Built for AISUM Hackathon 2026 by Team S&L.'],
+        zh: ['帮你挑礼物的 Agent · 24 小时做出来', '描述你要送礼的人，有穿搭或房间照片也可以加上，Agent 会先理解这个人，再去商店搜索，给出五个礼物和一个惊喜选项，每个都附上和这个人有关的理由。AISUM Hackathon 2026 作品，Team S&L。'],
+        tags: ['AI Agent', 'Hackathon', 'Multimodal'],
+        links: [{ url: 'https://app-934313837966.us-central1.run.app', en: 'Open the live app', zh: '打开线上应用' }] },
+      { icon: '🐙', name: 'GitHub',
+        en: ['My GitHub home page', 'How I present my projects and repositories on GitHub.'],
+        zh: ['GitHub 主页设计', '我在 GitHub 上展示项目和仓库的方式。'],
+        tags: ['Design', 'GitHub'],
+        links: [{ url: 'https://github.com/Starry-nn', en: 'Open my GitHub', zh: '打开我的 GitHub' }] },
+    ],
+  },
   // Residents move in as visitors find more things. `at` = how many finds unlock them; `unlock: 'mbti'` = arrives after the MBTI guess.
-  // species: cat, fox, bunny, bear or frog. `home` is a tile on the map.
+  // species: cat, fox, bunny, bear or frog. Each gets a house in the village east of the river (set in game.js).
   residents: [
     { id: 'mochi', species: 'cat', icon: '🐱', color: '#f6c89f', accent: '#7fd1c0', at: 2, home: [24, 18],
       name: { en: 'Mochi', zh: '麻薯' },
@@ -78,8 +100,8 @@ window.EXTRAS = {
     { id: 'bao', species: 'bear', icon: '🐻', color: '#c99a6b', belly: '#f3dfc4', accent: '#6f8fd8', at: 9, home: [36, 14],
       name: { en: 'Bao', zh: '阿宝' },
       lines: {
-        en: ['I run a very serious honey fund. Nan says my pipeline needs more structure.', 'The campus is just south of here: four schools, one clock tower.', 'If you are hiring, the mailbox is at the south end of the main road.'],
-        zh: ['我在经营一支非常严肃的蜂蜜基金。姚楠说我的项目管线不够有条理。', '往南走就是校园：四所学校，一座钟楼。', '如果你在招人，信箱就在主路的最南边。'],
+        en: ['I run a very serious honey fund. Nan says my pipeline needs more structure.', 'The campus is back over the bridge: four schools, one clock tower.', 'If you are hiring, the mailbox is at the south end of the main road, west of the river.'],
+        zh: ['我在经营一支非常严肃的蜂蜜基金。姚楠说我的项目管线不够有条理。', '过了桥往回走就是校园：四所学校，一座钟楼。', '如果你在招人，信箱在河西边主路的最南端。'],
       } },
     { id: 'rana', species: 'frog', icon: '🐸', color: '#8fd67c', belly: '#e6f7c9', accent: '#ffd166', at: 13, home: [31, 27],
       name: { en: 'Rana', zh: '呱呱' },
@@ -99,6 +121,7 @@ window.EXTRAS = {
     { id: 'sign',     icon: '👋', en: 'Read the welcome sign', zh: '看看小岛路牌' },
     { id: 'work',     icon: '🏢', en: 'Visit a place Nan has worked', zh: '拜访一处姚楠工作过的地方' },
     { id: 'project',  icon: '🔭', en: 'Check out one of her projects', zh: '看一个她做的项目' },
+    { id: 'showcase', icon: '🏛️', en: 'Cross the bridge to the Showcase', zh: '过桥去精选作品馆看看' },
     { id: 'dig',      icon: '⛏', en: 'Dig up a fun fact', zh: '挖出一个 fun fact' },
     { id: 'fish',     icon: '🎣', en: 'Catch something', zh: '钓上来一样东西' },
     { id: 'pet',      icon: '🐶', en: 'Pet Bingo the Samoyed (click him)', zh: '摸摸萨摩耶苹果（点它一下）' },
@@ -108,7 +131,7 @@ window.EXTRAS = {
     { id: 'dance',    icon: '💃', en: 'Dance', zh: '跳一支舞' },
     { id: 'mbti',     icon: '🔮', en: 'Guess Nan\'s MBTI at the crystal ball', zh: '去水晶球那儿猜姚楠的 MBTI' },
     { id: 'hello',    icon: '💌', en: 'Find the mailbox', zh: '找到信箱' },
-    { id: 'stars',    icon: '⭐', en: 'Find all 16 stars', zh: '集齐 16 颗星' },
+    { id: 'stars',    icon: '⭐', en: 'Find all 17 stars', zh: '集齐 17 颗星' },
   ],
   // Why the site works this way
   notes: {

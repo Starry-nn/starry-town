@@ -153,34 +153,34 @@ export function createView(world, canvas) {
     b.add(rbox(0.68, 0.15, 0.22, 0.05), WOOD, x, y, z);
     [-0.2, 0, 0.2].forEach((o, k) => b.add(sphS(0.085), k % 2 ? '#7ccf7c' : '#ff9db8', x + o, y + 0.1, z + 0.02));
   }
-  function house(bd) {
+  function house(bd, B = S) {
     const W = bd.w, cx = bd.x + W / 2, front = bd.y + bd.h - 0.15, Dp = bd.kind === 'campus' ? 2.5 : Math.min(3, Math.max(2.3, bd.h - 1.5)), cz = front - Dp / 2;
     const tall = bd.h >= 5, wallH = tall ? 2.5 : 2.2, y0 = 0.18, wf = cz + (Dp - 0.3) / 2, roofH = tall ? 1.5 : 1.3;
-    S.add(rbox(W - 0.1, 0.2, Dp + 0.1, 0.06), STONE, cx, 0.1, cz);
-    S.add(rbox(W - 0.5, wallH, Dp - 0.3, 0.15), bd.wall, cx, y0 + wallH / 2, cz);
-    S.add(rbox(W + 0.15, 0.17, Dp + 0.4, 0.07), bd.roofL, cx, y0 + wallH + 0.03, cz);
-    S.add(frustum(W + 0.3, Dp + 0.55, W * 0.5, 0.3, roofH), bd.roof, cx, y0 + wallH + 0.1 + roofH / 2, cz);
-    S.add(rbox(W * 0.5 + 0.14, 0.14, 0.42, 0.06), bd.roofL, cx, y0 + wallH + 0.1 + roofH, cz);
+    B.add(rbox(W - 0.1, 0.2, Dp + 0.1, 0.06), STONE, cx, 0.1, cz);
+    B.add(rbox(W - 0.5, wallH, Dp - 0.3, 0.15), bd.wall, cx, y0 + wallH / 2, cz);
+    B.add(rbox(W + 0.15, 0.17, Dp + 0.4, 0.07), bd.roofL, cx, y0 + wallH + 0.03, cz);
+    B.add(frustum(W + 0.3, Dp + 0.55, W * 0.5, 0.3, roofH), bd.roof, cx, y0 + wallH + 0.1 + roofH / 2, cz);
+    B.add(rbox(W * 0.5 + 0.14, 0.14, 0.42, 0.06), bd.roofL, cx, y0 + wallH + 0.1 + roofH, cz);
     const run = (Dp + 0.55) / 2 - 0.15, slope = Math.atan2(roofH, run);
-    for (let k = 1; k <= 3; k++) { const u = k / 4; S.add(rbox((W + 0.3) * (1 - u) + W * 0.5 * u - 0.12, 0.05, 0.09, 0.02), bd.roofL, cx, y0 + wallH + 0.1 + roofH * u + 0.02, cz + (Dp + 0.55) / 2 - run * u, { rx: -slope }); }
-    if (W >= 5) { S.add(rbox(0.42, 1.1, 0.42, 0.05), '#f0d6b4', cx + W * 0.3, y0 + wallH + 0.95, cz - 0.15); S.add(rbox(0.54, 0.14, 0.54, 0.05), '#c99a72', cx + W * 0.3, y0 + wallH + 1.52, cz - 0.15); }
+    for (let k = 1; k <= 3; k++) { const u = k / 4; B.add(rbox((W + 0.3) * (1 - u) + W * 0.5 * u - 0.12, 0.05, 0.09, 0.02), bd.roofL, cx, y0 + wallH + 0.1 + roofH * u + 0.02, cz + (Dp + 0.55) / 2 - run * u, { rx: -slope }); }
+    if (W >= 5) { B.add(rbox(0.42, 1.1, 0.42, 0.05), '#f0d6b4', cx + W * 0.3, y0 + wallH + 0.95, cz - 0.15); B.add(rbox(0.54, 0.14, 0.54, 0.05), '#c99a72', cx + W * 0.3, y0 + wallH + 1.52, cz - 0.15); }
     const dxc = bd.x + bd.door + 0.5;
     for (let i = 0; i < W; i++) {
       const wx = bd.x + i + 0.5;
-      if (i !== bd.door) { windowAt(S, wx, y0 + (tall ? 0.95 : 1.1), wf + 0.03); planter(S, wx, y0 + (tall ? 0.5 : 0.65), wf + 0.13); }
-      if (tall && i !== bd.door) windowAt(S, wx, y0 + 1.85, wf + 0.03);
+      if (i !== bd.door) { windowAt(B, wx, y0 + (tall ? 0.95 : 1.1), wf + 0.03); planter(B, wx, y0 + (tall ? 0.5 : 0.65), wf + 0.13); }
+      if (tall && i !== bd.door) windowAt(B, wx, y0 + 1.85, wf + 0.03);
     }
-    doorAt(S, dxc, y0, wf, bd.doorC);
+    doorAt(B, dxc, y0, wf, bd.doorC);
     // emblem on the roof slope above the door
     const ez = cz + (Dp + 0.55) / 2 - 0.42, ey = y0 + wallH + 0.62;
-    S.add(cyl(0.4, 0.4, 0.08, 22), WHITE, dxc, ey, ez, { rx: Math.PI / 2 - 0.55 });
-    S.add(cyl(0.32, 0.32, 0.1, 22), bd.sign, dxc, ey, ez + 0.015, { rx: Math.PI / 2 - 0.55 });
-    if (bd.id === 'agent') ['#5fbf7f', '#ffc94d', '#f0766a'].forEach((c, k) => S.add(sphS(0.075), c, dxc - 0.17 + k * 0.17, ey + 0.02, ez + 0.07));
-    else S.add(sphS(0.11), bd.doorC, dxc, ey + 0.02, ez + 0.06, { sz: 0.5 });
-    if (bd.id === 'wavo') ['#ffd166', '#7fd1c0', '#ffffff', '#b79cf5'].forEach((c, k, a) => { for (let i = k; i < W * 2; i += a.length) S.add(cone(0.13, 0.26, 4), c, bd.x + 0.3 + i * 0.49, y0 + wallH - 0.2, wf + 0.12, { rx: Math.PI, sz: 0.3 }); });
-    if (bd.id === 'agent') { S.add(cyl(0.07, 0.07, 0.9, 8), WHITE, bd.x + W + 0.15, 0.45, wf + 0.2); for (let i = 0; i < 5; i++) S.add(rbox(0.28, 0.14, 0.1, 0.03), i % 2 ? WHITE : '#f590b2', bd.x + W + 0.36 + i * 0.28, 0.72, wf + 0.2); }
-    if (bd.id === 'sync') { S.add(cyl(0.04, 0.04, 0.6, 6), WHITE, cx - W * 0.28, y0 + wallH + 1.3, cz); S.add(new THREE.SphereGeometry(0.34, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2), WHITE, cx - W * 0.28, y0 + wallH + 1.55, cz, { rx: Math.PI - 0.5 }); S.add(sphS(0.07), '#f0766a', cx - W * 0.28, y0 + wallH + 1.72, cz + 0.12); }
-    if (bd.id === 'waves') for (let i = 0; i < 5; i++) S.add(rbox(0.3, 0.07, 0.75, 0.03), i % 2 ? WHITE : '#4fa8dc', dxc - 0.6 + i * 0.3, y0 + 1.82, wf + 0.42, { rx: 0.35 });
+    B.add(cyl(0.4, 0.4, 0.08, 22), WHITE, dxc, ey, ez, { rx: Math.PI / 2 - 0.55 });
+    B.add(cyl(0.32, 0.32, 0.1, 22), bd.sign, dxc, ey, ez + 0.015, { rx: Math.PI / 2 - 0.55 });
+    if (bd.id === 'agent') ['#5fbf7f', '#ffc94d', '#f0766a'].forEach((c, k) => B.add(sphS(0.075), c, dxc - 0.17 + k * 0.17, ey + 0.02, ez + 0.07));
+    else B.add(sphS(0.11), bd.doorC, dxc, ey + 0.02, ez + 0.06, { sz: 0.5 });
+    if (bd.id === 'wavo') ['#ffd166', '#7fd1c0', '#ffffff', '#b79cf5'].forEach((c, k, a) => { for (let i = k; i < W * 2; i += a.length) B.add(cone(0.13, 0.26, 4), c, bd.x + 0.3 + i * 0.49, y0 + wallH - 0.2, wf + 0.12, { rx: Math.PI, sz: 0.3 }); });
+    if (bd.id === 'agent') { B.add(cyl(0.07, 0.07, 0.9, 8), WHITE, bd.x + W + 0.15, 0.45, wf + 0.2); for (let i = 0; i < 5; i++) B.add(rbox(0.28, 0.14, 0.1, 0.03), i % 2 ? WHITE : '#f590b2', bd.x + W + 0.36 + i * 0.28, 0.72, wf + 0.2); }
+    if (bd.id === 'sync') { B.add(cyl(0.04, 0.04, 0.6, 6), WHITE, cx - W * 0.28, y0 + wallH + 1.3, cz); B.add(new THREE.SphereGeometry(0.34, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2), WHITE, cx - W * 0.28, y0 + wallH + 1.55, cz, { rx: Math.PI - 0.5 }); B.add(sphS(0.07), '#f0766a', cx - W * 0.28, y0 + wallH + 1.72, cz + 0.12); }
+    if (bd.id === 'waves') for (let i = 0; i < 5; i++) B.add(rbox(0.3, 0.07, 0.75, 0.03), i % 2 ? WHITE : '#4fa8dc', dxc - 0.6 + i * 0.3, y0 + 1.82, wf + 0.42, { rx: 0.35 });
     return { cx, cz, wf, y0, wallH, W, Dp, roofH };
   }
   function campus(bd) {
@@ -230,6 +230,16 @@ export function createView(world, canvas) {
   }
   world.BUILDINGS.forEach(bd => (bd.kind === 'tower' ? tower : bd.kind === 'dome' ? dome : bd.kind === 'campus' ? campus : house)(bd));
 
+  // residents' houses: each in its own group, shown when its owner has moved in; the lot always has a little sign
+  const homes = world.HOMES.map(hm => {
+    const b = builder(); house(hm, b); const g = b.group(); g.visible = false; scene.add(g);
+    S.add(cyl(0.04, 0.04, 0.8, 6), '#a9785a', hm.x + 0.3, 0.4, hm.y + hm.h + 0.25); S.add(rbox(0.5, 0.3, 0.05, 0.03), '#e9c48e', hm.x + 0.3, 0.78, hm.y + hm.h + 0.27); S.add(sphS(0.07), hm.roof, hm.x + 0.3, 0.8, hm.y + hm.h + 0.31, { sz: 0.4 });
+    return { g, id: hm.id };
+  });
+  world.LILIES.forEach(([x, z], i) => {
+    S.add(cyl(0.24, 0.24, 0.02, 12), i % 2 ? '#63bf72' : '#7ccf7c', x, -0.02, z); S.add(cyl(0.13, 0.13, 0.02, 10), '#8bdc8a', x + 0.3, -0.02, z + 0.22);
+    if (i % 3 !== 1) { S.add(sphS(0.08), '#ff9db8', x, 0.05, z, { sy: 0.7 }); S.add(sphS(0.04), '#ffd166', x, 0.1, z); }
+  });
   /* objects: cx, cz = centre of the footprint */
   const dyn = { fires: [], lights: [], stars: [] };
   const OBJ = {
@@ -331,6 +341,12 @@ export function createView(world, canvas) {
     for (let k = 0; k < 4; k++) S.add(box(1.0, 0.02, 0.03), WOOD, x + 0.5, 0.105, y + 0.12 + k * 0.25);
     if (world.at(x - 1, y) !== world.D) S.add(cyl(0.09, 0.09, 0.7, 8), WOOD, x + 0.02, 0.1, y + 0.85);
     if (world.at(x + 1, y) !== world.D) S.add(cyl(0.09, 0.09, 0.7, 8), WOOD, x + 0.98, 0.1, y + 0.85);
+    if (y < 28) [[0, -1], [0, 1], [-1, 0], [1, 0]].forEach(([dx, dy]) => {        // bridges get a handrail on every side that faces water
+      if (world.at(x + dx, y + dy) !== world.W) return;
+      const rx = x + 0.5 + dx * 0.46, rz = y + 0.5 + dy * 0.46;
+      S.add(dx ? box(0.07, 0.07, 1.0) : box(1.0, 0.07, 0.07), WOODL, rx, 0.52, rz);
+      S.add(cyl(0.05, 0.05, 0.52, 6), WOOD, rx - (dx ? 0 : 0.5), 0.3, rz - (dx ? 0.5 : 0)); S.add(cyl(0.05, 0.05, 0.52, 6), WOOD, rx + (dx ? 0 : 0.5), 0.3, rz + (dx ? 0.5 : 0));
+    });
   }
   scene.add(S.group());
 
@@ -475,6 +491,13 @@ export function createView(world, canvas) {
   (() => { const pts = [[0.34, 0], [-0.16, 0.26], [-0.06, 0], [-0.16, -0.26]]; const a = new THREE.Mesh(extrude(pts, 0.05), mat('#ffffff', true)); a.scale.set(1.3, 1.3, 1); const b2 = new THREE.Mesh(extrude(pts, 0.07), mat('#46a368', true)); a.position.x = -0.02; arrow.add(a, b2); a.rotation.x = b2.rotation.x = -Math.PI / 2; arrow.position.y = 0.07; scene.add(arrow); })();
   const bobber = new THREE.Group();
   (() => { const a = new THREE.Mesh(new THREE.SphereGeometry(0.1, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2), mat('#ffffff', true)); const b2 = new THREE.Mesh(new THREE.SphereGeometry(0.1, 12, 8, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), mat('#f0766a', true)); bobber.add(a, b2); scene.add(bobber); })();
+  const catchFish = new THREE.Group();
+  (() => {
+    const a = new THREE.Mesh(sph(0.2), mat('#6fb8e8')); a.scale.set(1.5, 1, 0.7); const bl = new THREE.Mesh(sph(0.15), mat('#eaf6ff')); bl.scale.set(1.4, 0.7, 0.6); bl.position.y = -0.07;
+    const tl = new THREE.Mesh(cone(0.17, 0.26, 4), mat('#4f98d0')); tl.rotation.z = -Math.PI / 2; tl.position.x = -0.38; tl.scale.z = 0.4;
+    const ey = new THREE.Mesh(sphS(0.04), mat('#3d3848', true)); ey.position.set(0.17, 0.05, 0.12);
+    catchFish.add(a, bl, tl, ey); catchFish.visible = false; scene.add(catchFish);
+  })();
   const lineGeo = new THREE.BufferGeometry(); lineGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(14 * 3), 3));
   const fishLine = new THREE.Line(lineGeo, bend(new THREE.LineBasicMaterial({ color: '#ffffff' }))); fishLine.frustumCulled = false; scene.add(fishLine);
   const ripple = new THREE.Mesh(new THREE.RingGeometry(0.2, 0.25, 24), bend(new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.7, depthWrite: false }))); ripple.rotation.x = -Math.PI / 2; scene.add(ripple);
@@ -568,7 +591,7 @@ export function createView(world, canvas) {
     if (st.digging) { const dgp = Math.sin(Math.min(1, st.digging.t / 0.75) * Math.PI * 3); person.arms[1].rotation.x = -1.0 + dgp * 0.6; person.arms[0].rotation.x = -0.5 + dgp * 0.3; person.body.rotation.x = 0.12 + dgp * 0.08; }
     else person.body.rotation.x = 0;
     if (st.shaking) { const sk = Math.sin(st.shaking.t * 30) * 0.25; person.arms[0].rotation.x = person.arms[1].rotation.x = -1.5 + sk; }
-    if (st.fishing) { person.arms[1].rotation.x = -1.1; person.rod.rotation.x = 0.85 + (st.fishing.phase === 'bite' ? Math.sin(t * 40) * 0.05 : 0); }
+    if (st.fishing) { const ph = st.fishing.phase; person.arms[1].rotation.x = ph === 'land' ? -2.2 : -1.1; person.rod.rotation.x = (ph === 'land' ? 0.2 : ph === 'reel' ? 0.6 : 0.85) + (ph === 'bite' || ph === 'reel' ? Math.sin(t * 40) * 0.06 : 0); }
 
     // dog
     const Dg = st.dog, dsw = Dg.moving ? Math.sin(Dg.anim * 18) : 0;
@@ -628,15 +651,21 @@ export function createView(world, canvas) {
     if (st.target) { ring.position.set(st.target.x / 16, 0.04, st.target.y / 16); ring.scale.setScalar(1 + (reduceMotion ? 0 : Math.sin(t * 8) * 0.12)); }
     arrow.visible = !!st.next;
     if (st.next) { const a = Math.atan2(st.next.y - P.y, st.next.x - P.x), r = 0.95 + (reduceMotion ? 0 : Math.sin(t * 5) * 0.08); arrow.position.set(px + Math.cos(a) * r, 0.07, pz + Math.sin(a) * r); arrow.rotation.y = -a; }
+    homes.forEach(hm => { const r = st.residents.find(q => q.def.id === hm.id); hm.g.visible = !!(r && r.here); });
     const F = st.fishing;
-    bobber.visible = fishLine.visible = ripple.visible = !!F;
+    bobber.visible = fishLine.visible = ripple.visible = !!F; catchFish.visible = false;
     if (F) {
-      const dip = F.phase === 'bite' ? -0.09 + Math.sin(t * 30) * 0.04 : Math.sin(t * 3) * 0.02, bx = F.bx / 16, bz = F.by / 16;
-      bobber.position.set(bx, 0.03 + dip, bz);
-      const rp = reduceMotion ? 0.5 : (t * 0.9) % 1; ripple.position.set(bx, 0.0, bz); ripple.scale.setScalar(1 + rp * 2.2); ripple.material.opacity = 0.7 * (1 - rp);
+      let bx = F.bx / 16, bz = F.by / 16, by = 0.03, dip = F.phase === 'bite' ? -0.09 + Math.sin(t * 30) * 0.04 : Math.sin(t * 3) * 0.02;
+      if (F.phase === 'reel') { const u = Math.min(1, F.p) * 0.45; bx += (px - bx) * u; bz += (pz - bz) * u; dip = -0.08 + Math.sin(t * 45) * 0.05; }
+      if (F.phase === 'land') {                       // the catch leaves the water in an arc and lands in the visitor's hands
+        const u = Math.min(1, F.t / 0.7), w = 0.45 + u * 0.5; bx += (px - bx) * w; bz += (pz - bz) * w; by = 0.1 + Math.sin(u * Math.PI) * 1.5 + u * 1.25; dip = 0;
+        catchFish.visible = true; catchFish.position.set(bx, by, bz); catchFish.rotation.set(0, t * 9, Math.sin(t * 28) * 0.5); bobber.visible = false; ripple.visible = u < 0.6;
+      }
+      bobber.position.set(bx, by + dip, bz);
+      const rp = reduceMotion ? 0.5 : (t * (F.phase === 'wait' ? 0.9 : 2.2)) % 1; ripple.position.set(bx, 0.0, bz); ripple.scale.setScalar(1 + rp * 2.2); ripple.material.opacity = 0.7 * (1 - rp);
       person.g.updateMatrixWorld(true); v.set(0, 1.6, 0).applyMatrix4(person.rod.matrixWorld);
-      const arr = lineGeo.attributes.position.array, tx = v.x, ty = v.y, tz = v.z;
-      for (let i = 0; i < 14; i++) { const u = i / 13; arr[i * 3] = tx + (bx - tx) * u; arr[i * 3 + 1] = ty + (0.1 + dip - ty) * u - Math.sin(u * Math.PI) * 0.25; arr[i * 3 + 2] = tz + (bz - tz) * u; }
+      const arr = lineGeo.attributes.position.array, tx = v.x, ty = v.y, tz = v.z, sag = F.phase === 'wait' ? 0.25 : 0.05;
+      for (let i = 0; i < 14; i++) { const u = i / 13; arr[i * 3] = tx + (bx - tx) * u; arr[i * 3 + 1] = ty + (by + 0.07 + dip - ty) * u - Math.sin(u * Math.PI) * sag; arr[i * 3 + 2] = tz + (bz - tz) * u; }
       lineGeo.attributes.position.needsUpdate = true;
     }
     renderer.render(scene, camera);
