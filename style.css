@@ -153,9 +153,15 @@ body[data-mode="night"] {
 .emote:hover { background: #f8a6c2; }
 .emote-2 { bottom: calc(max(24px, env(safe-area-inset-bottom)) + 64px); width: 44px; height: 44px; right: 19px; font-size: 18px; background: var(--cream); }
 .emote-2:hover { background: #fff; }
-.emote-3 { bottom: calc(max(24px, env(safe-area-inset-bottom)) + 114px); font-weight: 900; color: var(--ink); }
-.emote-4 { bottom: calc(max(24px, env(safe-area-inset-bottom)) + 164px); font-weight: 900; color: var(--ink); }
-.emote-5 { bottom: calc(max(24px, env(safe-area-inset-bottom)) + 214px); }
+.emote { color: #fff; }
+.emote-2 { color: var(--ink); }
+.camctl { position: fixed; right: 17px; bottom: calc(max(24px, env(safe-area-inset-bottom)) + 120px); z-index: 6; display: flex; flex-direction: column; background: var(--cream); border: 4px solid #fff; border-radius: 28px; box-shadow: 0 5px 0 rgba(107, 79, 58, .25); overflow: hidden; }
+.camctl button { width: 40px; height: 40px; border: 0; background: transparent; color: var(--ink); display: grid; place-items: center; cursor: pointer; }
+.camctl button + button { border-top: 2px solid var(--line); }
+.camctl button:hover { background: #fff; }
+.camctl button:active { background: var(--cream-2); }
+.camctl button:focus-visible { outline: 3px solid var(--green-d); outline-offset: -3px; }
+.label.pet { background: #fff; }
 .prompt.reel { background: linear-gradient(90deg, var(--yellow) var(--p, 0%), #fff var(--p, 0%)); color: var(--ink); }
 .btn-danger { background: #f0766a; color: #fff; }
 .btn-danger:hover { background: #e2604f; }

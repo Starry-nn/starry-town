@@ -1,5 +1,5 @@
 /* Starry Town — a walkable portfolio island. The rules live here; view3d.js draws the picture. */
-import { createView } from './view3d.js?v=15';
+import { createView } from './view3d.js?v=16';
 (() => {
 'use strict';
 
@@ -39,7 +39,7 @@ const UI = {
     postcardTitle: 'A postcard from the island', postcardMeta: 'Save it or send it to a friend', save: 'Save image', greet: 'Greetings from Starry Town', back: 'Back to backpack',
     quick: 'Quick view', cv: 'CV', lang: '中文', bag: 'Backpack',
     visit: 'Visit', talk: 'Talk to', movedIn: 'just moved to the island! Go say hi.', neighbours: 'Residents', lockedRes: 'Moves in after {n} finds', no3d: 'This browser cannot show the 3D island, so here is everything on one page.', dig: 'Dig here', fish: 'Go fishing', wait: 'Waiting for a bite…', pull: 'Pull!',
-    hello: "Hi, I'm Nan! Welcome to my island. The to-do list in the top left will show you around. My Samoyed, Bingo, insists on coming along.",
+    hello: "Hi, I'm Nan! Welcome to my island. The to-do list in the top left will show you around. Bingo insists on coming along.",
     next: 'tap or press any key ▸', speaker: 'Nan',
     newStar: 'New star', allDone: 'All {n} stars found. Thanks for walking the whole island!', sayHi: 'Say hi',
     early: 'Too early, it swam away.', missed: 'It got away. Try again!', again: 'You already have this one. Back it goes.',
@@ -69,7 +69,7 @@ const UI = {
     postcardTitle: '一张小岛明信片', postcardMeta: '保存下来，或者发给朋友', save: '保存图片', greet: '来自 Starry Town 的问候', back: '回到背包',
     quick: '快速浏览', cv: '简历', lang: 'EN', bag: '背包',
     visit: '拜访', talk: '聊聊', movedIn: '搬到岛上来了！去打个招呼吧。', neighbours: '居民', lockedRes: '找到 {n} 样东西后搬来', no3d: '这个浏览器显示不了 3D 小岛，所以把全部内容放在这一页。', dig: '挖一挖', fish: '钓鱼', wait: '等鱼上钩…', pull: '拉！',
-    hello: '嗨，我是姚楠！欢迎来我的小岛。左上角的任务清单会带你逛一圈。我的萨摩耶苹果一定要跟着。',
+    hello: '嗨，我是姚楠！欢迎来我的小岛。左上角的任务清单会带你逛一圈。苹果一定要跟着。',
     next: '点击或按任意键 ▸', speaker: '姚楠',
     newStar: '新的星星', allDone: '{n} 颗星全部找到，谢谢你逛完整座小岛！', sayHi: '打个招呼',
     early: '太早了，鱼游走了。', missed: '跑掉了，再试一次！', again: '这个你已经有了，放回去吧。',
@@ -298,10 +298,7 @@ ground.width = MW * T * GS; ground.height = MH * T * GS;
     c.fillStyle = fill; c.fill();
   };
   const land = (x, y) => at(x, y) !== W && at(x, y) !== D;
-  shape(land, 7, 13, 'rgba(255,255,255,.35)');
-  shape(land, 4.5, 11, '#e9fbff');
-  shape(land, 3, 10, C.sand);
-  shape(land, 0, 7, C.grass);
+  shape(land, 0, 0, C.grass);            // the shore itself (lip, bank, sand, foam) is modelled in 3D
   HOMES.forEach(h => rr(c, h.x * T + 3, h.y * T + 12, h.w * T - 6, h.h * T - 14, 7, C.pathD));
   for (let y = 2; y < 32; y++) for (let x = 2; x < MW - 2; x++) {
     if (!land(x, y)) continue;
@@ -833,6 +830,7 @@ function render(dt) {
       s.name[lang], (has ? 'has ' : '') + (isN ? 'next ' : '') + (isA ? 'on' : ''), game ? (has ? '✓' : '🔮') : has ? '★' : isN ? '!' : '?');
   }
   if (fishing && fishing.phase === 'reel') $('prompt').style.setProperty('--p', Math.round(Math.min(1, fishing.p) * 100) + '%');
+  place(label('dog', () => { if (!paused() && !busy()) petDog(); }), started ? view.project(dog.x, dog.y, 1.2) : OFF, lang === 'zh' ? '苹果' : 'Bingo', 'res pet', '🐶');
   for (const h of HOMES) {
     const r = RES.find(q => q.def.id === h.id);
     place(label('home-' + h.id, () => { if (paused() || busy()) return; if (r.here) goTalk(r); else walkTo(h.x + 1, h.y + 3); }), started ? view.project((h.x + 1.5) * T, (h.y + 2) * T, 3.9) : OFF,
@@ -1053,6 +1051,11 @@ $('cardClose').onclick = () => cardEl.close();
 
 /* ------------------------------------------------------------------ HUD / intro */
 const touch = matchMedia('(pointer: coarse)').matches;
+const svg = d => `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const ICON = {
+  sound: svg('<path d="M4 9.5v5h3.5l4.5 4v-13l-4.5 4z" fill="currentColor"/><path d="M15.5 9a4.2 4.2 0 0 1 0 6M18.3 6.5a8 8 0 0 1 0 11"/>'),
+  mute: svg('<path d="M4 9.5v5h3.5l4.5 4v-13l-4.5 4z" fill="currentColor"/><path d="M16 9.5l5 5M21 9.5l-5 5"/>'),
+};
 function renderPrompt() {
   const e = $('prompt'), u = t();
   if (!action || !started || !$('say').hidden) { e.hidden = true; return; }
@@ -1084,7 +1087,7 @@ function renderHud() {
   $('btnBag').innerHTML = `🎒 <span>${itemCount()}/${itemTotal}</span>`; $('btnBag').setAttribute('aria-label', u.bag);
   $('btnQuick').textContent = u.quick; $('btnQuick2').textContent = u.quickLong; $('btnStart').textContent = hasProgress() ? u.cont : u.enter;
   $('btnReset').hidden = started || !hasProgress(); $('btnReset').textContent = '↺ ' + u.restart;
-  $('btnMute').hidden = !started; $('btnMute').textContent = soundOn || musicOn ? '🔊' : '🔇'; $('btnMute').setAttribute('aria-label', u.mute); $('btnMute').title = u.mute;
+  $('btnMute').hidden = !started; $('btnMute').innerHTML = soundOn || musicOn ? ICON.sound : ICON.mute; $('camCtl').hidden = !started; $('btnMute').setAttribute('aria-label', u.mute); $('btnMute').title = u.mute;
   [['btnView', u.viewBtn + (touch ? '' : ' (V)')], ['btnZoomIn', u.zoomIn], ['btnZoomOut', u.zoomOut]].forEach(([id, tip]) => { $(id).hidden = !started; $(id).title = tip; $(id).setAttribute('aria-label', tip); });
   $('btnDance').hidden = !started; $('btnDance').setAttribute('aria-label', u.dance); $('btnDance').title = u.dance + (touch ? '' : ' (Q)');
   $('btnCv').textContent = u.cv; $('btnCv').href = lang === 'zh' ? 'assets/Nan_Yao_Resume_CN.pdf' : 'assets/Nan_Yao_Resume_EN.pdf';

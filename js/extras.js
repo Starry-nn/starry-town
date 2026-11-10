@@ -124,7 +124,7 @@ window.EXTRAS = {
     { id: 'showcase', icon: '🏛️', en: 'Cross the bridge to the Showcase', zh: '过桥去精选作品馆看看' },
     { id: 'dig',      icon: '⛏', en: 'Dig up a fun fact', zh: '挖出一个 fun fact' },
     { id: 'fish',     icon: '🎣', en: 'Catch something', zh: '钓上来一样东西' },
-    { id: 'pet',      icon: '🐶', en: 'Pet Bingo the Samoyed (click him)', zh: '摸摸萨摩耶苹果（点它一下）' },
+    { id: 'pet',      icon: '🐶', en: 'Pet Bingo (click him)', zh: '摸摸苹果（点它一下）' },
     { id: 'fruit',    icon: '🍑', en: 'Shake a fruit tree', zh: '摇一棵果树' },
     { id: 'neighbor', icon: '🏡', en: 'Meet a resident', zh: '认识一位居民' },
     { id: 'gift',     icon: '🎁', en: 'Give a resident some fruit', zh: '送居民一个水果' },
