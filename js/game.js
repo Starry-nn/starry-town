@@ -1,5 +1,5 @@
 /* Starry Town — a walkable portfolio island. The rules live here; view3d.js draws the picture. */
-import { createView } from './view3d.js?v=13';
+import { createView } from './view3d.js?v=14';
 (() => {
 'use strict';
 
@@ -24,7 +24,7 @@ const UI = {
   en: {
     kicker: "NAN YAO'S PORTFOLIO ISLAND",
     sub: 'My portfolio is a little island you can walk around. Here is how it works:',
-    enter: '▶ Enter the island', quickLong: 'No time? Read it on one page',
+    enter: '▶ Enter the island', quickLong: 'Short on time? Visit my classic site ↗',
     how: [['🚶', 'Walk', 'Arrow keys or WASD, or click where you want to go.'], ['🏠', 'Visit', 'Walk up to a building with a “?” and press E, or just click it, to read about my work. My favourite pieces are in the Showcase across the river.'], ['⛏', 'Dig', 'Press E where the ground sparkles to dig up a fun fact.'], ['🎣', 'Fish', 'Press E next to water, press again when the float dips, then keep pressing to reel it in.'], ['🍑', 'And more', 'Shake fruit trees for fruit and hidden notes, guess my MBTI at the crystal ball, pet the dog, press Q to dance.']],
     howTouch: [['🚶', 'Walk', 'Tap where you want to go.'], ['🏠', 'Visit', 'Tap a building with a “?” to read about my work. My favourite pieces are in the Showcase across the river.'], ['⛏', 'Dig', 'Tap a sparkle on the ground to dig up a fun fact.'], ['🎣', 'Fish', 'Stand by the water and tap the button, tap again when the float dips, then keep tapping to reel it in.'], ['🍑', 'And more', 'Shake fruit trees for fruit and hidden notes, guess my MBTI at the crystal ball, pet the dog, tap 💃 to dance.']],
     cont: '▶ Back to the island', subBack: 'Welcome back! Your progress is saved on this device: ★ {a} · 🎒 {b}.', helloBack: 'Welcome back! Everything is where you left it.',
@@ -53,7 +53,7 @@ const UI = {
   zh: {
     kicker: '姚楠的作品集小岛',
     sub: '我把作品集做成了一座可以逛的小岛。玩法很简单：',
-    enter: '▶ 进入小岛', quickLong: '没时间？一页看完',
+    enter: '▶ 进入小岛', quickLong: '赶时间？去看简洁版个人主页 ↗',
     how: [['🚶', '走路', '方向键或 WASD，也可以直接点击想去的地方。'], ['🏠', '拜访', '走到带“?”的建筑前按 E，或者直接点它，看我的经历和项目。最满意的作品放在河对岸的精选作品馆。'], ['⛏', '挖宝', '在地上闪光的地方按 E，挖出一个 fun fact。'], ['🎣', '钓鱼', '站在水边按 E 抛竿，浮标下沉时再按一次，然后连按把鱼拉上来。'], ['🍑', '还有', '摇果树会掉水果和小纸条，去水晶球猜我的 MBTI，摸摸狗，按 Q 跳舞。']],
     howTouch: [['🚶', '走路', '点击想去的地方。'], ['🏠', '拜访', '点带“?”的建筑，看我的经历和项目。最满意的作品放在河对岸的精选作品馆。'], ['⛏', '挖宝', '点地上闪光的地方，挖出一个 fun fact。'], ['🎣', '钓鱼', '站在水边点下方按钮，浮标下沉时再点一次，然后连点把鱼拉上来。'], ['🍑', '还有', '摇果树会掉水果和小纸条，去水晶球猜我的 MBTI，摸摸狗，点 💃 跳舞。']],
     cont: '▶ 继续逛小岛', subBack: '欢迎回来！进度保存在这台设备上：★ {a} · 🎒 {b}。', helloBack: '欢迎回来！岛上的一切都和你离开时一样。',
@@ -1118,7 +1118,7 @@ function start() {
 $('btnStart').onclick = start; $('btnReset').onclick = askReset;
 $('btnDance').onclick = () => { $('btnDance').blur(); startDance(); };
 $('btnMute').onclick = () => { $('btnMute').blur(); const on = !(soundOn || musicOn); soundOn = on; store.set('sound', on); setMusic(on); renderHud(); };
-$('btnQuick').onclick = openQuick; $('btnQuick2').onclick = openQuick;
+$('btnQuick').onclick = openQuick;
 $('btnBag').onclick = openBag;
 $('btnLang').onclick = setLang; $('btnLang2').onclick = setLang;
 $('say').onclick = hideSay;

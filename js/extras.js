@@ -137,13 +137,13 @@ window.EXTRAS = {
   notes: {
     en: ['How this site is designed', [
       ['Teach, then let go', 'One screen explains how to play, then everyone enters the same island. No sign-up, no choices to get wrong.'],
-      ['The game never blocks the content', 'Quick view shows everything on one page for visitors in a hurry, and the CV is always one click away.'],
+      ['The game never blocks the content', 'Visitors in a hurry can jump to the classic one-page site from the welcome screen or open Quick view on the island, and the CV is always one click away.'],
       ['A reason to keep going', 'A to-do list, stars, buried facts, fish, notes in trees, a guessing game and new residents turn reading a résumé into collecting. Progress is saved for the next visit.'],
       ['Every path leads to contact', 'The to-do list ends at the mailbox, the bottle you can fish up links to it, and the postcard carries the address.'],
     ]],
     zh: ['这个网站是怎么设计的', [
       ['先教会，再放手', '一屏讲清玩法，然后所有人进同一座岛。不用注册，也没有会选错的选项。'],
-      ['游戏不挡内容', '赶时间的访客可以用“快速浏览”一页看完，简历始终一键可达。'],
+      ['游戏不挡内容', '赶时间的访客可以从欢迎页跳到简洁版个人主页，或在岛上用“快速浏览”一页看完，简历始终一键可达。'],
       ['给继续逛一个理由', '任务清单、星星、埋着的小事实、鱼、树上的纸条、竞猜和新居民，把看简历变成收集。进度会保存，下次接着逛。'],
       ['每条路都通向联系', '任务清单的终点是信箱，钓上来的漂流瓶会指向它，明信片上也印着地址。'],
     ]],
