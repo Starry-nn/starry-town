@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Starry Town · Nan Yao</title>
+<meta name="description" content="Nan Yao's portfolio as a small pixel town you can walk around: AI, venture, product and operations.">
+<meta name="theme-color" content="#14142b">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Crect width='16' height='16' fill='%2314142b'/%3E%3Cpath fill='%23ffd95a' d='M7 2h2v3h3v2h-1v1h-1v2h1v3h-2v-2H7v2H5v-3h1V8H5V7H4V5h3z'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="game" aria-label="A pixel town map. Use the Quick view button for a plain version of the same content."></canvas>
+
+<header class="hud" id="hud">
+  <div class="hud-brand">
+    <span class="hud-star" aria-hidden="true">★</span>
+    <span class="hud-title">STARRY TOWN</span>
+    <span class="hud-name" id="hudName"></span>
+  </div>
+  <div class="hud-actions">
+    <span class="hud-count" id="hudCount" aria-live="polite"></span>
+    <button class="btn" id="btnQuick"></button>
+    <a class="btn" id="btnCv" target="_blank" rel="noopener"></a>
+    <button class="btn" id="btnLang" aria-label="Switch language"></button>
+  </div>
+</header>
+
+<button class="prompt" id="prompt" hidden></button>
+<div class="say" id="say" hidden><p id="sayText"></p><span class="say-more" id="sayMore"></span></div>
+<div class="toast" id="toast" hidden></div>
+
+<section class="intro" id="intro">
+  <div class="intro-card">
+    <p class="intro-kicker" id="introKicker"></p>
+    <h1 class="intro-title">STARRY<br>TOWN</h1>
+    <p class="intro-sub" id="introSub"></p>
+    <div class="intro-btns">
+      <button class="btn btn-main" id="btnStart"></button>
+      <button class="btn" id="btnQuick2"></button>
+      <button class="btn" id="btnLang2"></button>
+    </div>
+    <p class="intro-hint" id="introHint"></p>
+  </div>
+</section>
+
+<dialog class="card" id="card">
+  <div class="card-head">
+    <div>
+      <p class="card-kicker" id="cardKicker"></p>
+      <h2 class="card-title" id="cardTitle"></h2>
+      <p class="card-meta" id="cardMeta"></p>
+    </div>
+    <button class="btn btn-close" id="cardClose" aria-label="Close">✕</button>
+  </div>
+  <div class="card-body" id="cardBody"></div>
+</dialog>
+
+<noscript>
+  <div class="noscript">
+    <h1>Nan Yao</h1>
+    <p>AI · Venture · Product · Operations. New York / Beijing / Shenzhen.</p>
+    <p>This portfolio is an interactive pixel town and needs JavaScript. You can reach me at
+      <a href="mailto:yaonan1127@gmail.com">yaonan1127@gmail.com</a> or
+      <a href="https://www.linkedin.com/in/yaonanstarry">LinkedIn</a>, or read my
+      <a href="assets/Nan_Yao_Resume_EN.pdf">résumé</a>.</p>
+  </div>
+</noscript>
+
+<script src="js/data.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>
