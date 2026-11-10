@@ -39,6 +39,34 @@ window.EXTRAS = {
     { icon: '🍾', en: ['A message in a bottle', 'You fished this far, so here is a shortcut: write to me.'],
                   zh: ['一只漂流瓶', '都钓到这儿了，给你一条捷径：直接写信给我。'], cta: true },
   ],
+  // Residents move in as visitors find more things (dig + fish). `at` = how many finds unlock them.
+  // species: cat, bunny, bear or frog. `home` is a tile on the map.
+  residents: [
+    { id: 'mochi', species: 'cat', icon: '🐱', color: '#f6c89f', accent: '#7fd1c0', at: 2, home: [24, 18],
+      name: { en: 'Mochi', zh: '麻薯' },
+      lines: {
+        en: ['I moved in because someone keeps digging things up. That was you, right?', 'See the tall dark tower up north? That is Monolith Capital, where Nan looks for AI startups.', 'Tip: the fish by the pier bite faster. Probably.'],
+        zh: ['听说有人一直在挖东西，我就搬来了。是你吧？', '看到北边那栋深色高楼了吗？那是 Monolith 砺思资本，姚楠在那儿找 AI 创业公司。', '小提示：码头那边的鱼咬钩更快。大概吧。'],
+      } },
+    { id: 'pip', species: 'bunny', icon: '🐰', color: '#f7f2ea', belly: '#ffffff', accent: '#f590b2', at: 5, home: [9, 29],
+      name: { en: 'Pip', zh: '跳跳' },
+      lines: {
+        en: ['The campsite is where Nan keeps the non-work stuff. And the dog house.', 'I tried the climbing boulder once. Once.', 'Orbit, the observatory in the north-west, is her newest project. Go have a look.'],
+        zh: ['营地放的都是姚楠工作之外的东西，还有狗屋。', '那块攀岩石我爬过一次。就一次。', '西北角的天文台是 Orbit，她最新的项目，去看看吧。'],
+      } },
+    { id: 'bao', species: 'bear', icon: '🐻', color: '#c99a6b', belly: '#f3dfc4', accent: '#6f8fd8', at: 9, home: [36, 17],
+      name: { en: 'Bao', zh: '阿宝' },
+      lines: {
+        en: ['I run a very serious honey fund. Nan says my pipeline needs more structure.', 'The campus is right behind me: four schools, one clock tower.', 'If you are hiring, the mailbox is at the south end of the main road.'],
+        zh: ['我在经营一支非常严肃的蜂蜜基金。姚楠说我的项目管线不够有条理。', '我身后就是校园：四所学校，一座钟楼。', '如果你在招人，信箱就在主路的最南边。'],
+      } },
+    { id: 'rana', species: 'frog', icon: '🐸', color: '#8fd67c', belly: '#e6f7c9', accent: '#ffd166', at: 13, home: [31, 27],
+      name: { en: 'Rana', zh: '呱呱' },
+      lines: {
+        en: ['Nice rod. Catch all eight and you have read her résumé in numbers.', 'That ship is Waves Odyssey. Research trips, not pirates.', 'Everything you found is in your backpack, top right.'],
+        zh: ['鱼竿不错。把八条都钓上来，你就用数字读完她的简历了。', '那艘船是 Waves Odyssey。是出海调研，不是海盗船。', '你找到的东西都在右上角的背包里。'],
+      } },
+  ],
   // Visitor routes: who is visiting decides what to see first
   routes: {
     recruiter: { icon: '💼', stops: ['about', 'monolith', 'orbit', 'skills', 'contact'],
