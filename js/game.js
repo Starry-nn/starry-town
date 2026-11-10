@@ -1,5 +1,5 @@
 /* Starry Town — a walkable portfolio island. The rules live here; view3d.js draws the picture. */
-import { createView } from './view3d.js?v=9';
+import { createView } from './view3d.js?v=12';
 (() => {
 'use strict';
 
@@ -25,16 +25,17 @@ const UI = {
     kicker: "NAN YAO'S PORTFOLIO ISLAND",
     sub: 'My portfolio is a little island you can walk around. Here is how it works:',
     enter: '▶ Enter the island', quickLong: 'No time? Read it on one page',
-    how: [['🚶', 'Walk', 'Arrow keys or WASD, or click where you want to go.'], ['🏠', 'Visit', 'Walk up to a building with a “?” and press E, or just click it, to read about my work.'], ['⛏', 'Dig', 'Press E where the ground sparkles to dig up a fun fact.'], ['🎣', 'Fish', 'Press E next to water, then again when the float dips.'], ['🍑', 'And more', 'Shake fruit trees, meet new residents, pet the dog, press Q to dance.']],
-    howTouch: [['🚶', 'Walk', 'Tap where you want to go.'], ['🏠', 'Visit', 'Tap a building with a “?” to read about my work.'], ['⛏', 'Dig', 'Tap a sparkle on the ground to dig up a fun fact.'], ['🎣', 'Fish', 'Stand by the water and tap the button, then tap again when the float dips.'], ['🍑', 'And more', 'Shake fruit trees, meet new residents, pet the dog, tap 💃 to dance.']],
+    how: [['🚶', 'Walk', 'Arrow keys or WASD, or click where you want to go.'], ['🏠', 'Visit', 'Walk up to a building with a “?” and press E, or just click it, to read about my work.'], ['⛏', 'Dig', 'Press E where the ground sparkles to dig up a fun fact.'], ['🎣', 'Fish', 'Press E next to water, then again when the float dips.'], ['🍑', 'And more', 'Shake fruit trees for fruit and hidden notes, guess my MBTI at the crystal ball, pet the dog, press Q to dance.']],
+    howTouch: [['🚶', 'Walk', 'Tap where you want to go.'], ['🏠', 'Visit', 'Tap a building with a “?” to read about my work.'], ['⛏', 'Dig', 'Tap a sparkle on the ground to dig up a fun fact.'], ['🎣', 'Fish', 'Stand by the water and tap the button, then tap again when the float dips.'], ['🍑', 'And more', 'Shake fruit trees for fruit and hidden notes, guess my MBTI at the crystal ball, pet the dog, tap 💃 to dance.']],
     shake: 'Shake the tree', give: 'Give fruit to', dance: 'Dance', tasks: 'To-do', taskDone: 'Done', allTasks: 'Every task done. You know this island better than I do!', nextTask: 'Next',
     thanks: ['Fruit! For me? You are my favourite visitor.', 'Fresh from the tree. Thank you!', 'I will save this one for later. Maybe.'],
     fruitLine: 'Fruit in your pocket', fruitHint: 'Shake a fruit tree, then give the fruit to a resident.',
-    settings: 'Island settings', soundOn: 'Sound: on', soundOff: 'Sound: off', modes: { day: 'Day', dusk: 'Dusk', night: 'Night' }, postcard: 'Postcard',
+    settings: 'Island settings', soundOn: 'Sound effects: on', soundOff: 'Sound effects: off', musicOn: 'Music: on', musicOff: 'Music: off', mute: 'Sound on / off',
+    treeTitle: 'A note fell out of the tree!', notes: 'Shaken out of trees', lockedMbti: 'Moves in when the MBTI is guessed', guess: 'Guess', socials: 'Find me elsewhere', xhs: 'Xiaohongshu', modes: { day: 'Day', dusk: 'Dusk', night: 'Night' }, postcard: 'Postcard',
     postcardTitle: 'A postcard from the island', postcardMeta: 'Save it or send it to a friend', save: 'Save image', greet: 'Greetings from Starry Town', back: 'Back to backpack',
     quick: 'Quick view', cv: 'CV', lang: '中文', bag: 'Backpack',
     visit: 'Visit', talk: 'Talk to', movedIn: 'just moved to the island! Go say hi.', neighbours: 'Residents', lockedRes: 'Moves in after {n} finds', no3d: 'This browser cannot show the 3D island, so here is everything on one page.', dig: 'Dig here', fish: 'Go fishing', wait: 'Waiting for a bite…', pull: 'Pull!',
-    hello: "Hi, I'm Nan! Welcome to my island. The to-do list in the top left will show you around. My Samoyed insists on coming along.",
+    hello: "Hi, I'm Nan! Welcome to my island. The to-do list in the top left will show you around. My Samoyed, Bingo, insists on coming along.",
     next: 'tap or press any key ▸', speaker: 'Nan',
     newStar: 'New star', allDone: 'All 16 stars found. Thanks for walking the whole island!', sayHi: 'Say hi',
     early: 'Too early, it swam away.', missed: 'It got away. Try again!', again: 'You already have this one. Back it goes.',
@@ -44,22 +45,23 @@ const UI = {
     kick: { about: 'Welcome', job: 'Experience', project: 'Selected work', focus: 'How I work', edu: 'Education', skills: 'Capabilities', life: 'Beyond the desk', contact: 'Contact' },
     aboutTitle: "Hi, I'm Nan Yao", eduTitle: 'Education', contactTitle: 'Get in touch', phone: 'Phone', github: 'GitHub',
     bagTitle: 'Backpack', bagMeta: 'What you have found so far', route: 'Your route', treasures: 'Dug up', catches: 'Caught', unknown: 'Not found yet',
-    toolsText: 'Dig where the ground sparkles. Stand next to water and press E to fish, then press again when the float dips.',
+    toolsText: 'Dig where the ground sparkles. Stand next to water and press E to fish, then press again when the float dips. Fruit trees sometimes drop a note.',
   },
   zh: {
     kicker: '姚楠的作品集小岛',
     sub: '我把作品集做成了一座可以逛的小岛。玩法很简单：',
     enter: '▶ 进入小岛', quickLong: '没时间？一页看完',
-    how: [['🚶', '走路', '方向键或 WASD，也可以直接点击想去的地方。'], ['🏠', '拜访', '走到带“?”的建筑前按 E，或者直接点它，看我的经历和项目。'], ['⛏', '挖宝', '在地上闪光的地方按 E，挖出一个 fun fact。'], ['🎣', '钓鱼', '站在水边按 E 抛竿，浮标下沉时再按一次。'], ['🍑', '还有', '摇果树、认识新居民、摸摸狗，按 Q 跳舞。']],
-    howTouch: [['🚶', '走路', '点击想去的地方。'], ['🏠', '拜访', '点带“?”的建筑，看我的经历和项目。'], ['⛏', '挖宝', '点地上闪光的地方，挖出一个 fun fact。'], ['🎣', '钓鱼', '站在水边点下方按钮，浮标下沉时再点一次。'], ['🍑', '还有', '摇果树、认识新居民、摸摸狗，点 💃 跳舞。']],
+    how: [['🚶', '走路', '方向键或 WASD，也可以直接点击想去的地方。'], ['🏠', '拜访', '走到带“?”的建筑前按 E，或者直接点它，看我的经历和项目。'], ['⛏', '挖宝', '在地上闪光的地方按 E，挖出一个 fun fact。'], ['🎣', '钓鱼', '站在水边按 E 抛竿，浮标下沉时再按一次。'], ['🍑', '还有', '摇果树会掉水果和小纸条，去水晶球猜我的 MBTI，摸摸狗，按 Q 跳舞。']],
+    howTouch: [['🚶', '走路', '点击想去的地方。'], ['🏠', '拜访', '点带“?”的建筑，看我的经历和项目。'], ['⛏', '挖宝', '点地上闪光的地方，挖出一个 fun fact。'], ['🎣', '钓鱼', '站在水边点下方按钮，浮标下沉时再点一次。'], ['🍑', '还有', '摇果树会掉水果和小纸条，去水晶球猜我的 MBTI，摸摸狗，点 💃 跳舞。']],
     shake: '摇一摇树', give: '送水果给', dance: '跳舞', tasks: '任务', taskDone: '完成', allTasks: '任务全部完成，你比我还熟悉这座岛了！', nextTask: '下一步',
     thanks: ['水果！给我的吗？你是我最喜欢的访客。', '刚摘的，谢谢你！', '这个我留着晚点吃。大概吧。'],
     fruitLine: '口袋里的水果', fruitHint: '摇一摇果树，再把水果送给居民。',
-    settings: '小岛设置', soundOn: '音效：开', soundOff: '音效：关', modes: { day: '白天', dusk: '黄昏', night: '夜晚' }, postcard: '明信片',
+    settings: '小岛设置', soundOn: '音效：开', soundOff: '音效：关', musicOn: '音乐：开', musicOff: '音乐：关', mute: '声音开关',
+    treeTitle: '树上掉下一张纸条！', notes: '树上摇下来的', lockedMbti: '猜对 MBTI 后搬来', guess: '猜一下', socials: '在别处找到我', xhs: '小红书', modes: { day: '白天', dusk: '黄昏', night: '夜晚' }, postcard: '明信片',
     postcardTitle: '一张小岛明信片', postcardMeta: '保存下来，或者发给朋友', save: '保存图片', greet: '来自 Starry Town 的问候', back: '回到背包',
     quick: '快速浏览', cv: '简历', lang: 'EN', bag: '背包',
     visit: '拜访', talk: '聊聊', movedIn: '搬到岛上来了！去打个招呼吧。', neighbours: '居民', lockedRes: '找到 {n} 样东西后搬来', no3d: '这个浏览器显示不了 3D 小岛，所以把全部内容放在这一页。', dig: '挖一挖', fish: '钓鱼', wait: '等鱼上钩…', pull: '拉！',
-    hello: '嗨，我是姚楠！欢迎来我的小岛。左上角的任务清单会带你逛一圈。我的萨摩耶一定要跟着。',
+    hello: '嗨，我是姚楠！欢迎来我的小岛。左上角的任务清单会带你逛一圈。我的萨摩耶苹果一定要跟着。',
     next: '点击或按任意键 ▸', speaker: '姚楠',
     newStar: '新的星星', allDone: '16 颗星全部找到，谢谢你逛完整座小岛！', sayHi: '打个招呼',
     early: '太早了，鱼游走了。', missed: '跑掉了，再试一次！', again: '这个你已经有了，放回去吧。',
@@ -69,7 +71,7 @@ const UI = {
     kick: { about: '欢迎', job: '工作经历', project: '代表作品', focus: '工作方法', edu: '教育背景', skills: '能力与工具', life: '工作之外', contact: '联系方式' },
     aboutTitle: '嗨，我是姚楠', eduTitle: '教育背景', contactTitle: '联系我', phone: '电话', github: 'GitHub',
     bagTitle: '背包', bagMeta: '你目前找到的东西', route: '你的路线', treasures: '挖到的', catches: '钓到的', unknown: '还没找到',
-    toolsText: '地上闪光的地方可以挖。站在水边按 E 抛竿，浮标下沉时再按一次。',
+    toolsText: '地上闪光的地方可以挖。站在水边按 E 抛竿，浮标下沉时再按一次。果树有时会掉下小纸条。',
   },
 };
 let lang = store.get('lang', (navigator.language || '').toLowerCase().startsWith('zh') ? 'zh' : 'en');
@@ -97,16 +99,20 @@ const SPOTS = [
   { id: 'life',     kind: 'life',         name: { en: 'Campsite', zh: '营地' } },
   { id: 'contact',  kind: 'contact',      name: { en: 'Mailbox', zh: '信箱' } },
 ];
-const spotById = Object.fromEntries(SPOTS.map(s => [s.id, s]));
-const found = new Set(store.get('found', []).filter(id => spotById[id]));
+const GUESS = { id: 'mbti', kind: 'mbti', name: EX.mbti.name };       // the guessing machine: a place to visit, but not one of the 16 stars
+const PLACES = [...SPOTS, GUESS];
+const spotById = Object.fromEntries(PLACES.map(s => [s.id, s]));
+const found = new Set(store.get('found', []).filter(id => spotById[id] && id !== 'mbti'));
 const dug = new Set(store.get('dug', []).filter(i => i >= 0 && i < EX.dig.length));
 const caught = new Set(store.get('caught', []).filter(i => i >= 0 && i < EX.fish.length));
+const shaken = new Set(store.get('shaken', []).filter(i => i >= 0 && i < EX.tree.length));   // notes shaken out of trees
+const SETS = { dig: dug, fish: caught, tree: shaken };
 let fruit = store.get('fruit', 0) | 0;
 const flags = new Set(store.get('flags', []));      // one-off things done: pet, fruit, neighbor, gift, dance
 const tasksSeen = new Set(store.get('tasks', []));  // tasks already announced as done
 const gifts = store.get('gifts', {});
-let soundOn = store.get('sound', true) !== false;
-const itemCount = () => dug.size + caught.size, itemTotal = EX.dig.length + EX.fish.length;
+let soundOn = store.get('sound', true) !== false, musicOn = store.get('music', true) !== false;
+const itemCount = () => dug.size + caught.size + shaken.size, itemTotal = EX.dig.length + EX.fish.length + EX.tree.length;
 
 /* ------------------------------------------------------------------ world */
 const G = 0, P = 1, Z = 2, W = 3, D = 4;
@@ -152,7 +158,7 @@ const BUILDINGS = [
 const TRIG = {
   skills: [5, 13], orbit: [10, 13], linear: [16, 13], monolith: [22, 11], crossing: [31, 13], waves: [38, 13],
   sync: [6, 23], agent: [15, 23], wavo: [30, 23], edu: [38, 23],
-  about: [20, 16], focus: [25, 16], manus: [26, 14], life: [13, 29], odyssey: [31, 30], contact: [23, 27],
+  about: [20, 16], focus: [25, 16], mbti: [24, 15], manus: [26, 14], life: [13, 29], odyssey: [31, 30], contact: [23, 27],
 };
 const OBJECTS = [
   { kind: 'sign',     tx: 20, ty: 15, fw: 1, fh: 1, spot: 'about' },
@@ -166,6 +172,7 @@ const OBJECTS = [
   { kind: 'net',      tx: 14, ty: 30, fw: 3, fh: 1 },
   { kind: 'mailbox',  tx: 24, ty: 27, fw: 1, fh: 1, spot: 'contact' },
   { kind: 'ship',     tx: 32, ty: 29, fw: 5, fh: 3, spot: 'odyssey' },
+  { kind: 'oracle',   tx: 24, ty: 14, fw: 1, fh: 1, spot: 'mbti' },
   { kind: 'crossSign', tx: 28, ty: 13, fw: 1, fh: 1 },
   { kind: 'light',    tx: 12, ty: 23, fw: 1, fh: 1 },
   { kind: 'crates',   tx: 8,  ty: 12, fw: 1, fh: 1 },
@@ -194,13 +201,13 @@ OBJECTS.forEach(o => {
   rect(o.tx - 1, o.ty - 2, o.fw + 2, o.fh + 3, 1, reserved);
   if (o.spot) {
     const s = spotById[o.spot];
-    const hh = { booth: 2.7, ship: 4.6, doghouse: 2.1, sign: 1.9, scope: 2.0, mailbox: 1.9 }[o.kind] || 2;
+    const hh = { booth: 2.7, ship: 4.6, doghouse: 2.1, sign: 1.9, scope: 2.0, mailbox: 1.9, oracle: 2.0 }[o.kind] || 2;
     s.front = { x: (o.tx + o.fw / 2) * T, y: (o.ty + o.fh) * T };
     s.boxes = [o.kind === 'ship' ? { x0: o.tx + 0.3, x1: o.tx + 4.7, z0: o.ty + 0.7, z1: o.ty + 2.3, h: 4.5 } : { x0: o.tx - 0.1, x1: o.tx + o.fw + 0.1, z0: o.ty, z1: o.ty + o.fh, h: hh - 0.3 }];
     s.lab = { x: (o.tx + o.fw / 2) * T, y: (o.ty + o.fh / 2) * T, h: Math.min(hh, 3.3) };
   }
 });
-SPOTS.forEach(s => { s.trig = TRIG[s.id]; });
+PLACES.forEach(s => { s.trig = TRIG[s.id]; });
 DIGS.forEach(g => rect(g.tx - 1, g.ty - 1, 3, 3, 1, reserved));
 rect(4, 26, 15, 5, 1, reserved);
 for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) {
@@ -369,7 +376,7 @@ if (view) { view.setMode(mode); addEventListener('resize', view.resize); }
 
 let pendingMove = null;
 function syncResidents(announce) {
-  for (const r of RES) if (!r.here && itemCount() >= r.def.at) { r.here = true; if (announce) pendingMove = r; }
+  for (const r of RES) if (!r.here && (r.def.unlock === 'mbti' ? flags.has('mbti') : itemCount() >= r.def.at)) { r.here = true; if (announce) pendingMove = r; }
 }
 function segFree(x0, y0, x1, y1) {
   const n = Math.ceil(Math.hypot(x1 - x0, y1 - y0) / 4);
@@ -402,13 +409,13 @@ function talkTo(r) {
     fruit--; store.set('fruit', fruit);
     gifts[r.def.id] = (gifts[r.def.id] || 0) + 1; store.set('gifts', gifts); flag('gift');
     const L = t().thanks;
-    say(L[(gifts[r.def.id] - 1) % L.length], false, r.def.name[lang]);
+    say(L[(gifts[r.def.id] - 1) % L.length], false, r.def.name[lang], VOICE[r.def.species]);
     floatText(r.x, r.y, 1.7, '♥', 'heart'); sfx('pet'); renderHud();
     return;
   }
   const lines = r.def.lines[lang];
-  say(lines[r.line % lines.length], false, r.def.name[lang]); r.line++;
-  floatText(r.x, r.y, 1.7, '♪', 'gold'); sfx('talk');
+  say(lines[r.line % lines.length], false, r.def.name[lang], VOICE[r.def.species]); r.line++;
+  floatText(r.x, r.y, 1.7, '♪', 'gold');
 }
 function petDog() {
   dog.pet = 0.9; flag('pet');
@@ -416,34 +423,99 @@ function petDog() {
 }
 
 /* ------------------------------------------------------------------ sound (tiny synth, no files) */
-let actx = null;
-function tone(f, dur, o = {}) {
+let actx = null, musicGain = null, noiseBuf = null;
+function audio() {
   try {
-    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
-    if (actx.state === 'suspended') actx.resume();
-    const t0 = actx.currentTime + (o.at || 0), osc = actx.createOscillator(), g = actx.createGain();
+    if (!actx) {
+      actx = new (window.AudioContext || window.webkitAudioContext)();
+      musicGain = actx.createGain(); musicGain.gain.value = 0.6; musicGain.connect(actx.destination);
+      noiseBuf = actx.createBuffer(1, actx.sampleRate, actx.sampleRate);
+      const ch = noiseBuf.getChannelData(0); for (let i = 0; i < ch.length; i++) ch[i] = Math.random() * 2 - 1;
+    }
+    if (actx.state === 'suspended' && !document.hidden) actx.resume();
+  } catch (e) { actx = null; }
+  return actx;
+}
+function tone(f, dur, o = {}) {
+  const a = audio(); if (!a) return;
+  try {
+    const t0 = a.currentTime + (o.at || 0), osc = a.createOscillator(), g = a.createGain();
     osc.type = o.type || 'sine'; osc.frequency.setValueAtTime(f, t0);
     if (o.to) osc.frequency.exponentialRampToValueAtTime(o.to, t0 + dur);
-    g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(o.vol || 0.07, t0 + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
-    osc.connect(g).connect(actx.destination); osc.start(t0); osc.stop(t0 + dur + 0.03);
+    g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(o.vol || 0.07, t0 + (o.attack || 0.015)); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    osc.connect(g).connect(o.dest || a.destination); osc.start(t0); osc.stop(t0 + dur + 0.03);
+  } catch (e) {}
+}
+function noise(dur, o = {}) {       // filtered hiss: rustles, splashes, footsteps
+  const a = audio(); if (!a) return;
+  try {
+    const t0 = a.currentTime + (o.at || 0), src = a.createBufferSource(), flt = a.createBiquadFilter(), g = a.createGain();
+    src.buffer = noiseBuf; src.loop = true; flt.type = o.type || 'bandpass'; flt.frequency.setValueAtTime(o.f || 1000, t0); flt.Q.value = o.q || 1;
+    if (o.to) flt.frequency.exponentialRampToValueAtTime(o.to, t0 + dur);
+    g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(o.vol || 0.06, t0 + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    src.connect(flt).connect(g).connect(a.destination); src.start(t0, Math.random() * 0.5); src.stop(t0 + dur + 0.03);
   } catch (e) {}
 }
 const SFX = {
-  open: () => tone(660, 0.09),
+  open: () => { tone(520, 0.07, { to: 880, vol: 0.05 }); },
+  close: () => { tone(700, 0.07, { to: 420, vol: 0.04 }); },
   star: () => [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.16, { at: i * 0.07, type: 'triangle' })),
-  item: () => [659, 784, 988].forEach((f, i) => tone(f, 0.14, { at: i * 0.08, type: 'triangle' })),
-  dig: () => [0, 0.25, 0.5].forEach(a => tone(180, 0.12, { type: 'square', vol: 0.035, to: 90, at: a })),
-  cast: () => tone(520, 0.25, { to: 180 }),
-  bite: () => { tone(880, 0.07); tone(880, 0.07, { at: 0.12 }); },
+  item: () => [659, 784, 988, 1319].forEach((f, i) => tone(f, i === 3 ? 0.4 : 0.13, { at: i * 0.09, type: 'triangle' })),
+  dig: () => [0, 0.25, 0.5].forEach(a => { noise(0.13, { at: a, f: 900, to: 300, q: 0.8, vol: 0.09 }); tone(140, 0.1, { at: a, to: 70, vol: 0.06 }); }),
+  cast: () => { tone(900, 0.22, { to: 300, vol: 0.04 }); noise(0.25, { at: 0.24, f: 1800, to: 500, vol: 0.07 }); tone(320, 0.12, { at: 0.24, to: 620, vol: 0.05 }); },
+  bite: () => { tone(988, 0.06); tone(988, 0.06, { at: 0.11 }); noise(0.1, { f: 2200, vol: 0.04 }); },
+  catch: () => { noise(0.35, { f: 2400, to: 600, vol: 0.09 }); tone(260, 0.16, { to: 720, vol: 0.05 }); },
   miss: () => tone(300, 0.22, { to: 150 }),
-  talk: () => [0, 1, 2].forEach(i => tone(420 + Math.random() * 180, 0.06, { at: i * 0.07, type: 'triangle', vol: 0.05 })),
   pet: () => { tone(700, 0.08, { to: 900 }); tone(900, 0.1, { at: 0.1, to: 1100 }); },
-  shake: () => [0, 1, 2, 3, 4].forEach(i => tone(900 + Math.random() * 500, 0.03, { at: i * 0.06, type: 'square', vol: 0.02 })),
-  fruit: () => tone(300, 0.14, { to: 560 }),
+  shake: () => [0, 1, 2, 3, 4, 5].forEach(i => noise(0.07, { at: i * 0.07, f: 3200 + Math.random() * 1500, q: 1.5, vol: 0.06 })),
+  fruit: () => { tone(520, 0.1, { to: 200, vol: 0.05 }); tone(150, 0.07, { at: 0.11, to: 90, vol: 0.08 }); noise(0.05, { at: 0.11, f: 400, vol: 0.05 }); },
   task: () => [784, 988, 1175].forEach((f, i) => tone(f, 0.12, { at: i * 0.09 })),
-  move: () => [392, 523, 659].forEach((f, i) => tone(f, 0.18, { at: i * 0.1, type: 'triangle' })),
+  move: () => [392, 523, 659, 784].forEach((f, i) => tone(f, 0.2, { at: i * 0.11, type: 'triangle' })),
   dance: () => [523, 587, 659, 784, 659, 784, 1047].forEach((f, i) => tone(f, 0.13, { at: i * 0.16, type: 'triangle' })),
+  pick: () => tone(660, 0.05, { vol: 0.04, type: 'triangle' }),
+  wrong: () => { tone(330, 0.12, { type: 'triangle' }); tone(262, 0.2, { at: 0.13, type: 'triangle' }); },
+  right: () => [523, 659, 784, 1047, 1319].forEach((f, i) => tone(f, i === 4 ? 0.5 : 0.12, { at: i * 0.08, type: 'triangle' })),
+  step: () => noise(0.045, { f: 420 + Math.random() * 260, q: 0.7, vol: 0.022 }),
 };
+// Background music: three short original loops, written as notes and played by the same synth. One per time of day.
+const NOTE = n => 440 * 2 ** ((n - 69) / 12), _ = null;
+const TRACKS = {
+  day: { bpm: 108, wave: 'triangle', mel: 0.34, mv: 0.05, bv: 0.06, cv: 0.016, comp: [2, 6], bars: [
+    { c: [60, 64, 67], b: 48, m: [72, _, 76, 79, _, 76, 74, _] }, { c: [57, 60, 64], b: 45, m: [72, _, 76, 81, _, 79, 76, _] },
+    { c: [57, 60, 65], b: 41, m: [77, _, 81, 84, _, 81, 79, 77] }, { c: [59, 62, 67], b: 43, m: [74, _, 79, 83, _, 79, 74, _] },
+    { c: [60, 64, 67], b: 48, m: [76, 79, _, 84, _, 79, 76, _] }, { c: [57, 60, 64], b: 45, m: [81, _, 79, 76, _, 72, 74, 76] },
+    { c: [57, 60, 65], b: 41, m: [77, _, 76, 74, _, 72, 69, _] }, { c: [59, 62, 67], b: 43, m: [71, 74, _, 79, _, _, _, _] }] },
+  dusk: { bpm: 84, wave: 'sine', mel: 0.8, mv: 0.055, bv: 0.06, cv: 0.02, comp: [2, 5], bars: [
+    { c: [60, 64, 69], b: 41, m: [69, _, _, 72, _, _, 76, _] }, { c: [60, 65, 69], b: 50, m: [77, _, _, 76, _, 72, _, _] },
+    { c: [58, 62, 65], b: 46, m: [74, _, _, 70, _, _, 69, _] }, { c: [60, 64, 67], b: 48, m: [67, _, 72, _, _, 76, _, _] },
+    { c: [60, 64, 69], b: 41, m: [81, _, _, 79, _, 76, _, _] }, { c: [60, 65, 69], b: 50, m: [77, _, 74, _, _, 69, _, _] },
+    { c: [58, 62, 65], b: 46, m: [70, _, _, 74, _, 77, _, 74] }, { c: [60, 64, 67], b: 48, m: [72, _, _, _, _, _, _, _] }] },
+  night: { bpm: 64, wave: 'sine', mel: 1.7, mv: 0.045, bv: 0.05, cv: 0.016, comp: [0], pad: true, bars: [
+    { c: [57, 60, 64], b: 45, m: [_, _, 76, _, _, _, 81, _] }, { c: [57, 60, 65], b: 41, m: [_, _, 84, _, _, 79, _, _] },
+    { c: [55, 60, 64], b: 48, m: [_, 76, _, _, 79, _, _, _] }, { c: [55, 59, 62], b: 43, m: [_, _, 74, _, _, _, _, _] },
+    { c: [57, 60, 64], b: 45, m: [88, _, _, _, 84, _, _, 81] }, { c: [57, 60, 65], b: 41, m: [_, _, 77, _, _, _, 81, _] },
+    { c: [55, 60, 64], b: 48, m: [_, 79, _, _, 76, _, _, _] }, { c: [55, 59, 64], b: 52, m: [_, _, 71, _, _, _, _, _] }] },
+};
+const music = { next: 0, step: 0 };
+function musicTick() {
+  if (!musicOn || !started || !actx || document.hidden || actx.state !== 'running') return;
+  const tr = TRACKS[mode], spb = 30 / tr.bpm, now = actx.currentTime;
+  if (music.next < now) music.next = now + 0.06;
+  while (music.next < now + 0.7) {
+    const at = music.next - now, bar = tr.bars[(music.step / 8) | 0], k = music.step % 8, o = { at, dest: musicGain };
+    if (bar.m[k]) tone(NOTE(bar.m[k]), tr.mel, { ...o, type: tr.wave, vol: tr.mv });
+    if (k === 0 || (k === 4 && !tr.pad)) tone(NOTE(bar.b), spb * (tr.pad ? 7 : 3.2), { ...o, type: 'triangle', vol: tr.bv, attack: tr.pad ? 0.4 : 0.02 });
+    if (tr.comp.includes(k)) bar.c.forEach((n, i) => tone(NOTE(n), tr.pad ? spb * 7.5 : 0.3, { ...o, at: at + (tr.pad ? 0 : i * 0.012), type: tr.pad ? 'sine' : 'triangle', vol: tr.cv, attack: tr.pad ? 0.6 : 0.015 }));
+    music.step = (music.step + 1) % (tr.bars.length * 8); music.next += spb;
+  }
+}
+setInterval(musicTick, 120);
+function setMusic(on) {
+  musicOn = on; store.set('music', on);
+  if (musicGain && actx) musicGain.gain.setTargetAtTime(on ? 0.6 : 0, actx.currentTime, 0.08);
+  if (on) { music.next = 0; audio(); }
+}
+document.addEventListener('visibilitychange', () => { if (!actx) return; try { if (document.hidden) actx.suspend(); else if (started) actx.resume(); } catch (e) {} });
 const sfx = name => { if (soundOn && started && SFX[name]) SFX[name](); };
 
 /* ------------------------------------------------------------------ to-do list, fruit trees, dancing */
@@ -457,7 +529,7 @@ const TASK_DONE = {
   project: () => SPOTS.some(s => s.kind === 'project' && found.has(s.id)),
   dig: () => dug.size > 0, fish: () => caught.size > 0,
   pet: () => flags.has('pet'), fruit: () => flags.has('fruit'), neighbor: () => flags.has('neighbor'), gift: () => flags.has('gift'), dance: () => flags.has('dance'),
-  hello: () => found.has('contact'), stars: () => found.size === SPOTS.length,
+  mbti: () => flags.has('mbti'), hello: () => found.has('contact'), stars: () => found.size === SPOTS.length,
 };
 const taskDone = id => !!(TASK_DONE[id] && TASK_DONE[id]());
 const currentTask = () => EX.tasks.find(k => !taskDone(k.id)) || null;
@@ -479,6 +551,9 @@ function taskTarget(k) {            // where the guide arrow points, and what cl
     case 'work': return spot('monolith');
     case 'project': return spot('orbit');
     case 'hello': return spot('contact');
+    case 'mbti': return spot('mbti');
+    case 'pet': return { x: dog.x, y: dog.y, go: petDog };
+    case 'dance': return { x: player.x, y: player.y, go: startDance };
     case 'stars': { const c = closest(SPOTS.filter(s => !found.has(s.id)), s => s.trig[0] * T + 8, s => s.trig[1] * T + 10); return c && spot(c.o.id); }
     case 'dig': { const c = closest(DIGS.filter(g => !dug.has(g.i)), g => g.x, g => g.y); return c && { x: c.o.x, y: c.o.y, go: () => walkTo(c.o.tx, c.o.ty, () => { action = currentAction(); if (action && action.type === 'dig') act(); }) }; }
     case 'fish': return { x: 30 * T + 8, y: 30 * T + 10, go: () => walkTo(30, 30, () => { player.dir = 'down'; }) };
@@ -507,7 +582,7 @@ function startDance() {
 }
 
 /* ------------------------------------------------------------------ update */
-let started = false, action = null, actionKey = '', time = 0;
+let started = false, action = null, actionKey = '', time = 0, stepAt = 0;
 const SPEED = 78;
 const cardEl = $('card');
 const paused = () => !started || cardEl.open;
@@ -515,7 +590,7 @@ function currentAction() {
   if (busy()) return null;
   if (fishing) return { type: 'fish' };
   let best = null, bd = 20;
-  for (const s of SPOTS) { const dist = Math.hypot(s.trig[0] * T + 8 - player.x, s.trig[1] * T + 10 - player.y); if (dist < bd && dist < (s.id === 'odyssey' ? 11 : 20)) { bd = dist; best = s; } }
+  for (const s of PLACES) { const dist = Math.hypot(s.trig[0] * T + 8 - player.x, s.trig[1] * T + 10 - player.y); if (dist < bd && dist < (s.id === 'odyssey' ? 11 : 20)) { bd = dist; best = s; } }
   if (best) return { type: 'spot', spot: best };
   for (const r of RES) if (r.here && Math.hypot(r.x - player.x, r.y - player.y) < 20) return { type: 'talk', res: r };
   for (const g of DIGS) if (!dug.has(g.i) && Math.hypot(g.x - player.x, g.y - player.y) < 13) return { type: 'dig', dig: g };
@@ -554,6 +629,7 @@ function update(dt) {
   const moved = Math.hypot(player.x - px, player.y - py);
   player.moving = moved > 0.01;
   player.anim = player.moving ? player.anim + dt : 0;
+  if (player.moving && (stepAt += dt) > 0.27) { stepAt = 0; sfx('step'); }
   if (player.moving) {
     const last = trail[trail.length - 1];
     if (Math.hypot(player.x - last.x, player.y - last.y) >= 1) { trail.push({ x: player.x, y: player.y }); if (trail.length > 18) trail.shift(); }
@@ -579,8 +655,10 @@ function update(dt) {
     if (shaking.t > 0.45 && !shaking.got) {
       shaking.got = true; fruit++; store.set('fruit', fruit); flag('fruit'); shaking.tree.ready = time + 40;
       floatText(shaking.tree.tx * T + 8, shaking.tree.ty * T + 10, 1.4, shaking.tree.v < 0.5 ? '+🍑' : '+🍊', 'gold'); sfx('fruit'); renderHud();
+      const left = EX.tree.map((_, i) => i).filter(i => !shaken.has(i));          // the first shake always drops a note, later ones often do
+      if (left.length && (!shaken.size || Math.random() < 0.6)) shaking.note = left[Math.floor(Math.random() * left.length)];
     }
-    if (shaking.t > 0.85) shaking = null;
+    if (shaking.t > 0.85) { const n = shaking.note; shaking = null; if (n != null) { shaken.add(n); store.set('shaken', [...shaken]); showItem('tree', n, true); } }
   }
   if (dancing) {
     dancing.t += dt;
@@ -623,6 +701,7 @@ function act() {
     else {
       fishing = null;
       const left = EX.fish.map((_, i) => i).filter(i => !caught.has(i));
+      sfx('catch');
       if (left.length) { const i = left[Math.floor(Math.random() * left.length)]; caught.add(i); store.set('caught', [...caught]); showItem('fish', i, true); }
       else showItem('fish', Math.floor(Math.random() * EX.fish.length), false);
     }
@@ -662,10 +741,10 @@ function render(dt) {
   view.render({ time, dt, player, dog, digging, fishing, dug, shaking, dancing, foundRatio: found.size / SPOTS.length, residents: RES,
     target: path && path.length ? path[path.length - 1] : null,
     next: far ? { x: gd.x, y: gd.y } : null });
-  for (const s of SPOTS) {
-    const has = found.has(s.id), isN = s === nxt, isA = action && action.spot === s;
+  for (const s of PLACES) {
+    const game = s === GUESS, has = game ? flags.has('mbti') : found.has(s.id), isN = s === nxt, isA = action && action.spot === s;
     place(label(s.id, () => { if (!paused() && !busy()) visitSpot(s); }), started ? view.project(s.lab.x, s.lab.y, s.lab.h) : OFF,
-      s.name[lang], (has ? 'has ' : '') + (isN ? 'next ' : '') + (isA ? 'on' : ''), has ? '★' : isN ? '!' : '?');
+      s.name[lang], (has ? 'has ' : '') + (isN ? 'next ' : '') + (isA ? 'on' : ''), game ? (has ? '✓' : '🔮') : has ? '★' : isN ? '!' : '?');
   }
   for (const r of RES) place(label('res-' + r.def.id, () => { if (!paused() && !busy()) goTalk(r); }), started && r.here ? view.project(r.x, r.y, 1.5) : OFF, r.def.name[lang] + ((gifts[r.def.id] || 0) >= 3 ? ' ♥' : ''), 'res', r.def.icon);
 }
@@ -713,6 +792,12 @@ function content(s) {
           <a class="row" href="https://github.com/Starry-nn" target="_blank" rel="noopener noreferrer"><small>${u.github}</small><b>github.com/Starry-nn ↗</b></a>
           <a class="row" href="tel:${esc(D_.phone.replace(/\s/g, ''))}"><small>${u.phone}</small><b>${esc(D_.phone)}</b></a>
         </div>
+        <h3>${esc(u.socials)}</h3>
+        <div class="rows">
+          <a class="row" href="https://x.com/Starry_n_n" target="_blank" rel="noopener noreferrer"><small>X</small><b>@Starry_n_n ↗</b></a>
+          <a class="row" href="https://www.instagram.com/starry_n_n/" target="_blank" rel="noopener noreferrer"><small>Instagram</small><b>@starry_n_n ↗</b></a>
+          <a class="row" href="https://xhslink.cn/o/4Mml1E94GZX" target="_blank" rel="noopener noreferrer"><small>${esc(u.xhs)}</small><b>${esc(lang === 'zh' ? '我的小红书主页' : 'My Xiaohongshu page')} ↗</b></a>
+        </div>
         <div class="links">${ext('assets/Nan_Yao_Resume_EN.pdf', D_.cvEn)}${ext('assets/Nan_Yao_Resume_CN.pdf', D_.cvZh)}</div>` };
   }
 }
@@ -726,7 +811,30 @@ function showCard(kicker, title, meta, body, cls, again) {
   if (!cardEl.open) cardEl.showModal();
   keys.clear();
 }
+let guess = ['', '', '', ''];
+function openMbti(msg, cls) {
+  const M = EX.mbti, u = t(), done = flags.has('mbti');
+  const pairs = [['E', 'I'], ['S', 'N'], ['T', 'F'], ['J', 'P']];
+  showCard('🔮 MBTI', M.name[lang], '', done
+    ? `<div class="item-big" aria-hidden="true">🔮</div><p class="lead center">${esc(M.solved[lang].replace('{a}', M.answers[0]))}</p>`
+    : `<p class="lead center">${esc(M.ask[lang])}</p>
+       <div class="mbti">${pairs.map((pr, i) => `<div>${pr.map(c => `<button data-mbti="${i}${c}" aria-pressed="${guess[i] === c}">${c}</button>`).join('')}</div>`).join('')}</div>
+       <p class="mbti-msg" aria-live="polite" style="color:${cls === 'bad' ? '#c9584e' : 'inherit'}">${esc(msg || '')}</p>
+       <div class="links center"><button class="btn btn-main" data-act="guess"${guess.every(Boolean) ? '' : ' disabled'}>${esc(u.guess)} ${esc(guess.map(c => c || '·').join(''))}</button></div>`, 'mini', () => openMbti());
+}
+function tryGuess() {
+  const M = EX.mbti, g = guess.join('');
+  if (g.length < 4) return;
+  if (M.answers.includes(g)) {
+    flag('mbti'); sfx('right'); syncResidents(true); renderHud();
+    showCard('🔮 MBTI', g, '', `<div class="item-big" aria-hidden="true">🎉</div><p class="lead center">${esc(M.right[lang])}</p>`, 'mini', () => openMbti());
+  } else {
+    const n = Math.max(...M.answers.map(a => [...a].filter((c, i) => c === g[i]).length));
+    sfx('wrong'); openMbti(M.wrong[lang].replace('{n}', n), 'bad');
+  }
+}
 function openSpot(s) {
+  if (s === GUESS) { sfx('open'); return openMbti(); }
   const k = content(s);
   showCard(t().kick[s.kind], k.title, k.meta, k.body, '', () => openSpot(s));
   if (!found.has(s.id)) {
@@ -738,8 +846,9 @@ function openSpot(s) {
 }
 function showItem(kind, i, isNew, fromBag) {
   const it = EX[kind][i], u = t(), [name, text] = it[lang];
-  showCard(fromBag ? u.bagTitle : kind === 'dig' ? u.dugTitle : u.fishTitle, name, isNew || fromBag ? '' : u.again,
+  showCard(fromBag ? u.bagTitle : kind === 'dig' ? u.dugTitle : kind === 'tree' ? u.treeTitle : u.fishTitle, name, isNew || fromBag ? '' : u.again,
     `<div class="item-big" aria-hidden="true">${it.icon}</div><p class="lead center">${esc(text)}</p>` +
+    (it.link ? `<div class="links center">${ext(it.link.url, it.link[lang], true)}</div>` : '') +
     (it.cta ? `<div class="links center"><a class="btn btn-main" href="mailto:${esc(d().mail)}">${esc(u.writeMe)} ✉</a></div>` : '') +
     `<p class="caption center">🎒 ${itemCount()}/${itemTotal}</p>`, 'mini', () => showItem(kind, i, isNew, fromBag));
   if (isNew && !fromBag) { floatText(dog.x, dog.y, 1.3, '♥', 'heart'); syncResidents(true); sfx('item'); renderHud(); }
@@ -755,19 +864,23 @@ function openBag() {
     `<h3>${esc(u.tasks)} · ${nDone}/${EX.tasks.length}</h3><ul class="tasks">${EX.tasks.map(k => `<li class="${taskDone(k.id) ? 'done' : ''}"><i>${taskDone(k.id) ? '✓' : ''}</i><span>${k.icon}</span>${esc(k[lang])}</li>`).join('')}</ul>
      <h3>${esc(u.neighbours)} · ${RES.filter(r => r.here).length}/${RES.length}</h3><div class="bag-grid">${RES.map(r => r.here
        ? `<div class="slot"><span>${r.def.icon}</span><small>${esc(r.def.name[lang])}</small></div>`
-       : `<div class="slot empty"><span>?</span><small>${esc(u.lockedRes.replace('{n}', r.def.at))}</small></div>`).join('')}</div>
+       : `<div class="slot empty"><span>?</span><small>${esc(r.def.unlock === 'mbti' ? u.lockedMbti : u.lockedRes.replace('{n}', r.def.at))}</small></div>`).join('')}</div>
      <h3>${esc(u.treasures)} · ${dug.size}/${EX.dig.length}</h3>${grid('dig', dug)}
      <h3>${esc(u.catches)} · ${caught.size}/${EX.fish.length}</h3>${grid('fish', caught)}
+     <h3>${esc(u.notes)} · ${shaken.size}/${EX.tree.length}</h3>${grid('tree', shaken)}
      <p class="caption">${esc(u.toolsText)}</p>
      <h3>${esc(u.fruitLine)} · 🍑 × ${fruit}</h3><p class="caption">${esc(u.fruitHint)}</p>
-     <h3>${esc(u.settings)}</h3><div class="links"><button class="btn" data-act="sound">${soundOn ? '🔊 ' + esc(u.soundOn) : '🔇 ' + esc(u.soundOff)}</button><button class="btn" data-act="mode">${{ day: '☀️', dusk: '🌇', night: '🌙' }[mode]} ${esc(u.modes[mode])}</button><button class="btn" data-act="postcard">📸 ${esc(u.postcard)}</button></div>
+     <h3>${esc(u.settings)}</h3><div class="links"><button class="btn" data-act="sound">${soundOn ? '🔊 ' + esc(u.soundOn) : '🔇 ' + esc(u.soundOff)}</button><button class="btn" data-act="music">${musicOn ? '🎵 ' + esc(u.musicOn) : '🎵 ' + esc(u.musicOff)}</button><button class="btn" data-act="mode">${{ day: '☀️', dusk: '🌇', night: '🌙' }[mode]} ${esc(u.modes[mode])}</button><button class="btn" data-act="postcard">📸 ${esc(u.postcard)}</button></div>
      <details class="notes"><summary>${esc(N[0])}</summary><div class="rows">${N[1].map((n, i) => `<div class="row"><small>0${i + 1}</small><b>${esc(n[0])}</b><span>${esc(n[1])}</span></div>`).join('')}</div></details>`, '', openBag);
 }
 $('cardBody').addEventListener('click', e => {
-  const slot = e.target.closest('.slot[data-kind]'), btn = e.target.closest('[data-act]');
+  const slot = e.target.closest('.slot[data-kind]'), btn = e.target.closest('[data-act]'), pick = e.target.closest('[data-mbti]');
+  if (pick) { const v = pick.dataset.mbti; guess[+v[0]] = v[1]; sfx('pick'); openMbti(); return; }
   if (btn) {
     const a = btn.dataset.act;
-    if (a === 'sound') { soundOn = !soundOn; store.set('sound', soundOn); sfx('open'); openBag(); }
+    if (a === 'guess') tryGuess();
+    if (a === 'music') { setMusic(!musicOn); renderHud(); openBag(); }
+    if (a === 'sound') { soundOn = !soundOn; store.set('sound', soundOn); sfx('open'); renderHud(); openBag(); }
     if (a === 'mode') { setMode({ day: 'dusk', dusk: 'night', night: 'day' }[mode]); openBag(); }
     if (a === 'postcard') openPostcard();
     if (a === 'bag') openBag();
@@ -813,7 +926,7 @@ function toast(html, ms) {
   clearTimeout(toastTimer); if (ms) toastTimer = setTimeout(() => { e.hidden = true; }, ms);
 }
 cardEl.addEventListener('close', () => {
-  reopen = null; keys.clear();
+  reopen = null; keys.clear(); sfx('close');
   if (pendingMove) {
     const r = pendingMove; pendingMove = null; pendingToast = null;
     toast(`<span>🏡 <b>${esc(r.def.name[lang])}</b> ${esc(t().movedIn)}</span>`, 6000); sfx('move');
@@ -859,6 +972,7 @@ function renderHud() {
   $('hudCount').textContent = `★ ${found.size}/${SPOTS.length}`;
   $('btnBag').innerHTML = `🎒 <span>${itemCount()}/${itemTotal}</span>`; $('btnBag').setAttribute('aria-label', u.bag);
   $('btnQuick').textContent = u.quick; $('btnQuick2').textContent = u.quickLong; $('btnStart').textContent = u.enter;
+  $('btnMute').hidden = !started; $('btnMute').textContent = soundOn || musicOn ? '🔊' : '🔇'; $('btnMute').setAttribute('aria-label', u.mute); $('btnMute').title = u.mute;
   $('btnDance').hidden = !started; $('btnDance').setAttribute('aria-label', u.dance); $('btnDance').title = u.dance + (touch ? '' : ' (Q)');
   $('btnCv').textContent = u.cv; $('btnCv').href = lang === 'zh' ? 'assets/Nan_Yao_Resume_CN.pdf' : 'assets/Nan_Yao_Resume_EN.pdf';
   $('btnLang').textContent = u.lang; $('btnLang2').textContent = u.lang;
@@ -868,7 +982,7 @@ function renderHud() {
   renderPrompt(); renderQuest();
 }
 function setMode(m) {
-  mode = m; document.body.dataset.mode = m;
+  mode = m; document.body.dataset.mode = m; music.step = 0; music.next = 0;
   if (view) view.setMode(m);
 }
 function setLang() {
@@ -878,23 +992,29 @@ function setLang() {
   if (cardEl.open && reopen) reopen();
 }
 let sayTimer = 0, sayWho = null, sayAt = -1;
-function say(text, instant, who) {
+const VOICE = { cat: 620, fox: 700, bunny: 820, bear: 300, frog: 240 };
+function say(text, instant, who, pitch) {
   const e = $('say'), p = $('sayText');
   sayWho = who || null; $('sayName').textContent = sayWho || t().speaker; sayAt = time;
   e.hidden = false; clearInterval(sayTimer); $('prompt').hidden = true;
   if (instant || reduceMotion) { p.textContent = text; return; }
-  let i = 0; p.textContent = '';
-  sayTimer = setInterval(() => { i += 2; p.textContent = text.slice(0, i); if (i >= text.length) clearInterval(sayTimer); }, 22);
+  let i = 0, n = 0; p.textContent = ''; const base = pitch || 470;
+  sayTimer = setInterval(() => {
+    i += 2; p.textContent = text.slice(0, i);
+    if (n++ % 3 === 0 && soundOn && started && /\S/.test(text.slice(i - 2, i))) tone(base * (0.85 + Math.random() * 0.45), 0.055, { type: 'triangle', vol: 0.035 });   // babble while the text types out
+    if (i >= text.length) clearInterval(sayTimer);
+  }, 22);
 }
 function hideSay() { if (!$('say').hidden) { $('say').hidden = true; clearInterval(sayTimer); renderPrompt(); } }
 function start() {
   if (started || !view) return;
-  started = true; $('intro').hidden = true;
+  started = true; $('intro').hidden = true; audio();
   EX.tasks.forEach(k => { if (taskDone(k.id)) tasksSeen.add(k.id); });   // returning visitors: no replay of old announcements
   renderHud(); say(t().hello);
 }
 $('btnStart').onclick = start;
 $('btnDance').onclick = () => { $('btnDance').blur(); startDance(); };
+$('btnMute').onclick = () => { $('btnMute').blur(); const on = !(soundOn || musicOn); soundOn = on; store.set('sound', on); setMusic(on); renderHud(); };
 $('btnQuick').onclick = openQuick; $('btnQuick2').onclick = openQuick;
 $('btnBag').onclick = openBag;
 $('btnLang').onclick = setLang; $('btnLang2').onclick = setLang;
@@ -937,7 +1057,7 @@ function inHull(h, x, y) {
 }
 function spotAt(mx, my) {
   let best = null;
-  for (const s of SPOTS) for (const b of s.boxes) {
+  for (const s of PLACES) for (const b of s.boxes) {
     const pts = [];
     for (const X of [b.x0, b.x1]) for (const Z of [b.z0, b.z1]) for (const Y of [0, b.h]) { const q = view.project(X * T, Z * T, Y, true); pts.push([q.x, q.y]); }
     if (inHull(hull(pts), mx, my) && (!best || s.front.y > best.front.y)) best = s;
@@ -971,7 +1091,8 @@ canvas.addEventListener('pointerdown', e => {
 });
 
 /* ------------------------------------------------------------------ boot */
-SPOTS.forEach(s => { if (!findPath(21, 18, s.trig[0], s.trig[1])) console.warn('Unreachable spot:', s.id); });
+PLACES.forEach(s => { if (!findPath(21, 18, s.trig[0], s.trig[1])) console.warn('Unreachable spot:', s.id); });
+EX.residents.forEach(r => { if (!findPath(21, 18, r.home[0], r.home[1])) console.warn('Unreachable resident home:', r.id); });
 DIGS.forEach(g => { if (!findPath(21, 18, g.tx, g.ty)) console.warn('Unreachable dig spot:', g.i); });
 renderHud();
 let lastT = performance.now();
@@ -985,5 +1106,5 @@ if (view) requestAnimationFrame(frame);
 else { $('btnStart').hidden = true; $('introHow').hidden = true; $('introSub').textContent = t().no3d; openQuick(); }
 
 // small hook for testing from the console
-window.__town = { startDance, openPostcard, makePostcard, flags, tasksSeen, FRUIT_TREES, get fruit() { return fruit; }, get mode() { return mode; }, get shaking() { return shaking; }, get dancing() { return dancing; }, step(n) { for (let i = 0; i < n; i++) { update(0.05); if (i % 6 === 0 || i === n - 1) render(0.3); } }, spotAt, keys, player, dog, SPOTS, DIGS, RES, view, walkTo, openSpot, act, start, found, dug, caught, showItem, talkTo, petDog, get fishing() { return fishing; }, get action() { return action; } };
+window.__town = { shaken, PLACES, tryGuess, openMbti, TRACKS, music, get actx() { return actx; }, get guess() { return guess; }, set guess(v) { guess = v; }, startDance, openPostcard, makePostcard, flags, tasksSeen, FRUIT_TREES, get fruit() { return fruit; }, get mode() { return mode; }, get shaking() { return shaking; }, get dancing() { return dancing; }, step(n) { for (let i = 0; i < n; i++) { update(0.05); if (i % 6 === 0 || i === n - 1) render(0.3); } }, spotAt, keys, player, dog, SPOTS, DIGS, RES, view, walkTo, openSpot, act, start, found, dug, caught, showItem, talkTo, petDog, get fishing() { return fishing; }, get action() { return action; } };
 })();

@@ -291,6 +291,12 @@ export function createView(world, canvas) {
       S.add(rbox(0.62, 0.5, 0.85, 0.2), '#f0766a', x, 1.1, z); S.add(rbox(0.36, 0.06, 0.03, 0.01), '#fffaf0', x, 1.14, z + 0.43);
       S.add(box(0.04, 0.4, 0.04), WHITE, x + 0.33, 1.3, z + 0.1); S.add(rbox(0.05, 0.18, 0.26, 0.02), '#ffd166', x + 0.34, 1.45, z + 0.02);
     },
+    oracle(x, z) {
+      S.add(cyl(0.42, 0.5, 0.22, 8), '#d9c3a8', x, 0.11, z); S.add(cyl(0.3, 0.36, 0.7, 8), '#8f7ad6', x, 0.55, z); S.add(cyl(0.4, 0.32, 0.14, 8), '#ffd166', x, 0.95, z);
+      [0, 1, 2, 3].forEach(k => S.add(extrude(starPts(0.07, 0.035), 0.03), '#ffd166', x + Math.cos(k * 1.57 + 0.78) * 0.34, 0.55, z + Math.sin(k * 1.57 + 0.78) * 0.34));
+      const ball = new THREE.Mesh(sph(0.36), bend(new THREE.MeshLambertMaterial({ color: '#d9c8ff', emissive: '#8a5cf0', emissiveIntensity: 0.45 })));
+      ball.castShadow = true; ball.position.set(x, 1.34, z); scene.add(ball); dyn.oracle = ball;
+    },
     crossSign(x, z) {
       S.add(cyl(0.05, 0.06, 1.7, 8), '#a9785a', x, 0.85, z);
       S.add(rbox(0.9, 0.3, 0.08, 0.05), '#ffd166', x - 0.25, 1.5, z + 0.04); S.add(rbox(0.9, 0.3, 0.08, 0.05), '#f590b2', x + 0.25, 1.1, z + 0.04);
@@ -428,6 +434,10 @@ export function createView(world, canvas) {
     if (def.species === 'cat') [-1, 1].forEach(s => { part(cone(0.12, 0.22, 4), fur, s * 0.2, 0.3, 0, head).rotation.z = -s * 0.25; part(cone(0.06, 0.12, 4), mat('#ffc9d6'), s * 0.2, 0.28, 0.04, head).rotation.z = -s * 0.25; });
     if (def.species === 'bear') [-1, 1].forEach(s => { part(sph(0.12), fur, s * 0.26, 0.24, 0, head); part(sph(0.06), light, s * 0.26, 0.24, 0.08, head); });
     if (def.species === 'bunny') [-1, 1].forEach(s => { part(cap(0.075, 0.34), fur, s * 0.13, 0.5, -0.02, head).rotation.z = -s * 0.12; part(cap(0.035, 0.26), mat('#ffc9d6'), s * 0.13, 0.5, 0.04, head).rotation.z = -s * 0.12; });
+    if (def.species === 'fox') {
+      [-1, 1].forEach(s => { part(cone(0.13, 0.3, 4), fur, s * 0.2, 0.33, 0, head).rotation.z = -s * 0.2; part(cone(0.07, 0.17, 4), mat('#4a3a34'), s * 0.2, 0.33, 0.045, head).rotation.z = -s * 0.2; });
+      const tl = part(cap(0.1, 0.3), fur, 0.14, 0.4, -0.34, body); tl.rotation.set(-0.7, 0, -0.4); part(sph(0.1), light, 0.2, 0.55, -0.47, body);
+    }
     if (def.species === 'cat') { const tl = part(cap(0.045, 0.34), fur, 0.12, 0.42, -0.3, body); tl.rotation.set(-0.5, 0, -0.4); }
     if (def.species === 'bunny' || def.species === 'bear') part(sph(0.09), light, 0, 0.28, -0.26, body);
     g.visible = false;
@@ -583,6 +593,7 @@ export function createView(world, canvas) {
     });
 
     // world bits
+    if (dyn.oracle) dyn.oracle.material.emissiveIntensity = reduceMotion ? 0.45 : 0.4 + Math.sin(t * 2.4) * 0.22;
     if (dyn.statue) { dyn.statue.rotation.y = reduceMotion ? 0.3 : t * 0.8; dyn.statue.position.y = 1.75 + (reduceMotion ? 0 : Math.sin(t * 2) * 0.08); dyn.statue.material.emissiveIntensity = 0.15 + st.foundRatio * 0.75; }
     if (orbitC) { const a = reduceMotion ? 0.8 : t * 1.1; planet.position.set(orbitC.x + Math.cos(a) * 2.45, orbitC.y + Math.sin(a) * 0.73, orbitC.z + Math.sin(a) * 2.34); }
     if (dyn.ship && !reduceMotion) { dyn.ship.position.y = Math.sin(t * 1.6) * 0.06; dyn.ship.rotation.z = Math.sin(t * 1.1) * 0.035; }

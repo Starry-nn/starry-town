@@ -151,6 +151,14 @@ body[data-mode="night"] {
   cursor: pointer; box-shadow: 0 5px 0 rgba(107, 79, 58, .25); display: grid; place-items: center;
 }
 .emote:hover { background: #f8a6c2; }
+.emote-2 { bottom: calc(max(24px, env(safe-area-inset-bottom)) + 64px); width: 44px; height: 44px; right: 19px; font-size: 18px; background: var(--cream); }
+.emote-2:hover { background: #fff; }
+.mbti { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; max-width: 340px; margin: 14px auto 4px; }
+.mbti div { display: grid; gap: 8px; }
+.mbti button { font: 900 22px/1 var(--font); color: var(--ink); padding: 12px 0; border-radius: 16px; border: 3px solid var(--line); background: #fff; cursor: pointer; }
+.mbti button[aria-pressed="true"] { background: var(--yellow); border-color: var(--yellow); }
+.mbti button:focus-visible { outline: 3px solid var(--green-d); outline-offset: 2px; }
+.mbti-msg { min-height: 1.5em; text-align: center; font: 800 15px/1.5 var(--font); margin: 10px 0 0; }
 .emote:active { transform: translateY(2px); }
 .emote:focus-visible { outline: 3px solid var(--green-d); outline-offset: 2px; }
 
