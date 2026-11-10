@@ -521,6 +521,8 @@ export function createView(world, canvas) {
 
   /* ---------- camera, projection, picking ---------- */
   let cw = 1, ch = 1, snap = true;
+  const camG = { pitch: 0.94, zoom: 1 }, camS = { pitch: 0.94, zoom: 1 };   // goal and smoothed camera tilt (radians above the horizon) and distance factor
+  function setCam(pitch, zoom, now) { camG.pitch = pitch; camG.zoom = zoom; if (now) { camS.pitch = pitch; camS.zoom = zoom; } }
   const camT = new THREE.Vector3(), v = new THREE.Vector3();
   function resize() {
     cw = window.innerWidth; ch = window.innerHeight;
@@ -547,7 +549,7 @@ export function createView(world, canvas) {
     ray.setFromCamera({ x: tx, y: ty }, camera);
     if (!ray.ray.intersectPlane(plane, hit)) hit.set(camT.x, 0, camT.z);
     let X = hit.x, Z = hit.z;
-    for (let it = 0; it < 6; it++) {                 // undo the curve: nudge the guess until it lands under the pointer
+    for (let it = 0; it < 12; it++) {                 // undo the curve: nudge the guess until it lands under the pointer
       ndc(X, 0, Z, tmpA); ndc(X + 0.5, 0, Z, tmpB); ndc(X, 0, Z + 0.5, tmpC);
       const a = (tmpB.x - tmpA.x) * 2, b = (tmpC.x - tmpA.x) * 2, c = (tmpB.y - tmpA.y) * 2, d2 = (tmpC.y - tmpA.y) * 2, det = a * d2 - b * c;
       if (Math.abs(det) < 1e-9) break;
@@ -566,9 +568,11 @@ export function createView(world, canvas) {
     // camera
     const f = Math.max(1, Math.min(1.95, 1.3 / camera.aspect));
     if (snap) { camT.set(px, 0, pz); snap = false; } else camT.lerp(v.set(px, 0, pz), 1 - Math.exp(-dt * 7));
-    camera.position.set(camT.x, 23.5 * f, camT.z + 16 * f); camera.lookAt(camT.x, 0.8, camT.z - 0.6);
+    const kc = reduceMotion ? 1 : 1 - Math.exp(-dt * 4.5); camS.pitch += (camG.pitch - camS.pitch) * kc; camS.zoom += (camG.zoom - camS.zoom) * kc;
+    const cd = 28.2 * f * camS.zoom;
+    camera.position.set(camT.x, 0.8 + Math.sin(camS.pitch) * cd, camT.z - 0.6 + Math.cos(camS.pitch) * cd); camera.lookAt(camT.x, 0.8, camT.z - 0.6);
     camera.updateMatrixWorld(); bendU.z0.value = camera.position.distanceTo(v.set(camT.x, 0.8, camT.z - 0.6));
-    bendU.k.value = 0.002 / f;
+    bendU.k.value = 0.002 / (f * Math.max(0.75, camS.zoom));
     sun.position.set(camT.x - 9, 17, camT.z + 9); sun.target.position.set(camT.x, 0, camT.z - 2); sun.target.updateMatrixWorld();
     if (!reduceMotion) wtex.offset.set(t * 0.012, t * 0.007);
 
@@ -671,5 +675,5 @@ export function createView(world, canvas) {
     renderer.render(scene, camera);
   }
   resize();
-  return { render, resize, project, pick, setMode };
+  return { render, resize, project, pick, setMode, setCam };
 }

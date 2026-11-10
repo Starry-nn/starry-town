@@ -1,5 +1,5 @@
 /* Starry Town — a walkable portfolio island. The rules live here; view3d.js draws the picture. */
-import { createView } from './view3d.js?v=14';
+import { createView } from './view3d.js?v=15';
 (() => {
 'use strict';
 
@@ -25,11 +25,12 @@ const UI = {
     kicker: "NAN YAO'S PORTFOLIO ISLAND",
     sub: 'My portfolio is a little island you can walk around. Here is how it works:',
     enter: '▶ Enter the island', quickLong: 'Short on time? Visit my classic site ↗',
-    how: [['🚶', 'Walk', 'Arrow keys or WASD, or click where you want to go.'], ['🏠', 'Visit', 'Walk up to a building with a “?” and press E, or just click it, to read about my work. My favourite pieces are in the Showcase across the river.'], ['⛏', 'Dig', 'Press E where the ground sparkles to dig up a fun fact.'], ['🎣', 'Fish', 'Press E next to water, press again when the float dips, then keep pressing to reel it in.'], ['🍑', 'And more', 'Shake fruit trees for fruit and hidden notes, guess my MBTI at the crystal ball, pet the dog, press Q to dance.']],
-    howTouch: [['🚶', 'Walk', 'Tap where you want to go.'], ['🏠', 'Visit', 'Tap a building with a “?” to read about my work. My favourite pieces are in the Showcase across the river.'], ['⛏', 'Dig', 'Tap a sparkle on the ground to dig up a fun fact.'], ['🎣', 'Fish', 'Stand by the water and tap the button, tap again when the float dips, then keep tapping to reel it in.'], ['🍑', 'And more', 'Shake fruit trees for fruit and hidden notes, guess my MBTI at the crystal ball, pet the dog, tap 💃 to dance.']],
+    how: [['🚶', 'Walk', 'Arrow keys or WASD, or click where you want to go. Scroll to zoom, press V to change the camera angle.'], ['🏠', 'Visit', 'Walk up to a building with a “?” and press E, or just click it, to read about my work. My favourite pieces are in the Showcase across the river.'], ['⛏', 'Dig', 'Press E where the ground sparkles to dig up a fun fact.'], ['🎣', 'Fish', 'Press E next to water, press again when the float dips, then keep pressing to reel it in.'], ['🍑', 'And more', 'Shake fruit trees for fruit and hidden notes, guess my MBTI at the crystal ball, pet the dog, press Q to dance.']],
+    howTouch: [['🚶', 'Walk', 'Tap where you want to go. Pinch or use ＋ － to zoom, 🎥 to change the camera angle.'], ['🏠', 'Visit', 'Tap a building with a “?” to read about my work. My favourite pieces are in the Showcase across the river.'], ['⛏', 'Dig', 'Tap a sparkle on the ground to dig up a fun fact.'], ['🎣', 'Fish', 'Stand by the water and tap the button, tap again when the float dips, then keep tapping to reel it in.'], ['🍑', 'And more', 'Shake fruit trees for fruit and hidden notes, guess my MBTI at the crystal ball, pet the dog, tap 💃 to dance.']],
     cont: '▶ Back to the island', subBack: 'Welcome back! Your progress is saved on this device: ★ {a} · 🎒 {b}.', helloBack: 'Welcome back! Everything is where you left it.',
     restart: 'Start over', resetTitle: 'Start over?', resetText: 'This clears everything saved on this device: stars, backpack, residents and the to-do list. It cannot be undone.', resetYes: 'Clear and start over', resetNo: 'Keep my progress',
     reel: 'Reel it in! Keep pressing', reelTouch: 'Reel it in! Keep tapping', homeOf: "{n}'s home", lot: 'Empty lot',
+    views: ['Eye level', 'Classic', 'Bird\'s eye'], viewBtn: 'Change camera angle', zoomIn: 'Zoom in', zoomOut: 'Zoom out',
     shake: 'Shake the tree', give: 'Give fruit to', dance: 'Dance', tasks: 'To-do', taskDone: 'Done', allTasks: 'Every task done. You know this island better than I do!', nextTask: 'Next',
     thanks: ['Fruit! For me? You are my favourite visitor.', 'Fresh from the tree. Thank you!', 'I will save this one for later. Maybe.'],
     fruitLine: 'Fruit in your pocket', fruitHint: 'Shake a fruit tree, then give the fruit to a resident.',
@@ -54,11 +55,12 @@ const UI = {
     kicker: '姚楠的作品集小岛',
     sub: '我把作品集做成了一座可以逛的小岛。玩法很简单：',
     enter: '▶ 进入小岛', quickLong: '赶时间？去看简洁版个人主页 ↗',
-    how: [['🚶', '走路', '方向键或 WASD，也可以直接点击想去的地方。'], ['🏠', '拜访', '走到带“?”的建筑前按 E，或者直接点它，看我的经历和项目。最满意的作品放在河对岸的精选作品馆。'], ['⛏', '挖宝', '在地上闪光的地方按 E，挖出一个 fun fact。'], ['🎣', '钓鱼', '站在水边按 E 抛竿，浮标下沉时再按一次，然后连按把鱼拉上来。'], ['🍑', '还有', '摇果树会掉水果和小纸条，去水晶球猜我的 MBTI，摸摸狗，按 Q 跳舞。']],
-    howTouch: [['🚶', '走路', '点击想去的地方。'], ['🏠', '拜访', '点带“?”的建筑，看我的经历和项目。最满意的作品放在河对岸的精选作品馆。'], ['⛏', '挖宝', '点地上闪光的地方，挖出一个 fun fact。'], ['🎣', '钓鱼', '站在水边点下方按钮，浮标下沉时再点一次，然后连点把鱼拉上来。'], ['🍑', '还有', '摇果树会掉水果和小纸条，去水晶球猜我的 MBTI，摸摸狗，点 💃 跳舞。']],
+    how: [['🚶', '走路', '方向键或 WASD，也可以直接点击想去的地方。滚轮缩放，按 V 切换视角。'], ['🏠', '拜访', '走到带“?”的建筑前按 E，或者直接点它，看我的经历和项目。最满意的作品放在河对岸的精选作品馆。'], ['⛏', '挖宝', '在地上闪光的地方按 E，挖出一个 fun fact。'], ['🎣', '钓鱼', '站在水边按 E 抛竿，浮标下沉时再按一次，然后连按把鱼拉上来。'], ['🍑', '还有', '摇果树会掉水果和小纸条，去水晶球猜我的 MBTI，摸摸狗，按 Q 跳舞。']],
+    howTouch: [['🚶', '走路', '点击想去的地方。双指或 ＋ － 缩放，点 🎥 切换视角。'], ['🏠', '拜访', '点带“?”的建筑，看我的经历和项目。最满意的作品放在河对岸的精选作品馆。'], ['⛏', '挖宝', '点地上闪光的地方，挖出一个 fun fact。'], ['🎣', '钓鱼', '站在水边点下方按钮，浮标下沉时再点一次，然后连点把鱼拉上来。'], ['🍑', '还有', '摇果树会掉水果和小纸条，去水晶球猜我的 MBTI，摸摸狗，点 💃 跳舞。']],
     cont: '▶ 继续逛小岛', subBack: '欢迎回来！进度保存在这台设备上：★ {a} · 🎒 {b}。', helloBack: '欢迎回来！岛上的一切都和你离开时一样。',
     restart: '重新开始', resetTitle: '要重新开始吗？', resetText: '这会清空这台设备上保存的全部进度：星星、背包、居民和任务清单。清空后无法恢复。', resetYes: '清空并重新开始', resetNo: '保留进度',
     reel: '收线！连续按', reelTouch: '收线！连续点', homeOf: '{n}的家', lot: '空地',
+    views: ['平视', '经典', '俯视'], viewBtn: '切换视角', zoomIn: '放大', zoomOut: '缩小',
     shake: '摇一摇树', give: '送水果给', dance: '跳舞', tasks: '任务', taskDone: '完成', allTasks: '任务全部完成，你比我还熟悉这座岛了！', nextTask: '下一步',
     thanks: ['水果！给我的吗？你是我最喜欢的访客。', '刚摘的，谢谢你！', '这个我留着晚点吃。大概吧。'],
     fruitLine: '口袋里的水果', fruitHint: '摇一摇果树，再把水果送给居民。',
@@ -438,6 +440,14 @@ let mode = ['day', 'dusk', 'night'].includes(askedMode) ? askedMode : hour >= 6.
 document.body.dataset.mode = mode;
 if (view) { view.setMode(mode); addEventListener('resize', view.resize); }
 
+// camera: three angles from eye level to bird's eye, and a zoom, both eased in the view and remembered
+const PITCH = [0.42, 0.94, 1.38], cam = Object.assign({ v: 1, z: 1 }, store.get('cam', {}));
+if (![0, 1, 2].includes(cam.v)) cam.v = 1;
+cam.z = Math.min(1.5, Math.max(0.5, +cam.z || 1));
+const applyCam = now => { if (view) view.setCam(PITCH[cam.v], cam.z, now); store.set('cam', cam); };
+applyCam(true);
+function nextView() { cam.v = (cam.v + 1) % 3; applyCam(); sfx('pick'); if (started && !cardEl.open) toast(`<span>🎥 <b>${esc(t().views[cam.v])}</b></span>`, 1400); }
+function zoomBy(k) { cam.z = Math.min(1.5, Math.max(0.5, cam.z * k)); applyCam(); }
 let pendingMove = null;
 function syncResidents(announce) {
   for (const r of RES) if (!r.here && (r.def.unlock === 'mbti' ? flags.has('mbti') : itemCount() >= r.def.at)) { r.here = true; if (announce) pendingMove = r; }
@@ -1075,6 +1085,7 @@ function renderHud() {
   $('btnQuick').textContent = u.quick; $('btnQuick2').textContent = u.quickLong; $('btnStart').textContent = hasProgress() ? u.cont : u.enter;
   $('btnReset').hidden = started || !hasProgress(); $('btnReset').textContent = '↺ ' + u.restart;
   $('btnMute').hidden = !started; $('btnMute').textContent = soundOn || musicOn ? '🔊' : '🔇'; $('btnMute').setAttribute('aria-label', u.mute); $('btnMute').title = u.mute;
+  [['btnView', u.viewBtn + (touch ? '' : ' (V)')], ['btnZoomIn', u.zoomIn], ['btnZoomOut', u.zoomOut]].forEach(([id, tip]) => { $(id).hidden = !started; $(id).title = tip; $(id).setAttribute('aria-label', tip); });
   $('btnDance').hidden = !started; $('btnDance').setAttribute('aria-label', u.dance); $('btnDance').title = u.dance + (touch ? '' : ' (Q)');
   $('btnCv').textContent = u.cv; $('btnCv').href = lang === 'zh' ? 'assets/Nan_Yao_Resume_CN.pdf' : 'assets/Nan_Yao_Resume_EN.pdf';
   $('btnLang').textContent = u.lang; $('btnLang2').textContent = u.lang;
@@ -1115,6 +1126,8 @@ function start() {
   EX.tasks.forEach(k => { if (taskDone(k.id)) tasksSeen.add(k.id); });   // returning visitors: no replay of old announcements
   renderHud(); say(back ? t().helloBack : t().hello);
 }
+$('btnView').onclick = () => { $('btnView').blur(); nextView(); };
+$('btnZoomIn').onclick = () => { $('btnZoomIn').blur(); zoomBy(1 / 1.2); }; $('btnZoomOut').onclick = () => { $('btnZoomOut').blur(); zoomBy(1.2); };
 $('btnStart').onclick = start; $('btnReset').onclick = askReset;
 $('btnDance').onclick = () => { $('btnDance').blur(); startDance(); };
 $('btnMute').onclick = () => { $('btnMute').blur(); const on = !(soundOn || musicOn); soundOn = on; store.set('sound', on); setMusic(on); renderHud(); };
@@ -1131,6 +1144,9 @@ addEventListener('keydown', e => {
   if (e.metaKey || e.ctrlKey || e.altKey || cardEl.open || !started) return;
   const onButton = e.target instanceof HTMLElement && e.target.closest('button, a, summary');
   if (KEYMAP[e.key]) { keys.add(KEYMAP[e.key]); e.preventDefault(); if (document.activeElement && document.activeElement !== document.body) document.activeElement.blur(); return; }
+  if (e.key === 'v' || e.key === 'V') { e.preventDefault(); if (!e.repeat) nextView(); return; }
+  if (e.key === '=' || e.key === '+') { e.preventDefault(); zoomBy(1 / 1.12); return; }
+  if (e.key === '-' || e.key === '_') { e.preventDefault(); zoomBy(1.12); return; }
   if (e.key === 'q' || e.key === 'Q') { e.preventDefault(); if (!e.repeat) startDance(); return; }
   if (e.key === 'e' || e.key === 'E' || ((e.key === ' ' || e.key === 'Enter') && !onButton)) {
     e.preventDefault();
@@ -1193,6 +1209,17 @@ canvas.addEventListener('pointerdown', e => {
   if (free) walkTo(free[0], free[1]);
 });
 
+canvas.addEventListener('wheel', e => { if (paused()) return; e.preventDefault(); zoomBy(Math.exp(Math.max(-60, Math.min(60, e.deltaY)) * 0.004)); }, { passive: false });
+let pinch = 0;
+canvas.addEventListener('touchmove', e => {       // two fingers: pinch to zoom
+  if (e.touches.length !== 2 || paused()) return;
+  e.preventDefault();
+  const dd = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+  if (pinch) { zoomBy(pinch / dd); path = null; autoAct = null; }
+  pinch = dd;
+}, { passive: false });
+canvas.addEventListener('touchend', () => { pinch = 0; });
+
 /* ------------------------------------------------------------------ boot */
 PLACES.forEach(s => { if (!findPath(21, 18, s.trig[0], s.trig[1])) console.warn('Unreachable spot:', s.id); });
 EX.residents.forEach(r => { if (!findPath(21, 18, r.home[0], r.home[1])) console.warn('Unreachable resident home:', r.id); });
@@ -1209,5 +1236,5 @@ if (view) requestAnimationFrame(frame);
 else { $('btnStart').hidden = true; $('introHow').hidden = true; $('introSub').textContent = t().no3d; openQuick(); }
 
 // small hook for testing from the console
-window.__town = { holes, HOMES, hasProgress, askReset, at, map, MW, MH, findPath, shaken, PLACES, tryGuess, openMbti, TRACKS, music, get actx() { return actx; }, get guess() { return guess; }, set guess(v) { guess = v; }, startDance, openPostcard, makePostcard, flags, tasksSeen, FRUIT_TREES, get fruit() { return fruit; }, get mode() { return mode; }, get shaking() { return shaking; }, get dancing() { return dancing; }, step(n) { for (let i = 0; i < n; i++) { update(0.05); if (i % 6 === 0 || i === n - 1) render(0.3); } }, spotAt, keys, player, dog, SPOTS, DIGS, RES, view, walkTo, openSpot, act, start, found, dug, caught, showItem, talkTo, petDog, get fishing() { return fishing; }, get action() { return action; } };
+window.__town = { cam, nextView, zoomBy, holes, HOMES, hasProgress, askReset, at, map, MW, MH, findPath, shaken, PLACES, tryGuess, openMbti, TRACKS, music, get actx() { return actx; }, get guess() { return guess; }, set guess(v) { guess = v; }, startDance, openPostcard, makePostcard, flags, tasksSeen, FRUIT_TREES, get fruit() { return fruit; }, get mode() { return mode; }, get shaking() { return shaking; }, get dancing() { return dancing; }, step(n) { for (let i = 0; i < n; i++) { update(0.05); if (i % 6 === 0 || i === n - 1) render(0.3); } }, spotAt, keys, player, dog, SPOTS, DIGS, RES, view, walkTo, openSpot, act, start, found, dug, caught, showItem, talkTo, petDog, get fishing() { return fishing; }, get action() { return action; } };
 })();

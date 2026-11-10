@@ -15,6 +15,7 @@ A small 3D island. Walk with the arrow keys or WASD (or click / tap where you wa
 - **More to do**: shake fruit trees and give the fruit to residents, pet the dog, dance (`Q`), take a postcard of the island.
 - **Sound**: synthesised effects and three short original music loops (day, dusk, night), all generated in the browser with no audio files. The round button above the dance button mutes everything.
 - **Progress is saved** in the visitor's browser, including where they were standing. "Start over" in the backpack (or on the welcome screen) clears it after a confirmation.
+- **Camera**: three angles from eye level to bird's eye (`V` or the camera button) and zoom (scroll, pinch, `+` / `-`), eased and remembered.
 - **Quick view** shows the same content as one plain page. Everything is in English and Chinese.
 - The island follows the visitor's local time (day, dusk, night). Add `?time=day`, `?time=dusk` or `?time=night` to the URL to preview one.
 

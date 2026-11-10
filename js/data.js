@@ -91,13 +91,16 @@ window.DATA = {
     ]
    ],
    [
-    "Nov 2026 — Present",
+    "Jan 2026 — Present",
     "",
     "Manus AI",
     "Fellow · Campus Ambassador",
     "Manus Fellow · Campus Ambassador Program",
-    "Manus Fellow since November 2026. Earlier in 2026, selected for the Manus AI Campus Ambassador Program.",
-    []
+    "From Campus Ambassador to Fellow at Manus AI.",
+    [
+     "Nov 2026 · Fellow",
+     "Jan 2026 · Campus Ambassador"
+    ]
    ],
    [
     "Apr 2025 — Sep 2025",
@@ -394,13 +397,16 @@ window.DATA = {
     ]
    ],
    [
-    "2026.11 — 至今",
+    "2026.01 — 至今",
     "",
     "Manus AI",
     "Fellow · 校园大使",
     "Manus Fellow · 校园大使计划",
-    "2026 年 11 月起担任 Manus Fellow。此前于 2026 年入选 Manus AI 校园大使计划。",
-    []
+    "在 Manus AI 从校园大使到 Fellow。",
+    [
+     "2026 年 11 月 · Fellow",
+     "2026 年 1 月 · Campus Ambassador"
+    ]
    ],
    [
     "2025.04 — 2025.09",

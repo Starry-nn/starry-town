@@ -153,6 +153,9 @@ body[data-mode="night"] {
 .emote:hover { background: #f8a6c2; }
 .emote-2 { bottom: calc(max(24px, env(safe-area-inset-bottom)) + 64px); width: 44px; height: 44px; right: 19px; font-size: 18px; background: var(--cream); }
 .emote-2:hover { background: #fff; }
+.emote-3 { bottom: calc(max(24px, env(safe-area-inset-bottom)) + 114px); font-weight: 900; color: var(--ink); }
+.emote-4 { bottom: calc(max(24px, env(safe-area-inset-bottom)) + 164px); font-weight: 900; color: var(--ink); }
+.emote-5 { bottom: calc(max(24px, env(safe-area-inset-bottom)) + 214px); }
 .prompt.reel { background: linear-gradient(90deg, var(--yellow) var(--p, 0%), #fff var(--p, 0%)); color: var(--ink); }
 .btn-danger { background: #f0766a; color: #fff; }
 .btn-danger:hover { background: #e2604f; }
