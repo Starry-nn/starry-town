@@ -348,6 +348,7 @@ export function createView(world, canvas) {
       const sc = 0.88 + tr.v * 0.3;
       e4.set(0, type === 'pine' ? tr.v * 6 : (tr.v - 0.5) * 0.8, 0); q4.setFromEuler(e4); s4.set(sc, sc, sc); p4.set(tr.tx + 0.5, 0, tr.ty + 0.6);
       im.setMatrixAt(i, m4.compose(p4, q4, s4));
+      tr._im = im; tr._i = i; tr._m = m4.clone();
     });
     im.castShadow = true; im.receiveShadow = true; im.frustumCulled = false; scene.add(im);
   });
@@ -456,6 +457,8 @@ export function createView(world, canvas) {
   });
   const fishMat = bend(new THREE.MeshBasicMaterial({ color: '#2a6f93', transparent: true, opacity: 0.4, depthWrite: false }));
   const fishes = world.FISHES.map(() => { const g = new THREE.Group(); const a = new THREE.Mesh(new THREE.CircleGeometry(0.2, 12), fishMat); a.scale.set(1.9, 1, 1); const b2 = new THREE.Mesh(new THREE.CircleGeometry(0.13, 3), fishMat); b2.position.x = -0.42; g.add(a, b2); g.rotation.x = -Math.PI / 2; g.position.y = -0.02; scene.add(g); return g; });
+  const dropFruit = new THREE.Mesh(sph(0.14), mat('#ff9a8a')); dropFruit.castShadow = true; dropFruit.visible = false; scene.add(dropFruit);
+  let shakeTree = null; const mRot = new THREE.Matrix4(), mOut = new THREE.Matrix4();
   const planet = new THREE.Mesh(sph(0.24), mat('#ffd166')); planet.castShadow = true; scene.add(planet);
   const ring = new THREE.Mesh(new THREE.RingGeometry(0.26, 0.36, 28), bend(new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.9, depthWrite: false }))); ring.rotation.x = -Math.PI / 2; ring.renderOrder = 2; scene.add(ring);
   const arrow = new THREE.Group();
@@ -543,9 +546,18 @@ export function createView(world, canvas) {
     person.arms[0].rotation.x = -sw * 0.7; person.arms[1].rotation.x = sw * 0.7;
     person.body.position.y = P.moving ? Math.abs(sw) * 0.05 : 0; person.body.scale.y = 1 + (P.moving ? 0 : idle * 0.012);
     person.head.rotation.z = P.moving ? sw * 0.04 : 0;
+    if (st.dancing) {
+      const dt2 = st.dancing.t;
+      person.ang = dt2 * 7.5; person.g.rotation.y = person.ang;
+      person.body.position.y = Math.abs(Math.sin(dt2 * 9)) * 0.14;
+      person.arms[0].rotation.x = person.arms[1].rotation.x = Math.PI + Math.sin(dt2 * 9) * 0.35;
+      person.legs[0].rotation.x = Math.sin(dt2 * 9) * 0.5; person.legs[1].rotation.x = -Math.sin(dt2 * 9) * 0.5;
+      person.head.rotation.z = Math.sin(dt2 * 9) * 0.12;
+    }
     person.shovel.visible = !!st.digging; person.rod.visible = !!st.fishing;
     if (st.digging) { const dgp = Math.sin(Math.min(1, st.digging.t / 0.75) * Math.PI * 3); person.arms[1].rotation.x = -1.0 + dgp * 0.6; person.arms[0].rotation.x = -0.5 + dgp * 0.3; person.body.rotation.x = 0.12 + dgp * 0.08; }
     else person.body.rotation.x = 0;
+    if (st.shaking) { const sk = Math.sin(st.shaking.t * 30) * 0.25; person.arms[0].rotation.x = person.arms[1].rotation.x = -1.5 + sk; }
     if (st.fishing) { person.arms[1].rotation.x = -1.1; person.rod.rotation.x = 0.85 + (st.fishing.phase === 'bite' ? Math.sin(t * 40) * 0.05 : 0); }
 
     // dog
@@ -565,8 +577,8 @@ export function createView(world, canvas) {
       c.shown = Math.min(1, c.shown + dt * 2.2);
       const e = c.shown, pop = e < 1 ? 1 + Math.sin(e * Math.PI) * 0.25 : 1;
       c.g.visible = true; c.g.scale.setScalar(e * pop);
-      c.ang = turn(c.ang, Math.atan2(r.hx, r.hy), k); c.g.position.set(r.x / 16, 0, r.y / 16); c.g.rotation.y = c.ang;
-      c.body.position.y = r.moving ? Math.abs(Math.sin(t * 9 + i)) * 0.07 : 0;
+      c.ang = r.dance > 0 ? c.ang + dt * 7.5 : turn(c.ang, Math.atan2(r.hx, r.hy), k); c.g.position.set(r.x / 16, 0, r.y / 16); c.g.rotation.y = c.ang;
+      c.body.position.y = r.dance > 0 ? Math.abs(Math.sin(t * 9 + i)) * 0.16 : r.moving ? Math.abs(Math.sin(t * 9 + i)) * 0.07 : 0;
       c.body.rotation.z = r.moving ? Math.sin(t * 9 + i) * 0.07 : 0; c.head.rotation.z = r.moving || reduceMotion ? 0 : Math.sin(t * 1.6 + i * 2) * 0.07;
     });
 
@@ -588,6 +600,19 @@ export function createView(world, canvas) {
       fishes[i].position.x = (fz.x + (fz.vert ? 0 : s * fz.span)) / 16; fishes[i].position.z = (fz.y + (fz.vert ? s * 40 : 0)) / 16;
       fishes[i].rotation.z = fz.vert ? (c >= 0 ? -Math.PI / 2 : Math.PI / 2) : (c >= 0 ? 0 : Math.PI);
     });
+    const sh = st.shaking;
+    if (shakeTree && (!sh || sh.tree !== shakeTree)) { shakeTree._im.setMatrixAt(shakeTree._i, shakeTree._m); shakeTree._im.instanceMatrix.needsUpdate = true; shakeTree = null; }
+    dropFruit.visible = false;
+    if (sh && sh.tree._im) {
+      shakeTree = sh.tree;
+      mRot.makeRotationZ(Math.sin(sh.t * 38) * 0.07 * Math.max(0, 1 - sh.t / 0.8));
+      shakeTree._im.setMatrixAt(shakeTree._i, mOut.multiplyMatrices(shakeTree._m, mRot)); shakeTree._im.instanceMatrix.needsUpdate = true;
+      if (sh.t > 0.15 && sh.t < 0.75) {
+        const u = (sh.t - 0.15) / 0.3, bx = sh.tree.tx + 0.5, bz = sh.tree.ty + 0.6;
+        dropFruit.visible = true; dropFruit.material = mat(sh.tree.v < 0.5 ? '#ff9a8a' : '#ffb347');
+        dropFruit.position.set(bx + (px - bx) * 0.55, Math.max(0.14, 1.5 - u * u * 1.36), bz + (pz - bz) * 0.55);
+      }
+    }
     ring.visible = !!st.target;
     if (st.target) { ring.position.set(st.target.x / 16, 0.04, st.target.y / 16); ring.scale.setScalar(1 + (reduceMotion ? 0 : Math.sin(t * 8) * 0.12)); }
     arrow.visible = !!st.next;

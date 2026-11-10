@@ -1,5 +1,5 @@
 /* Starry Town — a walkable portfolio island. The rules live here; view3d.js draws the picture. */
-import { createView } from './view3d.js?v=5';
+import { createView } from './view3d.js?v=9';
 (() => {
 'use strict';
 
@@ -23,15 +23,20 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
 const UI = {
   en: {
     kicker: "NAN YAO'S PORTFOLIO ISLAND",
-    sub: 'My portfolio is a little island. Walk around, visit the buildings, dig things up, go fishing. Who is visiting today?',
+    sub: 'My portfolio is a little island you can walk around. Here is how it works:',
+    enter: '▶ Enter the island', quickLong: 'No time? Read it on one page',
+    how: [['🚶', 'Walk', 'Arrow keys or WASD, or click where you want to go.'], ['🏠', 'Visit', 'Walk up to a building with a “?” and press E, or just click it, to read about my work.'], ['⛏', 'Dig', 'Press E where the ground sparkles to dig up a fun fact.'], ['🎣', 'Fish', 'Press E next to water, then again when the float dips.'], ['🍑', 'And more', 'Shake fruit trees, meet new residents, pet the dog, press Q to dance.']],
+    howTouch: [['🚶', 'Walk', 'Tap where you want to go.'], ['🏠', 'Visit', 'Tap a building with a “?” to read about my work.'], ['⛏', 'Dig', 'Tap a sparkle on the ground to dig up a fun fact.'], ['🎣', 'Fish', 'Stand by the water and tap the button, then tap again when the float dips.'], ['🍑', 'And more', 'Shake fruit trees, meet new residents, pet the dog, tap 💃 to dance.']],
+    shake: 'Shake the tree', give: 'Give fruit to', dance: 'Dance', tasks: 'To-do', taskDone: 'Done', allTasks: 'Every task done. You know this island better than I do!', nextTask: 'Next',
+    thanks: ['Fruit! For me? You are my favourite visitor.', 'Fresh from the tree. Thank you!', 'I will save this one for later. Maybe.'],
+    fruitLine: 'Fruit in your pocket', fruitHint: 'Shake a fruit tree, then give the fruit to a resident.',
+    settings: 'Island settings', soundOn: 'Sound: on', soundOff: 'Sound: off', modes: { day: 'Day', dusk: 'Dusk', night: 'Night' }, postcard: 'Postcard',
+    postcardTitle: 'A postcard from the island', postcardMeta: 'Save it or send it to a friend', save: 'Save image', greet: 'Greetings from Starry Town', back: 'Back to backpack',
     quick: 'Quick view', cv: 'CV', lang: '中文', bag: 'Backpack',
-    hint: 'Arrow keys or WASD to walk · E or Space to act · or click where you want to go',
-    hintTouch: 'Tap anywhere to walk · tap a building to visit it',
     visit: 'Visit', talk: 'Talk to', movedIn: 'just moved to the island! Go say hi.', neighbours: 'Residents', lockedRes: 'Moves in after {n} finds', no3d: 'This browser cannot show the 3D island, so here is everything on one page.', dig: 'Dig here', fish: 'Go fishing', wait: 'Waiting for a bite…', pull: 'Pull!',
-    hello: "Hi, I'm Nan! Welcome to my island. Visit anything with a “?”, dig where the ground sparkles, and try fishing by the water. My Samoyed insists on coming along.",
+    hello: "Hi, I'm Nan! Welcome to my island. The to-do list in the top left will show you around. My Samoyed insists on coming along.",
     next: 'tap or press any key ▸', speaker: 'Nan',
     newStar: 'New star', allDone: 'All 16 stars found. Thanks for walking the whole island!', sayHi: 'Say hi',
-    routeDone: 'Route complete. That was the short version of me.', nextStop: 'Next', routeOk: 'Route complete · say hi',
     early: 'Too early, it swam away.', missed: 'It got away. Try again!', again: 'You already have this one. Back it goes.',
     dugTitle: 'You dug something up!', fishTitle: 'You caught something!', writeMe: 'Write to me',
     quickKicker: 'Quick view',
@@ -43,15 +48,20 @@ const UI = {
   },
   zh: {
     kicker: '姚楠的作品集小岛',
-    sub: '我把作品集做成了一座小岛。四处走走，拜访建筑，挖挖宝，钓钓鱼。今天来的是哪位？',
+    sub: '我把作品集做成了一座可以逛的小岛。玩法很简单：',
+    enter: '▶ 进入小岛', quickLong: '没时间？一页看完',
+    how: [['🚶', '走路', '方向键或 WASD，也可以直接点击想去的地方。'], ['🏠', '拜访', '走到带“?”的建筑前按 E，或者直接点它，看我的经历和项目。'], ['⛏', '挖宝', '在地上闪光的地方按 E，挖出一个 fun fact。'], ['🎣', '钓鱼', '站在水边按 E 抛竿，浮标下沉时再按一次。'], ['🍑', '还有', '摇果树、认识新居民、摸摸狗，按 Q 跳舞。']],
+    howTouch: [['🚶', '走路', '点击想去的地方。'], ['🏠', '拜访', '点带“?”的建筑，看我的经历和项目。'], ['⛏', '挖宝', '点地上闪光的地方，挖出一个 fun fact。'], ['🎣', '钓鱼', '站在水边点下方按钮，浮标下沉时再点一次。'], ['🍑', '还有', '摇果树、认识新居民、摸摸狗，点 💃 跳舞。']],
+    shake: '摇一摇树', give: '送水果给', dance: '跳舞', tasks: '任务', taskDone: '完成', allTasks: '任务全部完成，你比我还熟悉这座岛了！', nextTask: '下一步',
+    thanks: ['水果！给我的吗？你是我最喜欢的访客。', '刚摘的，谢谢你！', '这个我留着晚点吃。大概吧。'],
+    fruitLine: '口袋里的水果', fruitHint: '摇一摇果树，再把水果送给居民。',
+    settings: '小岛设置', soundOn: '音效：开', soundOff: '音效：关', modes: { day: '白天', dusk: '黄昏', night: '夜晚' }, postcard: '明信片',
+    postcardTitle: '一张小岛明信片', postcardMeta: '保存下来，或者发给朋友', save: '保存图片', greet: '来自 Starry Town 的问候', back: '回到背包',
     quick: '快速浏览', cv: '简历', lang: 'EN', bag: '背包',
-    hint: '方向键或 WASD 走路 · E 或空格互动 · 也可以直接点击想去的地方',
-    hintTouch: '点击任意位置走过去 · 点击建筑直接拜访',
     visit: '拜访', talk: '聊聊', movedIn: '搬到岛上来了！去打个招呼吧。', neighbours: '居民', lockedRes: '找到 {n} 样东西后搬来', no3d: '这个浏览器显示不了 3D 小岛，所以把全部内容放在这一页。', dig: '挖一挖', fish: '钓鱼', wait: '等鱼上钩…', pull: '拉！',
-    hello: '嗨，我是姚楠！欢迎来我的小岛。带“?”的地方都可以拜访，地上闪光的地方可以挖，水边还能钓鱼。我的萨摩耶一定要跟着。',
+    hello: '嗨，我是姚楠！欢迎来我的小岛。左上角的任务清单会带你逛一圈。我的萨摩耶一定要跟着。',
     next: '点击或按任意键 ▸', speaker: '姚楠',
     newStar: '新的星星', allDone: '16 颗星全部找到，谢谢你逛完整座小岛！', sayHi: '打个招呼',
-    routeDone: '路线走完了，这就是精简版的我。', nextStop: '下一站', routeOk: '路线完成 · 打个招呼',
     early: '太早了，鱼游走了。', missed: '跑掉了，再试一次！', again: '这个你已经有了，放回去吧。',
     dugTitle: '挖到东西了！', fishTitle: '钓到了！', writeMe: '给我写信',
     quickKicker: '快速浏览',
@@ -91,9 +101,11 @@ const spotById = Object.fromEntries(SPOTS.map(s => [s.id, s]));
 const found = new Set(store.get('found', []).filter(id => spotById[id]));
 const dug = new Set(store.get('dug', []).filter(i => i >= 0 && i < EX.dig.length));
 const caught = new Set(store.get('caught', []).filter(i => i >= 0 && i < EX.fish.length));
-let persona = store.get('persona', null);
-if (!EX.routes[persona]) persona = null;
-let routeToasted = store.get('routeDone', false);
+let fruit = store.get('fruit', 0) | 0;
+const flags = new Set(store.get('flags', []));      // one-off things done: pet, fruit, neighbor, gift, dance
+const tasksSeen = new Set(store.get('tasks', []));  // tasks already announced as done
+const gifts = store.get('gifts', {});
+let soundOn = store.get('sound', true) !== false;
 const itemCount = () => dug.size + caught.size, itemTotal = EX.dig.length + EX.fish.length;
 
 /* ------------------------------------------------------------------ world */
@@ -206,6 +218,13 @@ for (let y = 2; y < 32; y++) for (let x = 2; x < 44; x++) {
   if (!solid[i] && !DIGS.some(g => g.tx === x && g.ty === y) && hash(x, y, 3) < 0.1) flowers[i] = 1 + Math.floor(hash(x, y, 4) * 4);
 }
 
+// a few fruit trees in easy reach, so shaking one is never a hunt
+[[25, 22], [19, 27], [36, 27], [3, 18]].forEach(([x, y]) => {
+  const i = I(x, y);
+  if (map[i] !== G || solid[i]) return;
+  TREES.push({ tx: x, ty: y, type: 'fruit', v: hash(x, y, 8) }); solid[i] = 1; flowers[i] = 0;
+});
+
 const FLOWERS = [];
 for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) if (flowers[I(x, y)]) FLOWERS.push({ x, y, t: flowers[I(x, y)] });
 
@@ -313,7 +332,7 @@ function walkTo(tx, ty, then) {
   const [sx, sy] = playerTile();
   const p = findPath(sx, sy, tx, ty);
   if (!p) return false;
-  fishing = null; path = p; autoAct = then || null;
+  fishing = null; dancing = null; path = p; autoAct = then || null;
   if (!p.length && then) { autoAct = null; then(); }
   return true;
 }
@@ -344,7 +363,7 @@ try { view = createView({ MW, MH, hash, reduceMotion, ground, at, D, BUILDINGS, 
 catch (err) { console.warn('3D view unavailable', err); }
 const hour = new Date().getHours() + new Date().getMinutes() / 60;
 const askedMode = new URLSearchParams(location.search).get('time');
-const mode = ['day', 'dusk', 'night'].includes(askedMode) ? askedMode : hour >= 6.5 && hour < 17 ? 'day' : (hour >= 17 && hour < 19.5) || (hour >= 5 && hour < 6.5) ? 'dusk' : 'night';
+let mode = ['day', 'dusk', 'night'].includes(askedMode) ? askedMode : hour >= 6.5 && hour < 17 ? 'day' : (hour >= 17 && hour < 19.5) || (hour >= 5 && hour < 6.5) ? 'dusk' : 'night';
 document.body.dataset.mode = mode;
 if (view) { view.setMode(mode); addEventListener('resize', view.resize); }
 
@@ -360,6 +379,7 @@ function segFree(x0, y0, x1, y1) {
 function updateResidents(dt) {
   for (const r of RES) {
     if (!r.here) continue;
+    if (r.dance > 0) { r.dance -= dt; r.moving = false; continue; }
     const fx = player.x - r.x, fy = player.y - r.y, fl = Math.hypot(fx, fy) || 1;
     if (fl < 26) { r.moving = false; r.hx = fx / fl; r.hy = fy / fl; continue; }
     if (r.tx == null) {
@@ -375,14 +395,115 @@ function updateResidents(dt) {
     }
   }
 }
+function flag(id) { if (!flags.has(id)) { flags.add(id); store.set('flags', [...flags]); } }
 function talkTo(r) {
+  flag('neighbor');
+  if (fruit > 0) {
+    fruit--; store.set('fruit', fruit);
+    gifts[r.def.id] = (gifts[r.def.id] || 0) + 1; store.set('gifts', gifts); flag('gift');
+    const L = t().thanks;
+    say(L[(gifts[r.def.id] - 1) % L.length], false, r.def.name[lang]);
+    floatText(r.x, r.y, 1.7, '♥', 'heart'); sfx('pet'); renderHud();
+    return;
+  }
   const lines = r.def.lines[lang];
   say(lines[r.line % lines.length], false, r.def.name[lang]); r.line++;
-  floatText(r.x, r.y, 1.7, '♪', 'gold');
+  floatText(r.x, r.y, 1.7, '♪', 'gold'); sfx('talk');
 }
 function petDog() {
-  dog.pet = 0.9;
-  floatText(dog.x, dog.y, 1.3, '♥', 'heart');
+  dog.pet = 0.9; flag('pet');
+  floatText(dog.x, dog.y, 1.3, '♥', 'heart'); sfx('pet');
+}
+
+/* ------------------------------------------------------------------ sound (tiny synth, no files) */
+let actx = null;
+function tone(f, dur, o = {}) {
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    if (actx.state === 'suspended') actx.resume();
+    const t0 = actx.currentTime + (o.at || 0), osc = actx.createOscillator(), g = actx.createGain();
+    osc.type = o.type || 'sine'; osc.frequency.setValueAtTime(f, t0);
+    if (o.to) osc.frequency.exponentialRampToValueAtTime(o.to, t0 + dur);
+    g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(o.vol || 0.07, t0 + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    osc.connect(g).connect(actx.destination); osc.start(t0); osc.stop(t0 + dur + 0.03);
+  } catch (e) {}
+}
+const SFX = {
+  open: () => tone(660, 0.09),
+  star: () => [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.16, { at: i * 0.07, type: 'triangle' })),
+  item: () => [659, 784, 988].forEach((f, i) => tone(f, 0.14, { at: i * 0.08, type: 'triangle' })),
+  dig: () => [0, 0.25, 0.5].forEach(a => tone(180, 0.12, { type: 'square', vol: 0.035, to: 90, at: a })),
+  cast: () => tone(520, 0.25, { to: 180 }),
+  bite: () => { tone(880, 0.07); tone(880, 0.07, { at: 0.12 }); },
+  miss: () => tone(300, 0.22, { to: 150 }),
+  talk: () => [0, 1, 2].forEach(i => tone(420 + Math.random() * 180, 0.06, { at: i * 0.07, type: 'triangle', vol: 0.05 })),
+  pet: () => { tone(700, 0.08, { to: 900 }); tone(900, 0.1, { at: 0.1, to: 1100 }); },
+  shake: () => [0, 1, 2, 3, 4].forEach(i => tone(900 + Math.random() * 500, 0.03, { at: i * 0.06, type: 'square', vol: 0.02 })),
+  fruit: () => tone(300, 0.14, { to: 560 }),
+  task: () => [784, 988, 1175].forEach((f, i) => tone(f, 0.12, { at: i * 0.09 })),
+  move: () => [392, 523, 659].forEach((f, i) => tone(f, 0.18, { at: i * 0.1, type: 'triangle' })),
+  dance: () => [523, 587, 659, 784, 659, 784, 1047].forEach((f, i) => tone(f, 0.13, { at: i * 0.16, type: 'triangle' })),
+};
+const sfx = name => { if (soundOn && started && SFX[name]) SFX[name](); };
+
+/* ------------------------------------------------------------------ to-do list, fruit trees, dancing */
+const FRUIT_TREES = TREES.filter(tr => tr.type === 'fruit');
+FRUIT_TREES.forEach(tr => { tr.ready = 0; });
+let shaking = null, dancing = null;
+const busy = () => !!(digging || shaking);
+const TASK_DONE = {
+  sign: () => found.has('about'),
+  work: () => SPOTS.some(s => s.kind === 'job' && found.has(s.id)),
+  project: () => SPOTS.some(s => s.kind === 'project' && found.has(s.id)),
+  dig: () => dug.size > 0, fish: () => caught.size > 0,
+  pet: () => flags.has('pet'), fruit: () => flags.has('fruit'), neighbor: () => flags.has('neighbor'), gift: () => flags.has('gift'), dance: () => flags.has('dance'),
+  hello: () => found.has('contact'), stars: () => found.size === SPOTS.length,
+};
+const taskDone = id => !!(TASK_DONE[id] && TASK_DONE[id]());
+const currentTask = () => EX.tasks.find(k => !taskDone(k.id)) || null;
+const closest = (list, fx, fy) => list.reduce((b, o) => { const dd = Math.hypot(fx(o) - player.x, fy(o) - player.y); return !b || dd < b.d ? { o, d: dd } : b; }, null);
+function treeSide(tr) {           // a free tile next to a tree, the one nearest the player
+  const c = [[0, 1], [-1, 0], [1, 0], [0, -1]].map(([dx, dy]) => [tr.tx + dx, tr.ty + dy]).filter(([x, y]) => !tileSolid(x, y) && findPath(...playerTile(), x, y));
+  return closest(c, q => q[0] * T + 8, q => q[1] * T + 10);
+}
+function goShake(tr) {
+  const side = treeSide(tr);
+  if (side) walkTo(side.o[0], side.o[1], () => { action = currentAction(); if (action && action.type === 'shake') act(); });
+}
+function taskTarget(k) {            // where the guide arrow points, and what clicking the to-do chip does
+  const spot = id => { const s = spotById[id]; return { x: s.trig[0] * T + 8, y: s.trig[1] * T + 10, spot: s, go: () => visitSpot(s) }; };
+  const res = () => { const c = closest(RES.filter(r => r.here), r => r.x, r => r.y); return c && { x: c.o.x, y: c.o.y, go: () => goTalk(c.o) }; };
+  const tree = () => { const c = closest(FRUIT_TREES.filter(tr => time >= tr.ready && treeSide(tr)), tr => tr.tx * T + 8, tr => tr.ty * T + 10); return c && { x: c.o.tx * T + 8, y: c.o.ty * T + 10, go: () => goShake(c.o) }; };
+  switch (k.id) {
+    case 'sign': return spot('about');
+    case 'work': return spot('monolith');
+    case 'project': return spot('orbit');
+    case 'hello': return spot('contact');
+    case 'stars': { const c = closest(SPOTS.filter(s => !found.has(s.id)), s => s.trig[0] * T + 8, s => s.trig[1] * T + 10); return c && spot(c.o.id); }
+    case 'dig': { const c = closest(DIGS.filter(g => !dug.has(g.i)), g => g.x, g => g.y); return c && { x: c.o.x, y: c.o.y, go: () => walkTo(c.o.tx, c.o.ty, () => { action = currentAction(); if (action && action.type === 'dig') act(); }) }; }
+    case 'fish': return { x: 30 * T + 8, y: 30 * T + 10, go: () => walkTo(30, 30, () => { player.dir = 'down'; }) };
+    case 'fruit': return tree();
+    case 'neighbor': return res();
+    case 'gift': return fruit > 0 ? res() : tree();
+    default: return null;
+  }
+}
+function checkTasks() {
+  if (!started || cardEl.open || !$('toast').hidden) return;
+  const k = EX.tasks.find(q => taskDone(q.id) && !tasksSeen.has(q.id));
+  if (!k) return;
+  tasksSeen.add(k.id); store.set('tasks', [...tasksSeen]);
+  const all = EX.tasks.every(q => taskDone(q.id));
+  toast(all ? `<span>🎉 <b>${esc(t().allTasks)}</b></span><button class="btn" id="toastCard">📸 ${esc(t().postcard)}</button>` : `<span>✓ <b>${esc(t().taskDone)}</b> · ${k.icon} ${esc(k[lang])}</span>`, all ? 12000 : 2600);
+  if (all) $('toastCard').onclick = () => { $('toast').hidden = true; openPostcard(); };
+  sfx('task'); renderQuest();
+}
+function startDance() {
+  if (paused() || busy() || dancing) return;
+  path = null; autoAct = null; fishing = null; hideSay();
+  dancing = { t: 0, beat: 0 }; flag('dance'); dog.pet = 2.4;
+  for (const r of RES) if (r.here && Math.hypot(r.x - player.x, r.y - player.y) < 80) { r.dance = 2.4; r.tx = null; }
+  sfx('dance');
 }
 
 /* ------------------------------------------------------------------ update */
@@ -391,31 +512,34 @@ const SPEED = 78;
 const cardEl = $('card');
 const paused = () => !started || cardEl.open;
 function currentAction() {
-  if (digging) return null;
+  if (busy()) return null;
   if (fishing) return { type: 'fish' };
   let best = null, bd = 20;
   for (const s of SPOTS) { const dist = Math.hypot(s.trig[0] * T + 8 - player.x, s.trig[1] * T + 10 - player.y); if (dist < bd && dist < (s.id === 'odyssey' ? 11 : 20)) { bd = dist; best = s; } }
   if (best) return { type: 'spot', spot: best };
   for (const r of RES) if (r.here && Math.hypot(r.x - player.x, r.y - player.y) < 20) return { type: 'talk', res: r };
   for (const g of DIGS) if (!dug.has(g.i) && Math.hypot(g.x - player.x, g.y - player.y) < 13) return { type: 'dig', dig: g };
+  const [ptx, pty] = playerTile();
+  const tr = FRUIT_TREES.find(q => Math.abs(q.tx - ptx) + Math.abs(q.ty - pty) === 1 && time >= q.ready);
+  if (tr) return { type: 'shake', tree: tr };
   if (waterDir()) return { type: 'fish' };
   return null;
 }
 function update(dt) {
   time += dt;
   let mx = 0, my = 0;
-  if (!paused() && !digging) {
+  if (!paused() && !busy()) {
     if (keys.has('left')) mx -= 1; if (keys.has('right')) mx += 1;
     if (keys.has('up')) my -= 1; if (keys.has('down')) my += 1;
   }
   const px = player.x, py = player.y;
   if (mx || my) {
-    path = null; autoAct = null; fishing = null;
+    path = null; autoAct = null; fishing = null; dancing = null;
     const len = Math.hypot(mx, my), sx = mx / len * SPEED * dt, sy = my / len * SPEED * dt;
     if (!blocked(player.x + sx, player.y)) player.x += sx;
     if (!blocked(player.x, player.y + sy)) player.y += sy;
     player.dir = Math.abs(mx) >= Math.abs(my) && mx ? (mx < 0 ? 'left' : 'right') : (my < 0 ? 'up' : 'down');
-  } else if (path && !paused() && !digging) {
+  } else if (path && !paused() && !busy()) {
     let step = SPEED * dt;
     while (path && path.length && step > 0) {
       const n = path[0], dx = n.x - player.x, dy = n.y - player.y, dist = Math.hypot(dx, dy);
@@ -450,14 +574,28 @@ function update(dt) {
     digging.t += dt;
     if (digging.t > 0.75) { const g = digging.g; digging = null; dug.add(g.i); store.set('dug', [...dug]); showItem('dig', g.i, true); }
   }
+  if (shaking) {
+    shaking.t += dt;
+    if (shaking.t > 0.45 && !shaking.got) {
+      shaking.got = true; fruit++; store.set('fruit', fruit); flag('fruit'); shaking.tree.ready = time + 40;
+      floatText(shaking.tree.tx * T + 8, shaking.tree.ty * T + 10, 1.4, shaking.tree.v < 0.5 ? '+🍑' : '+🍊', 'gold'); sfx('fruit'); renderHud();
+    }
+    if (shaking.t > 0.85) shaking = null;
+  }
+  if (dancing) {
+    dancing.t += dt;
+    if (dancing.t > dancing.beat) { dancing.beat += 0.45; floatText(player.x + (Math.random() - 0.5) * 20, player.y, 1.9, '♪', 'gold'); }
+    if (dancing.t > 2.4) dancing = null;
+  }
+  checkTasks();
   if (fishing && !cardEl.open) {
     fishing.t += dt;
-    if (fishing.phase === 'wait' && fishing.t > fishing.biteAt) { fishing.phase = 'bite'; fishing.t = 0; floatText(fishing.bx, fishing.by, 0.6, '!', 'alert'); }
-    else if (fishing.phase === 'bite' && fishing.t > 1.2) { fishing = null; toast(esc(t().missed), 1800); }
+    if (fishing.phase === 'wait' && fishing.t > fishing.biteAt) { fishing.phase = 'bite'; fishing.t = 0; floatText(fishing.bx, fishing.by, 0.6, '!', 'alert'); sfx('bite'); }
+    else if (fishing.phase === 'bite' && fishing.t > 1.2) { fishing = null; toast(esc(t().missed), 1800); sfx('miss'); }
   }
 
   action = paused() ? null : currentAction();
-  const key = !action ? '' : action.type + (action.spot ? action.spot.id : '') + (action.dig ? action.dig.i : '') + (action.res ? action.res.def.id : '') + (fishing ? fishing.phase : '') + lang;
+  const key = !action ? '' : action.type + (action.spot ? action.spot.id : '') + (action.dig ? action.dig.i : '') + (action.res ? action.res.def.id + (fruit > 0 ? 'f' : '') : '') + (action.tree ? action.tree.tx + '_' + action.tree.ty : '') + (fishing ? fishing.phase : '') + lang;
   if (key !== actionKey) { actionKey = key; renderPrompt(); }
 
 }
@@ -469,14 +607,19 @@ function act() {
   if (!action) return;
   if (action.type === 'spot') return openSpot(action.spot);
   if (action.type === 'talk') return talkTo(action.res);
-  if (action.type === 'dig') { path = null; digging = { g: action.dig, t: 0 }; player.dir = 'down'; return; }
+  if (action.type === 'dig') { path = null; dancing = null; digging = { g: action.dig, t: 0 }; player.dir = 'down'; sfx('dig'); return; }
+  if (action.type === 'shake') {
+    const tr = action.tree, [ptx, pty] = playerTile();
+    path = null; dancing = null; shaking = { tree: tr, t: 0 };
+    player.dir = tr.tx < ptx ? 'left' : tr.tx > ptx ? 'right' : tr.ty < pty ? 'up' : 'down'; sfx('shake'); return;
+  }
   if (action.type === 'fish') {
     if (!fishing) {
       const k = waterDir(); if (!k) return;
-      player.dir = k; path = null;
+      player.dir = k; path = null; dancing = null; sfx('cast');
       const [dx, dy] = DIRS[k], [tx, ty] = playerTile(), far = at(tx + dx * 2, ty + dy * 2) === W ? 1.9 : 1.15;
       fishing = { phase: 'wait', t: 0, biteAt: 1.3 + Math.random() * 2.6, bx: tx * T + 8 + dx * T * far, by: ty * T + 9 + dy * T * far };
-    } else if (fishing.phase === 'wait') { fishing = null; toast(esc(t().early), 1800); }
+    } else if (fishing.phase === 'wait') { fishing = null; toast(esc(t().early), 1800); sfx('miss'); }
     else {
       fishing = null;
       const left = EX.fish.map((_, i) => i).filter(i => !caught.has(i));
@@ -487,9 +630,10 @@ function act() {
 }
 
 /* ------------------------------------------------------------------ labels + frame */
-function nextStop() {
-  const r = persona && EX.routes[persona].stops;
-  return r ? spotById[r.find(id => !found.has(id))] || null : null;
+let guideAt = -1, guideCache = null;
+function guide() {                  // target of the current to-do item, refreshed a few times a second
+  if (time - guideAt > 0.3 || time < guideAt) { guideAt = time; const k = currentTask(); guideCache = k ? taskTarget(k) : null; }
+  return guideCache;
 }
 const labelBox = $('labels'), labels = new Map(), OFF = { ok: false };
 function label(id, onClick) {
@@ -513,17 +657,17 @@ function floatText(x, y, h, text, cls) {
   labelBox.appendChild(e); setTimeout(() => e.remove(), 1400);
 }
 function render(dt) {
-  const nxt = started ? nextStop() : null;
-  const far = nxt && !cardEl.open && Math.hypot(nxt.trig[0] * T + 8 - player.x, nxt.trig[1] * T + 10 - player.y) > 40;
-  view.render({ time, dt, player, dog, digging, fishing, dug, foundRatio: found.size / SPOTS.length, residents: RES,
+  const gd = started ? guide() : null, nxt = gd && gd.spot || null;
+  const far = gd && !cardEl.open && !dancing && Math.hypot(gd.x - player.x, gd.y - player.y) > 40;
+  view.render({ time, dt, player, dog, digging, fishing, dug, shaking, dancing, foundRatio: found.size / SPOTS.length, residents: RES,
     target: path && path.length ? path[path.length - 1] : null,
-    next: far ? { x: nxt.trig[0] * T + 8, y: nxt.trig[1] * T + 10 } : null });
+    next: far ? { x: gd.x, y: gd.y } : null });
   for (const s of SPOTS) {
     const has = found.has(s.id), isN = s === nxt, isA = action && action.spot === s;
-    place(label(s.id, () => { if (!paused() && !digging) visitSpot(s); }), started ? view.project(s.lab.x, s.lab.y, s.lab.h) : OFF,
+    place(label(s.id, () => { if (!paused() && !busy()) visitSpot(s); }), started ? view.project(s.lab.x, s.lab.y, s.lab.h) : OFF,
       s.name[lang], (has ? 'has ' : '') + (isN ? 'next ' : '') + (isA ? 'on' : ''), has ? '★' : isN ? '!' : '?');
   }
-  for (const r of RES) place(label('res-' + r.def.id, () => { if (!paused() && !digging) goTalk(r); }), started && r.here ? view.project(r.x, r.y, 1.5) : OFF, r.def.name[lang], 'res', r.def.icon);
+  for (const r of RES) place(label('res-' + r.def.id, () => { if (!paused() && !busy()) goTalk(r); }), started && r.here ? view.project(r.x, r.y, 1.5) : OFF, r.def.name[lang] + ((gifts[r.def.id] || 0) >= 3 ? ' ♥' : ''), 'res', r.def.icon);
 }
 function goTalk(r) {
   const free = nearestFree(Math.floor(r.x / T), Math.floor((r.y - 2) / T) + 1) || [Math.floor(r.x / T), Math.floor(r.y / T)];
@@ -588,12 +732,9 @@ function openSpot(s) {
   if (!found.has(s.id)) {
     found.add(s.id); store.set('found', [...found]);
     floatText(dog.x, dog.y, 1.3, '♥', 'heart'); floatText(s.lab.x, s.lab.y, s.lab.h + 0.4, '+★', 'gold');
-    const r = persona && EX.routes[persona].stops;
-    if (found.size === SPOTS.length) pendingToast = 'all';
-    else if (r && !routeToasted && r.every(id => found.has(id))) { pendingToast = 'route'; routeToasted = true; store.set('routeDone', true); }
-    else pendingToast = 'star';
-    renderHud();
-  }
+    pendingToast = found.size === SPOTS.length ? 'all' : 'star';
+    sfx('star'); renderHud();
+  } else sfx('open');
 }
 function showItem(kind, i, isNew, fromBag) {
   const it = EX[kind][i], u = t(), [name, text] = it[lang];
@@ -601,33 +742,61 @@ function showItem(kind, i, isNew, fromBag) {
     `<div class="item-big" aria-hidden="true">${it.icon}</div><p class="lead center">${esc(text)}</p>` +
     (it.cta ? `<div class="links center"><a class="btn btn-main" href="mailto:${esc(d().mail)}">${esc(u.writeMe)} ✉</a></div>` : '') +
     `<p class="caption center">🎒 ${itemCount()}/${itemTotal}</p>`, 'mini', () => showItem(kind, i, isNew, fromBag));
-  if (isNew && !fromBag) { floatText(dog.x, dog.y, 1.3, '♥', 'heart'); syncResidents(true); renderHud(); }
+  if (isNew && !fromBag) { floatText(dog.x, dog.y, 1.3, '♥', 'heart'); syncResidents(true); sfx('item'); renderHud(); }
 }
 function openBag() {
   const u = t();
   const grid = (kind, set) => `<div class="bag-grid">${EX[kind].map((it, i) => set.has(i)
     ? `<button class="slot" data-kind="${kind}" data-i="${i}"><span>${it.icon}</span><small>${esc(it[lang][0])}</small></button>`
     : `<div class="slot empty"><span>?</span><small>${esc(u.unknown)}</small></div>`).join('')}</div>`;
-  const routes = Object.entries(EX.routes).map(([id, r]) => {
-    const done = r.stops ? r.stops.filter(s => found.has(s)).length : 0;
-    return `<button class="route${persona === id ? ' on' : ''}" data-route="${id}"><span>${r.icon}</span><b>${esc(r[lang][0])}</b><small>${esc(r[lang][1])}${r.stops ? ` · ${done}/${r.stops.length}` : ''}</small></button>`;
-  }).join('');
+  const nDone = EX.tasks.filter(k => taskDone(k.id)).length;
   const N = EX.notes[lang];
   showCard(`🎒 ${itemCount()}/${itemTotal} · ★ ${found.size}/${SPOTS.length}`, u.bagTitle, u.bagMeta,
-    `<h3>${esc(u.route)}</h3><div class="routes">${routes}</div>
+    `<h3>${esc(u.tasks)} · ${nDone}/${EX.tasks.length}</h3><ul class="tasks">${EX.tasks.map(k => `<li class="${taskDone(k.id) ? 'done' : ''}"><i>${taskDone(k.id) ? '✓' : ''}</i><span>${k.icon}</span>${esc(k[lang])}</li>`).join('')}</ul>
      <h3>${esc(u.neighbours)} · ${RES.filter(r => r.here).length}/${RES.length}</h3><div class="bag-grid">${RES.map(r => r.here
        ? `<div class="slot"><span>${r.def.icon}</span><small>${esc(r.def.name[lang])}</small></div>`
        : `<div class="slot empty"><span>?</span><small>${esc(u.lockedRes.replace('{n}', r.def.at))}</small></div>`).join('')}</div>
      <h3>${esc(u.treasures)} · ${dug.size}/${EX.dig.length}</h3>${grid('dig', dug)}
      <h3>${esc(u.catches)} · ${caught.size}/${EX.fish.length}</h3>${grid('fish', caught)}
      <p class="caption">${esc(u.toolsText)}</p>
+     <h3>${esc(u.fruitLine)} · 🍑 × ${fruit}</h3><p class="caption">${esc(u.fruitHint)}</p>
+     <h3>${esc(u.settings)}</h3><div class="links"><button class="btn" data-act="sound">${soundOn ? '🔊 ' + esc(u.soundOn) : '🔇 ' + esc(u.soundOff)}</button><button class="btn" data-act="mode">${{ day: '☀️', dusk: '🌇', night: '🌙' }[mode]} ${esc(u.modes[mode])}</button><button class="btn" data-act="postcard">📸 ${esc(u.postcard)}</button></div>
      <details class="notes"><summary>${esc(N[0])}</summary><div class="rows">${N[1].map((n, i) => `<div class="row"><small>0${i + 1}</small><b>${esc(n[0])}</b><span>${esc(n[1])}</span></div>`).join('')}</div></details>`, '', openBag);
 }
 $('cardBody').addEventListener('click', e => {
-  const slot = e.target.closest('.slot[data-kind]'), route = e.target.closest('.route');
+  const slot = e.target.closest('.slot[data-kind]'), btn = e.target.closest('[data-act]');
+  if (btn) {
+    const a = btn.dataset.act;
+    if (a === 'sound') { soundOn = !soundOn; store.set('sound', soundOn); sfx('open'); openBag(); }
+    if (a === 'mode') { setMode({ day: 'dusk', dusk: 'night', night: 'day' }[mode]); openBag(); }
+    if (a === 'postcard') openPostcard();
+    if (a === 'bag') openBag();
+  }
   if (slot) showItem(slot.dataset.kind, +slot.dataset.i, false, true);
-  if (route) { setPersona(route.dataset.route); openBag(); }
 });
+function makePostcard() {
+  render(0);                                   // draw a fresh frame, then copy it before the browser clears it
+  const Wd = 1200, Hd = 800, band = 150, cv = document.createElement('canvas'); cv.width = Wd; cv.height = Hd;
+  const c = cv.getContext('2d'), sky = c.createLinearGradient(0, 0, 0, Hd - band);
+  const cols = { day: ['#a9dcf5', '#dff4fb'], dusk: ['#f7a98c', '#ffeccf'], night: ['#1d2456', '#5a6bb5'] }[mode];
+  sky.addColorStop(0, cols[0]); sky.addColorStop(1, cols[1]); c.fillStyle = sky; c.fillRect(0, 0, Wd, Hd - band);
+  const ar = Wd / (Hd - band); let sw = canvas.width, sh = sw / ar;
+  if (sh > canvas.height) { sh = canvas.height; sw = sh * ar; }
+  c.drawImage(canvas, (canvas.width - sw) / 2, (canvas.height - sh) / 2, sw, sh, 0, 0, Wd, Hd - band);
+  c.fillStyle = '#fffaf0'; c.fillRect(0, Hd - band, Wd, band);
+  c.fillStyle = '#f5b01a'; c.fillRect(0, Hd - band, Wd, 6);
+  const F = '"Nunito","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif';
+  c.fillStyle = '#6b4f3a'; c.textBaseline = 'middle'; c.font = `900 46px ${F}`; c.fillText(t().greet + ' ★', 44, Hd - band + 54);
+  c.font = `800 26px ${F}`; c.fillStyle = '#9a8068';
+  c.fillText(`★ ${found.size}/${SPOTS.length}   ·   🎒 ${itemCount()}/${itemTotal}   ·   🏡 ${RES.filter(r => r.here).length}/${RES.length}   ·   ${d().name}`, 44, Hd - band + 108);
+  c.textAlign = 'right'; c.fillStyle = '#46a368'; c.fillText('starry-nn.github.io/starry-town', Wd - 44, Hd - band + 108);
+  return cv;
+}
+function openPostcard() {
+  const u = t(), url = makePostcard().toDataURL('image/jpeg', 0.9);
+  showCard('📸', u.postcardTitle, u.postcardMeta,
+    `<img class="postcard" src="${url}" alt="${esc(u.postcardTitle)}"><div class="links center"><a class="btn btn-main" download="starry-town-postcard.jpg" href="${url}">${esc(u.save)} ↓</a><button class="btn" data-act="bag">${esc(u.back)}</button></div>`, 'wide', openPostcard);
+}
 function openQuick() {
   const u = t();
   const group = (title, ids) => `<section class="qv-sec"><h3>${esc(title)}</h3>${ids.map(id => {
@@ -647,11 +816,11 @@ cardEl.addEventListener('close', () => {
   reopen = null; keys.clear();
   if (pendingMove) {
     const r = pendingMove; pendingMove = null; pendingToast = null;
-    toast(`<span>🏡 <b>${esc(r.def.name[lang])}</b> ${esc(t().movedIn)}</span>`, 6000);
+    toast(`<span>🏡 <b>${esc(r.def.name[lang])}</b> ${esc(t().movedIn)}</span>`, 6000); sfx('move');
     return;
   }
-  if (pendingToast === 'all' || pendingToast === 'route') {
-    toast(`<span>✨ <b>${esc(pendingToast === 'all' ? t().allDone : t().routeDone)}</b></span><button class="btn" id="toastHi">${esc(t().sayHi)}</button>`, 12000);
+  if (pendingToast === 'all') {
+    toast(`<span>✨ <b>${esc(t().allDone)}</b></span><button class="btn" id="toastHi">${esc(t().sayHi)}</button>`, 12000);
     $('toastHi').onclick = () => { $('toast').hidden = true; openSpot(spotById.contact); };
   } else if (pendingToast === 'star') toast(`<span>★ <b>${esc(t().newStar)}</b> · ${found.size}/${SPOTS.length}</span>`, 2200);
   pendingToast = null;
@@ -666,7 +835,8 @@ function renderPrompt() {
   if (!action || !started || !$('say').hidden) { e.hidden = true; return; }
   let label = '', cls = '';
   if (action.type === 'spot') label = `${u.visit} · ${action.spot.name[lang]}`;
-  else if (action.type === 'talk') label = `💬 ${u.talk} ${action.res.def.name[lang]}`;
+  else if (action.type === 'talk') label = fruit > 0 ? `🎁 ${u.give} ${action.res.def.name[lang]}` : `💬 ${u.talk} ${action.res.def.name[lang]}`;
+  else if (action.type === 'shake') label = `🌳 ${u.shake}`;
   else if (action.type === 'dig') label = `⛏ ${u.dig}`;
   else if (!fishing) label = `🎣 ${u.fish}`;
   else if (fishing.phase === 'wait') { label = `🎣 ${u.wait}`; cls = 'calm'; }
@@ -677,13 +847,9 @@ function renderPrompt() {
 }
 function renderQuest() {
   const e = $('quest'), u = t();
-  if (!started || !persona) { e.hidden = true; return; }
-  const r = EX.routes[persona];
-  if (!r.stops) e.innerHTML = `${r.icon} ⛏ ${dug.size}/${EX.dig.length} · 🎣 ${caught.size}/${EX.fish.length}`;
-  else {
-    const n = nextStop(), done = r.stops.filter(s => found.has(s)).length;
-    e.innerHTML = n ? `${r.icon} ${done}/${r.stops.length} · ${esc(u.nextStop)}: <b>${esc(n.name[lang])}</b> ➜` : `✓ ${esc(u.routeOk)}`;
-  }
+  if (!started) { e.hidden = true; return; }
+  const k = currentTask(), n = EX.tasks.filter(q => taskDone(q.id)).length;
+  e.innerHTML = k ? `📋 ${n}/${EX.tasks.length} · ${esc(u.nextTask)}: <b>${k.icon} ${esc(k[lang])}</b>` : `🎉 ${n}/${EX.tasks.length} · ${esc(u.tasks)}`;
   e.hidden = false;
 }
 function renderHud() {
@@ -692,20 +858,18 @@ function renderHud() {
   $('hudName').textContent = d().name;
   $('hudCount').textContent = `★ ${found.size}/${SPOTS.length}`;
   $('btnBag').innerHTML = `🎒 <span>${itemCount()}/${itemTotal}</span>`; $('btnBag').setAttribute('aria-label', u.bag);
-  $('btnQuick').textContent = u.quick; $('btnQuick2').textContent = u.quick;
+  $('btnQuick').textContent = u.quick; $('btnQuick2').textContent = u.quickLong; $('btnStart').textContent = u.enter;
+  $('btnDance').hidden = !started; $('btnDance').setAttribute('aria-label', u.dance); $('btnDance').title = u.dance + (touch ? '' : ' (Q)');
   $('btnCv').textContent = u.cv; $('btnCv').href = lang === 'zh' ? 'assets/Nan_Yao_Resume_CN.pdf' : 'assets/Nan_Yao_Resume_EN.pdf';
   $('btnLang').textContent = u.lang; $('btnLang2').textContent = u.lang;
   $('introKicker').textContent = u.kicker; $('introSub').textContent = u.sub;
-  $('introHint').textContent = touch ? u.hintTouch : u.hint;
-  $('introRoutes').innerHTML = Object.entries(EX.routes).map(([id, r]) => `<button class="route" data-route="${id}"><span>${r.icon}</span><b>${esc(r[lang][0])}</b><small>${esc(r[lang][1])}</small></button>`).join('');
+  $('introHow').innerHTML = (touch ? u.howTouch : u.how).map(h => `<li><span>${h[0]}</span><div><b>${esc(h[1])}</b>${esc(h[2])}</div></li>`).join('');
   $('sayName').textContent = sayWho || u.speaker; $('sayMore').textContent = u.next;
   renderPrompt(); renderQuest();
 }
-function setPersona(id) {
-  persona = id; store.set('persona', id);
-  const r = EX.routes[id].stops;
-  routeToasted = !!r && r.every(s => found.has(s)); store.set('routeDone', routeToasted);
-  renderQuest();
+function setMode(m) {
+  mode = m; document.body.dataset.mode = m;
+  if (view) view.setMode(m);
 }
 function setLang() {
   lang = lang === 'en' ? 'zh' : 'en'; store.set('lang', lang);
@@ -723,19 +887,20 @@ function say(text, instant, who) {
   sayTimer = setInterval(() => { i += 2; p.textContent = text.slice(0, i); if (i >= text.length) clearInterval(sayTimer); }, 22);
 }
 function hideSay() { if (!$('say').hidden) { $('say').hidden = true; clearInterval(sayTimer); renderPrompt(); } }
-function start(id) {
-  if (started) return;
-  setPersona(id || persona || 'explorer');
+function start() {
+  if (started || !view) return;
   started = true; $('intro').hidden = true;
-  renderQuest(); say(t().hello);
+  EX.tasks.forEach(k => { if (taskDone(k.id)) tasksSeen.add(k.id); });   // returning visitors: no replay of old announcements
+  renderHud(); say(t().hello);
 }
-$('introRoutes').addEventListener('click', e => { const b = e.target.closest('.route'); if (b) start(b.dataset.route); });
+$('btnStart').onclick = start;
+$('btnDance').onclick = () => { $('btnDance').blur(); startDance(); };
 $('btnQuick').onclick = openQuick; $('btnQuick2').onclick = openQuick;
 $('btnBag').onclick = openBag;
 $('btnLang').onclick = setLang; $('btnLang2').onclick = setLang;
 $('say').onclick = hideSay;
 $('prompt').onclick = () => { $('prompt').blur(); act(); };
-$('quest').onclick = () => { $('quest').blur(); const n = nextStop(); if (n) visitSpot(n); else if (EX.routes[persona].stops) openSpot(spotById.contact); else openBag(); };
+$('quest').onclick = () => { $('quest').blur(); if (paused() || busy()) return; guideAt = -1; const g = guide(); if (g) g.go(); else openBag(); };
 
 /* ------------------------------------------------------------------ input */
 const KEYMAP = { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'up', ArrowDown: 'down', a: 'left', d: 'right', w: 'up', s: 'down', A: 'left', D: 'right', W: 'up', S: 'down' };
@@ -743,6 +908,7 @@ addEventListener('keydown', e => {
   if (e.metaKey || e.ctrlKey || e.altKey || cardEl.open || !started) return;
   const onButton = e.target instanceof HTMLElement && e.target.closest('button, a, summary');
   if (KEYMAP[e.key]) { keys.add(KEYMAP[e.key]); e.preventDefault(); if (document.activeElement && document.activeElement !== document.body) document.activeElement.blur(); return; }
+  if (e.key === 'q' || e.key === 'Q') { e.preventDefault(); if (!e.repeat) startDance(); return; }
   if (e.key === 'e' || e.key === 'E' || ((e.key === ' ' || e.key === 'Enter') && !onButton)) {
     e.preventDefault();
     if (!$('say').hidden) { hideSay(); return; }
@@ -783,7 +949,7 @@ function onBody(x, y, h, mx, my) {
   return Math.hypot(mx - a.x, my - (a.y + b.y) / 2) < r;
 }
 canvas.addEventListener('pointerdown', e => {
-  if (paused() || digging) return;
+  if (paused() || busy()) return;
   hideSay();
   const mx = e.clientX, my = e.clientY;
   if (onBody(dog.x, dog.y, 0.95, mx, my)) { petDog(); return; }
@@ -795,6 +961,11 @@ canvas.addEventListener('pointerdown', e => {
   const g = DIGS.find(g => !dug.has(g.i) && Math.hypot(g.x - wx, g.y - wy) < 11);
   if (g) { walkTo(g.tx, g.ty, () => { action = currentAction(); if (action && action.type === 'dig') act(); }); return; }
   if (fishing) { act(); return; }
+  // fruit trees: of the ones under the pointer that can be reached, take the one closest to it
+  const tree = FRUIT_TREES.filter(tr => time >= tr.ready && onBody(tr.tx * T + 8, tr.ty * T + 12, 2.5, mx, my) && treeSide(tr))
+    .map(tr => { const q = view.project(tr.tx * T + 8, tr.ty * T + 12, 1.4, true); return { tr, d: Math.hypot(q.x - mx, q.y - my) }; })
+    .sort((a, b) => a.d - b.d)[0];
+  if (tree) { goShake(tree.tr); return; }
   const free = nearestFree(Math.floor(wx / T), Math.floor(wy / T));
   if (free) walkTo(free[0], free[1]);
 });
@@ -811,8 +982,8 @@ function frame(now) {
 }
 syncResidents(false);
 if (view) requestAnimationFrame(frame);
-else { $('introRoutes').hidden = true; $('introSub').textContent = t().no3d; openQuick(); }
+else { $('btnStart').hidden = true; $('introHow').hidden = true; $('introSub').textContent = t().no3d; openQuick(); }
 
 // small hook for testing from the console
-window.__town = { step(n) { for (let i = 0; i < n; i++) { update(0.05); if (i % 6 === 0 || i === n - 1) render(0.3); } }, spotAt, keys, player, dog, SPOTS, DIGS, RES, view, walkTo, openSpot, act, start, found, dug, caught, showItem, talkTo, petDog, get fishing() { return fishing; }, get action() { return action; } };
+window.__town = { startDance, openPostcard, makePostcard, flags, tasksSeen, FRUIT_TREES, get fruit() { return fruit; }, get mode() { return mode; }, get shaking() { return shaking; }, get dancing() { return dancing; }, step(n) { for (let i = 0; i < n; i++) { update(0.05); if (i % 6 === 0 || i === n - 1) render(0.3); } }, spotAt, keys, player, dog, SPOTS, DIGS, RES, view, walkTo, openSpot, act, start, found, dug, caught, showItem, talkTo, petDog, get fishing() { return fishing; }, get action() { return action; } };
 })();
