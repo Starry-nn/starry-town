@@ -154,7 +154,7 @@ export function createView(world, canvas) {
     [-0.2, 0, 0.2].forEach((o, k) => b.add(sphS(0.085), k % 2 ? '#7ccf7c' : '#ff9db8', x + o, y + 0.1, z + 0.02));
   }
   function house(bd) {
-    const W = bd.w, cx = bd.x + W / 2, front = bd.y + bd.h - 0.15, Dp = Math.min(3, Math.max(2.3, bd.h - 1.5)), cz = front - Dp / 2;
+    const W = bd.w, cx = bd.x + W / 2, front = bd.y + bd.h - 0.15, Dp = bd.kind === 'campus' ? 2.5 : Math.min(3, Math.max(2.3, bd.h - 1.5)), cz = front - Dp / 2;
     const tall = bd.h >= 5, wallH = tall ? 2.5 : 2.2, y0 = 0.18, wf = cz + (Dp - 0.3) / 2, roofH = tall ? 1.5 : 1.3;
     S.add(rbox(W - 0.1, 0.2, Dp + 0.1, 0.06), STONE, cx, 0.1, cz);
     S.add(rbox(W - 0.5, wallH, Dp - 0.3, 0.15), bd.wall, cx, y0 + wallH / 2, cz);

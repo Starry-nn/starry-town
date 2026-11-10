@@ -1,5 +1,5 @@
 /* Starry Town — a walkable portfolio island. The rules live here; view3d.js draws the picture. */
-import { createView } from './view3d.js';
+import { createView } from './view3d.js?v=5';
 (() => {
 'use strict';
 
@@ -168,7 +168,7 @@ for (let i = 0; i < map.length; i++) if (map[i] === W) solid[i] = 1;
 BUILDINGS.forEach(b => {
   rect(b.x, b.y, b.w, b.h, 1, solid);
   rect(b.x - 1, b.y - 2, b.w + 2, b.h + 4, 1, reserved);
-  const s = spotById[b.id], tall = b.h >= 5, dp = Math.min(3, Math.max(2.3, b.h - 1.5));
+  const s = spotById[b.id], tall = b.h >= 5, dp = b.kind === 'campus' ? 2.5 : Math.min(3, Math.max(2.3, b.h - 1.5));
   const front = b.y + b.h - 0.15, cx = b.x + b.w / 2;
   s.front = { x: cx * T, y: (b.y + b.h) * T };
   s.boxes = b.kind === 'tower' ? [{ x0: cx - 2.6, x1: cx + 2.6, z0: front - 2.6, z1: front + 0.1, h: 1.7 }, { x0: cx - 1.7, x1: cx + 1.7, z0: front - 2.5, z1: front - 0.45, h: 10.4 }]
@@ -433,7 +433,7 @@ function update(dt) {
   if (player.moving) {
     const last = trail[trail.length - 1];
     if (Math.hypot(player.x - last.x, player.y - last.y) >= 1) { trail.push({ x: player.x, y: player.y }); if (trail.length > 18) trail.shift(); }
-    hideSay();
+    if (time - sayAt > 0.2) hideSay();   // a line spoken on arrival must not be wiped by that same last step
   }
   const target = trail[0], ddx = target.x - dog.x, ddy = target.y - dog.y, dd = Math.hypot(ddx, ddy);
   dog.moving = dd > 0.6;
@@ -713,10 +713,10 @@ function setLang() {
   if (!$('say').hidden && !sayWho) say(t().hello, true);
   if (cardEl.open && reopen) reopen();
 }
-let sayTimer = 0, sayWho = null;
+let sayTimer = 0, sayWho = null, sayAt = -1;
 function say(text, instant, who) {
   const e = $('say'), p = $('sayText');
-  sayWho = who || null; $('sayName').textContent = sayWho || t().speaker;
+  sayWho = who || null; $('sayName').textContent = sayWho || t().speaker; sayAt = time;
   e.hidden = false; clearInterval(sayTimer); $('prompt').hidden = true;
   if (instant || reduceMotion) { p.textContent = text; return; }
   let i = 0; p.textContent = '';
