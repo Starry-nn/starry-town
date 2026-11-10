@@ -4,7 +4,7 @@ import * as THREE from './vendor/three.module.min.js';
 
 export function createView(world, canvas) {
   const { MW, MH, hash, reduceMotion } = world;
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, stencil: true, powerPreference: 'high-performance' });
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   const scene = new THREE.Scene();
@@ -154,8 +154,8 @@ export function createView(world, canvas) {
     [-0.2, 0, 0.2].forEach((o, k) => b.add(sphS(0.085), k % 2 ? '#7ccf7c' : '#ff9db8', x + o, y + 0.1, z + 0.02));
   }
   function house(bd) {
-    const W = bd.w, cx = bd.x + W / 2, front = bd.y + bd.h - 0.15, Dp = Math.max(2.3, bd.h - 1.5), cz = front - Dp / 2;
-    const tall = bd.h >= 5, wallH = tall ? 2.75 : 2.2, y0 = 0.18, wf = cz + (Dp - 0.3) / 2, roofH = tall ? 1.7 : 1.45;
+    const W = bd.w, cx = bd.x + W / 2, front = bd.y + bd.h - 0.15, Dp = Math.min(3, Math.max(2.3, bd.h - 1.5)), cz = front - Dp / 2;
+    const tall = bd.h >= 5, wallH = tall ? 2.5 : 2.2, y0 = 0.18, wf = cz + (Dp - 0.3) / 2, roofH = tall ? 1.5 : 1.3;
     S.add(rbox(W - 0.1, 0.2, Dp + 0.1, 0.06), STONE, cx, 0.1, cz);
     S.add(rbox(W - 0.5, wallH, Dp - 0.3, 0.15), bd.wall, cx, y0 + wallH / 2, cz);
     S.add(rbox(W + 0.15, 0.17, Dp + 0.4, 0.07), bd.roofL, cx, y0 + wallH + 0.03, cz);
@@ -168,7 +168,7 @@ export function createView(world, canvas) {
     for (let i = 0; i < W; i++) {
       const wx = bd.x + i + 0.5;
       if (i !== bd.door) { windowAt(S, wx, y0 + (tall ? 0.95 : 1.1), wf + 0.03); planter(S, wx, y0 + (tall ? 0.5 : 0.65), wf + 0.13); }
-      if (tall && i !== bd.door) windowAt(S, wx, y0 + 2.0, wf + 0.03);
+      if (tall && i !== bd.door) windowAt(S, wx, y0 + 1.85, wf + 0.03);
     }
     doorAt(S, dxc, y0, wf, bd.doorC);
     // emblem on the roof slope above the door
@@ -188,13 +188,13 @@ export function createView(world, canvas) {
     for (let i = 0; i <= bd.w; i++) S.add(cyl(0.13, 0.15, g.wallH - 0.1, 10), WHITE, bd.x + 0.3 + i * (bd.w - 0.6) / bd.w, g.y0 + g.wallH / 2 - 0.05, g.wf + 0.36);
     S.add(rbox(bd.w - 0.3, 0.2, 0.55, 0.05), WHITE, g.cx, g.y0 + g.wallH - 0.12, g.wf + 0.36);
     const ty = g.y0 + g.wallH;
-    S.add(rbox(1.45, 3.0, 1.45, 0.1), bd.wall, g.cx, ty + 1.2, g.cz);
-    S.add(rbox(1.7, 0.16, 1.7, 0.06), bd.roofL, g.cx, ty + 2.72, g.cz);
-    S.add(cone(1.2, 1.25, 4), bd.roof, g.cx, ty + 3.4, g.cz, { ry: Math.PI / 4 });
-    S.add(cyl(0.46, 0.46, 0.08, 22), WHITE, g.cx, ty + 2.0, g.cz + 0.74, { rx: Math.PI / 2 });
-    S.add(cyl(0.38, 0.38, 0.1, 22), '#fffaf0', g.cx, ty + 2.0, g.cz + 0.75, { rx: Math.PI / 2 });
-    S.add(box(0.04, 0.26, 0.03), '#6b4f3a', g.cx, ty + 2.11, g.cz + 0.81); S.add(box(0.2, 0.04, 0.03), '#6b4f3a', g.cx + 0.08, ty + 2.0, g.cz + 0.81);
-    [-1, 1].forEach(s => { const fx = g.cx + s * (bd.w / 2 - 0.9); S.add(cyl(0.03, 0.03, 1.5, 6), WHITE, fx, ty + 1.6, g.cz); S.add(rbox(0.55, 0.34, 0.04, 0.015), '#9a6fd6', fx + 0.3, ty + 2.15, g.cz); });
+    S.add(rbox(1.45, 2.3, 1.45, 0.1), bd.wall, g.cx, ty + 0.85, g.cz);
+    S.add(rbox(1.7, 0.16, 1.7, 0.06), bd.roofL, g.cx, ty + 2.02, g.cz);
+    S.add(cone(1.2, 1.1, 4), bd.roof, g.cx, ty + 2.62, g.cz, { ry: Math.PI / 4 });
+    S.add(cyl(0.46, 0.46, 0.08, 22), WHITE, g.cx, ty + 1.4, g.cz + 0.74, { rx: Math.PI / 2 });
+    S.add(cyl(0.38, 0.38, 0.1, 22), '#fffaf0', g.cx, ty + 1.4, g.cz + 0.75, { rx: Math.PI / 2 });
+    S.add(box(0.04, 0.26, 0.03), '#6b4f3a', g.cx, ty + 1.51, g.cz + 0.81); S.add(box(0.2, 0.04, 0.03), '#6b4f3a', g.cx + 0.08, ty + 1.4, g.cz + 0.81);
+    [-1, 1].forEach(s => { const fx = g.cx + s * (bd.w / 2 - 0.9); S.add(cyl(0.03, 0.03, 1.3, 6), WHITE, fx, ty + 1.4, g.cz); S.add(rbox(0.55, 0.34, 0.04, 0.015), '#9a6fd6', fx + 0.3, ty + 1.85, g.cz); });
   }
   function tower(bd) {
     const cx = bd.x + bd.w / 2, front = bd.y + bd.h - 0.15, sf = front - 0.45;
@@ -434,6 +434,17 @@ export function createView(world, canvas) {
   }
   const person = makePerson(), dogM = makeDog();
   scene.add(person.g, dogM.g);
+  // When the player or the dog walks behind a house or a tree, a pale silhouette shows through so they are never lost.
+  const ghostMat = bend(new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.6, depthFunc: THREE.GreaterDepth, depthWrite: false,
+    stencilWrite: true, stencilRef: 1, stencilFunc: THREE.NotEqualStencilFunc }));
+  [person.g, dogM.g].forEach(root => {
+    const solids = []; root.traverse(o => { if (o.isMesh) solids.push(o); });
+    solids.forEach(o => {
+      o.material = bend(o.material.clone());
+      Object.assign(o.material, { stencilWrite: true, stencilRef: 1, stencilFunc: THREE.AlwaysStencilFunc, stencilZPass: THREE.ReplaceStencilOp });
+      const g = new THREE.Mesh(o.geometry, ghostMat); g.renderOrder = 10; o.add(g);
+    });
+  });
   const critters = world.RESIDENTS.map(def => { const c = makeCritter(def); scene.add(c.g); return c; });
 
   /* ---------- small moving things ---------- */
@@ -489,8 +500,9 @@ export function createView(world, canvas) {
     return out;
   }
   const tmpA = {}, tmpB = {}, tmpC = {};
-  function project(px, py, h) {
+  function project(px, py, h, raw) {
     ndc(px / 16, h || 0, py / 16, tmpA);
+    if (raw) return { x: (tmpA.x * 0.5 + 0.5) * cw, y: (-tmpA.y * 0.5 + 0.5) * ch, ok: tmpA.ok };
     return { x: (tmpA.x * 0.5 + 0.5) * cw, y: (-tmpA.y * 0.5 + 0.5) * ch, ok: tmpA.ok && Math.abs(tmpA.x) < 1.15 && Math.abs(tmpA.y) < 1.2 };
   }
   const ray = new THREE.Raycaster(), plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), hit = new THREE.Vector3();
@@ -518,9 +530,9 @@ export function createView(world, canvas) {
     // camera
     const f = Math.max(1, Math.min(1.95, 1.3 / camera.aspect));
     if (snap) { camT.set(px, 0, pz); snap = false; } else camT.lerp(v.set(px, 0, pz), 1 - Math.exp(-dt * 7));
-    camera.position.set(camT.x, 22 * f, camT.z + 18 * f); camera.lookAt(camT.x, 0.8, camT.z - 0.6);
+    camera.position.set(camT.x, 23.5 * f, camT.z + 16 * f); camera.lookAt(camT.x, 0.8, camT.z - 0.6);
     camera.updateMatrixWorld(); bendU.z0.value = camera.position.distanceTo(v.set(camT.x, 0.8, camT.z - 0.6));
-    bendU.k.value = 0.0042 / f;
+    bendU.k.value = 0.002 / f;
     sun.position.set(camT.x - 9, 17, camT.z + 9); sun.target.position.set(camT.x, 0, camT.z - 2); sun.target.updateMatrixWorld();
     if (!reduceMotion) wtex.offset.set(t * 0.012, t * 0.007);
 

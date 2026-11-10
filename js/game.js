@@ -162,16 +162,20 @@ const OBJECTS = [
 ];
 [[7, 15], [13, 15], [18, 15], [28, 15], [35, 15], [41, 15], [9, 23], [18, 23], [27, 23], [36, 23], [21, 12], [24, 12], [12, 26], [21, 27], [29, 27]]
   .forEach(([tx, ty]) => OBJECTS.push({ kind: 'lamp', tx, ty, fw: 1, fh: 1 }));
-const DIGS = [[13, 14], [34, 14], [18, 18], [27, 21], [8, 18], [41, 14], [20, 29], [17, 26]].map(([tx, ty], i) => ({ i, tx, ty, x: tx * T + 8, y: ty * T + 9 }));
+const DIGS = [[13, 14], [34, 14], [18, 18], [27, 21], [9, 14], [41, 14], [20, 29], [17, 26]].map(([tx, ty], i) => ({ i, tx, ty, x: tx * T + 8, y: ty * T + 9 }));
 
 for (let i = 0; i < map.length; i++) if (map[i] === W) solid[i] = 1;
 BUILDINGS.forEach(b => {
   rect(b.x, b.y, b.w, b.h, 1, solid);
   rect(b.x - 1, b.y - 2, b.w + 2, b.h + 4, 1, reserved);
-  const s = spotById[b.id], tall = b.h >= 5, dp = Math.max(2.3, b.h - 1.5);
-  const top = b.kind === 'tower' ? b.y - 1.5 : b.kind === 'dome' ? b.y : b.y + b.h - dp / 2 - (tall ? 3.8 : 3.2);
-  s.hit = { x: b.x * T, y: top * T, w: b.w * T, h: (b.y + b.h - top) * T };
-  s.lab = { x: (b.x + (b.kind === 'house' || b.kind === 'campus' ? b.door + 0.5 : b.w / 2)) * T, y: (b.y + b.h) * T - 3, h: b.kind === 'tower' ? 2.5 : b.kind === 'dome' ? 5.5 : tall ? 5.2 : 4.5 };
+  const s = spotById[b.id], tall = b.h >= 5, dp = Math.min(3, Math.max(2.3, b.h - 1.5));
+  const front = b.y + b.h - 0.15, cx = b.x + b.w / 2;
+  s.front = { x: cx * T, y: (b.y + b.h) * T };
+  s.boxes = b.kind === 'tower' ? [{ x0: cx - 2.6, x1: cx + 2.6, z0: front - 2.6, z1: front + 0.1, h: 1.7 }, { x0: cx - 1.7, x1: cx + 1.7, z0: front - 2.5, z1: front - 0.45, h: 10.4 }]
+    : b.kind === 'dome' ? [{ x0: cx - 1.9, x1: cx + 1.9, z0: front - 3.7, z1: front + 0.1, h: 4.0 }]
+    : [{ x0: b.x, x1: b.x + b.w, z0: front - dp, z1: front + 0.1, h: tall ? 3.0 : 2.7 }, { x0: cx - b.w * 0.3, x1: cx + b.w * 0.3, z0: front - dp * 0.65, z1: front - dp * 0.35, h: tall ? 4.4 : 3.9 }]
+      .concat(b.kind === 'campus' ? [{ x0: cx - 0.75, x1: cx + 0.75, z0: front - dp / 2 - 0.75, z1: front - dp / 2 + 0.75, h: 5.6 }] : []);
+  s.lab = { x: (b.x + (b.kind === 'house' || b.kind === 'campus' ? b.door + 0.5 : b.w / 2)) * T, y: (b.y + b.h) * T - 3, h: b.kind === 'tower' ? 2.5 : b.kind === 'dome' ? 5.5 : tall ? 4.8 : 4.2 };
 });
 OBJECTS.forEach(o => {
   rect(o.tx, o.ty, o.fw, o.fh, 1, solid);
@@ -179,7 +183,8 @@ OBJECTS.forEach(o => {
   if (o.spot) {
     const s = spotById[o.spot];
     const hh = { booth: 2.7, ship: 4.6, doghouse: 2.1, sign: 1.9, scope: 2.0, mailbox: 1.9 }[o.kind] || 2;
-    s.hit = { x: o.tx * T, y: (o.ty - hh * 0.8) * T, w: o.fw * T, h: (o.fh + hh * 0.8) * T };
+    s.front = { x: (o.tx + o.fw / 2) * T, y: (o.ty + o.fh) * T };
+    s.boxes = [o.kind === 'ship' ? { x0: o.tx + 0.3, x1: o.tx + 4.7, z0: o.ty + 0.7, z1: o.ty + 2.3, h: 4.5 } : { x0: o.tx - 0.1, x1: o.tx + o.fw + 0.1, z0: o.ty, z1: o.ty + o.fh, h: hh - 0.3 }];
     s.lab = { x: (o.tx + o.fw / 2) * T, y: (o.ty + o.fh / 2) * T, h: Math.min(hh, 3.3) };
   }
 });
@@ -457,7 +462,7 @@ function update(dt) {
 
 }
 function faceSpot(s) {
-  const dx = s.hit.x + s.hit.w / 2 - player.x, dy = s.hit.y + s.hit.h - player.y;
+  const dx = s.front.x - player.x, dy = s.front.y - player.y;
   player.dir = Math.abs(dx) > Math.abs(dy) + 8 ? (dx < 0 ? 'left' : 'right') : (dy < 0 ? 'up' : 'down');
 }
 function act() {
@@ -489,7 +494,7 @@ function nextStop() {
 const labelBox = $('labels'), labels = new Map(), OFF = { ok: false };
 function label(id, onClick) {
   let e = labels.get(id);
-  if (!e) { e = document.createElement('button'); e.className = 'label'; e.innerHTML = '<i></i><span></span>'; e.onclick = onClick; labelBox.appendChild(e); labels.set(id, e); }
+  if (!e) { e = document.createElement('button'); e.className = 'label'; e.innerHTML = '<i></i><span></span>'; e.onclick = () => { e.blur(); onClick(); }; labelBox.appendChild(e); labels.set(id, e); }
   return e;
 }
 function place(e, p, text, cls, badge) {
@@ -590,13 +595,13 @@ function openSpot(s) {
     renderHud();
   }
 }
-function showItem(kind, i, isNew) {
+function showItem(kind, i, isNew, fromBag) {
   const it = EX[kind][i], u = t(), [name, text] = it[lang];
-  showCard(kind === 'dig' ? u.dugTitle : u.fishTitle, name, isNew ? '' : u.again,
+  showCard(fromBag ? u.bagTitle : kind === 'dig' ? u.dugTitle : u.fishTitle, name, isNew || fromBag ? '' : u.again,
     `<div class="item-big" aria-hidden="true">${it.icon}</div><p class="lead center">${esc(text)}</p>` +
     (it.cta ? `<div class="links center"><a class="btn btn-main" href="mailto:${esc(d().mail)}">${esc(u.writeMe)} ✉</a></div>` : '') +
-    `<p class="caption center">🎒 ${itemCount()}/${itemTotal}</p>`, 'mini', () => showItem(kind, i, isNew));
-  if (isNew) { floatText(dog.x, dog.y, 1.3, '♥', 'heart'); syncResidents(true); renderHud(); }
+    `<p class="caption center">🎒 ${itemCount()}/${itemTotal}</p>`, 'mini', () => showItem(kind, i, isNew, fromBag));
+  if (isNew && !fromBag) { floatText(dog.x, dog.y, 1.3, '♥', 'heart'); syncResidents(true); renderHud(); }
 }
 function openBag() {
   const u = t();
@@ -620,7 +625,7 @@ function openBag() {
 }
 $('cardBody').addEventListener('click', e => {
   const slot = e.target.closest('.slot[data-kind]'), route = e.target.closest('.route');
-  if (slot) showItem(slot.dataset.kind, +slot.dataset.i, true);
+  if (slot) showItem(slot.dataset.kind, +slot.dataset.i, false, true);
   if (route) { setPersona(route.dataset.route); openBag(); }
 });
 function openQuick() {
@@ -658,7 +663,7 @@ $('cardClose').onclick = () => cardEl.close();
 const touch = matchMedia('(pointer: coarse)').matches;
 function renderPrompt() {
   const e = $('prompt'), u = t();
-  if (!action || !started) { e.hidden = true; return; }
+  if (!action || !started || !$('say').hidden) { e.hidden = true; return; }
   let label = '', cls = '';
   if (action.type === 'spot') label = `${u.visit} · ${action.spot.name[lang]}`;
   else if (action.type === 'talk') label = `💬 ${u.talk} ${action.res.def.name[lang]}`;
@@ -712,7 +717,7 @@ let sayTimer = 0, sayWho = null;
 function say(text, instant, who) {
   const e = $('say'), p = $('sayText');
   sayWho = who || null; $('sayName').textContent = sayWho || t().speaker;
-  e.hidden = false; clearInterval(sayTimer);
+  e.hidden = false; clearInterval(sayTimer); $('prompt').hidden = true;
   if (instant || reduceMotion) { p.textContent = text; return; }
   let i = 0; p.textContent = '';
   sayTimer = setInterval(() => { i += 2; p.textContent = text.slice(0, i); if (i >= text.length) clearInterval(sayTimer); }, 22);
@@ -729,8 +734,8 @@ $('btnQuick').onclick = openQuick; $('btnQuick2').onclick = openQuick;
 $('btnBag').onclick = openBag;
 $('btnLang').onclick = setLang; $('btnLang2').onclick = setLang;
 $('say').onclick = hideSay;
-$('prompt').onclick = act;
-$('quest').onclick = () => { const n = nextStop(); if (n) visitSpot(n); else if (EX.routes[persona].stops) openSpot(spotById.contact); else openBag(); };
+$('prompt').onclick = () => { $('prompt').blur(); act(); };
+$('quest').onclick = () => { $('quest').blur(); const n = nextStop(); if (n) visitSpot(n); else if (EX.routes[persona].stops) openSpot(spotById.contact); else openBag(); };
 
 /* ------------------------------------------------------------------ input */
 const KEYMAP = { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'up', ArrowDown: 'down', a: 'left', d: 'right', w: 'up', s: 'down', A: 'left', D: 'right', W: 'up', S: 'down' };
@@ -738,7 +743,7 @@ addEventListener('keydown', e => {
   if (e.metaKey || e.ctrlKey || e.altKey || cardEl.open || !started) return;
   const onButton = e.target instanceof HTMLElement && e.target.closest('button, a, summary');
   if (KEYMAP[e.key]) { keys.add(KEYMAP[e.key]); e.preventDefault(); if (document.activeElement && document.activeElement !== document.body) document.activeElement.blur(); return; }
-  if ((e.key === 'e' || e.key === 'E' || e.key === ' ' || e.key === 'Enter') && !onButton) {
+  if (e.key === 'e' || e.key === 'E' || ((e.key === ' ' || e.key === 'Enter') && !onButton)) {
     e.preventDefault();
     if (!$('say').hidden) { hideSay(); return; }
     if (!e.repeat) act();
@@ -746,15 +751,47 @@ addEventListener('keydown', e => {
 });
 addEventListener('keyup', e => { if (KEYMAP[e.key]) keys.delete(KEYMAP[e.key]); });
 addEventListener('blur', () => keys.clear());
+// Clicks are tested against what is actually on screen: each place has a few 3D boxes around its model.
+function hull(pts) {
+  pts.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  const cross = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]), lo = [], up = [];
+  for (const q of pts) { while (lo.length > 1 && cross(lo[lo.length - 2], lo[lo.length - 1], q) <= 0) lo.pop(); lo.push(q); }
+  for (let i = pts.length - 1; i >= 0; i--) { const q = pts[i]; while (up.length > 1 && cross(up[up.length - 2], up[up.length - 1], q) <= 0) up.pop(); up.push(q); }
+  return lo.slice(0, -1).concat(up.slice(0, -1));
+}
+function inHull(h, x, y) {
+  let sign = 0;
+  for (let i = 0; i < h.length; i++) {
+    const a = h[i], b = h[(i + 1) % h.length], cr = (b[0] - a[0]) * (y - a[1]) - (b[1] - a[1]) * (x - a[0]);
+    if (Math.abs(cr) < 1e-9) continue;
+    if (sign && Math.sign(cr) !== sign) return false;
+    sign = Math.sign(cr);
+  }
+  return true;
+}
+function spotAt(mx, my) {
+  let best = null;
+  for (const s of SPOTS) for (const b of s.boxes) {
+    const pts = [];
+    for (const X of [b.x0, b.x1]) for (const Z of [b.z0, b.z1]) for (const Y of [0, b.h]) { const q = view.project(X * T, Z * T, Y, true); pts.push([q.x, q.y]); }
+    if (inHull(hull(pts), mx, my) && (!best || s.front.y > best.front.y)) best = s;
+  }
+  return best;
+}
+function onBody(x, y, h, mx, my) {
+  const a = view.project(x, y, 0, true), b = view.project(x, y, h, true), r = Math.max(14, (a.y - b.y) * 0.55);
+  return Math.hypot(mx - a.x, my - (a.y + b.y) / 2) < r;
+}
 canvas.addEventListener('pointerdown', e => {
   if (paused() || digging) return;
   hideSay();
-  const { x: wx, y: wy } = view.pick(e.clientX, e.clientY);
-  if (Math.hypot(dog.x - wx, dog.y - 5 - wy) < 11) { petDog(); return; }
-  const who = RES.find(r => r.here && Math.hypot(r.x - wx, r.y - 7 - wy) < 13);
+  const mx = e.clientX, my = e.clientY;
+  if (onBody(dog.x, dog.y, 0.95, mx, my)) { petDog(); return; }
+  const who = RES.find(r => r.here && onBody(r.x, r.y, 1.25, mx, my));
   if (who) { goTalk(who); return; }
-  const hit = SPOTS.find(s => wx >= s.hit.x && wx <= s.hit.x + s.hit.w && wy >= s.hit.y && wy <= s.hit.y + s.hit.h);
+  const hit = spotAt(mx, my);
   if (hit) { visitSpot(hit); return; }
+  const { x: wx, y: wy } = view.pick(mx, my);
   const g = DIGS.find(g => !dug.has(g.i) && Math.hypot(g.x - wx, g.y - wy) < 11);
   if (g) { walkTo(g.tx, g.ty, () => { action = currentAction(); if (action && action.type === 'dig') act(); }); return; }
   if (fishing) { act(); return; }
@@ -777,5 +814,5 @@ if (view) requestAnimationFrame(frame);
 else { $('introRoutes').hidden = true; $('introSub').textContent = t().no3d; openQuick(); }
 
 // small hook for testing from the console
-window.__town = { player, dog, SPOTS, DIGS, RES, view, walkTo, openSpot, act, start, found, dug, caught, showItem, talkTo, petDog, get fishing() { return fishing; }, get action() { return action; } };
+window.__town = { step(n) { for (let i = 0; i < n; i++) { update(0.05); if (i % 6 === 0 || i === n - 1) render(0.3); } }, spotAt, keys, player, dog, SPOTS, DIGS, RES, view, walkTo, openSpot, act, start, found, dug, caught, showItem, talkTo, petDog, get fishing() { return fishing; }, get action() { return action; } };
 })();

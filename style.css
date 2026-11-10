@@ -227,6 +227,7 @@ button.slot:hover { background: #fff1b8; }
   .hud-name { display: none; }
   .hud-brand, .chip, .btn, .quest { font-size: 12.5px; padding: 8px 11px; }
   .label { font-size: 12px; }
+  .toast { top: 118px; }
   .btn-main { font-size: 15px; padding: 11px 16px; }
   .card-title { font-size: 22px; }
   .about-grid { grid-template-columns: 1fr; }
