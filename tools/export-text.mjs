@@ -7,7 +7,7 @@ const win = {}; vm.runInNewContext(read('js/data.js') + read('js/extras.js'), { 
 const game = read('js/game.js');
 const grab = (start, end) => { const a = game.indexOf(start), b = game.indexOf(end, a); return vm.runInNewContext('(' + game.slice(a + start.length, b) + ')'); };
 const UI = grab('const UI = ', ';\nlet lang');
-const SPOTS = grab('const SPOTS = ', ';\nconst GUESS');
+const SPOTS = grab('const SPOTS = ', ';\nif (window.TextKeys)');
 
 const skip = v => typeof v !== 'string' || !v.trim() || /^(https?:|mailto:|tel:|assets\/|\+?[\d\s-]+$)/.test(v) || /^[\w.+-]+@[\w.-]+$/.test(v);
 const out = [];

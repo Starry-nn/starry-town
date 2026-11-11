@@ -1,5 +1,5 @@
 /* Starry Town — a walkable portfolio island. The rules live here; view3d.js draws the picture. */
-import { createView } from './view3d.js?v=18';
+import { createView } from './view3d.js?v=19';
 (() => {
 'use strict';
 
@@ -114,6 +114,7 @@ const SPOTS = [
   { id: 'contact',  kind: 'contact',      name: { en: 'Mailbox', zh: '信箱' } },
   { id: 'showcase', kind: 'showcase',     name: { en: 'Showcase', zh: '精选作品馆' } },
 ];
+if (window.TextKeys) window.TextKeys.apply({ DATA, EXTRAS: EX, UI, SPOTS }, window.TEXT_OVERRIDES);     // text edited in /admin
 const GUESS = { id: 'mbti', kind: 'mbti', name: EX.mbti.name };       // the guessing machine: a place to visit, but not one of the 16 stars
 GUESS.badge = '🔮';
 const month = new Date().getMonth();

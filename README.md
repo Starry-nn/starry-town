@@ -20,6 +20,10 @@ A small 3D island. Walk with the arrow keys or WASD (or click / tap where you wa
 - **Quick view** shows the same content as one plain page. Everything is in English and Chinese.
 - The island follows the visitor's local time (day, dusk, night). Add `?time=day`, `?time=dusk` or `?time=night` to the URL to preview one.
 
+## Editing text
+
+Open `/admin/` on the live site. It lists every piece of text in English and Chinese; saving commits `js/text-overrides.js` to `main` through the GitHub API with a fine-grained token (Contents: read and write on this repository) that stays in the editor's browser. `node tools/export-text.mjs` writes the same text to one file.
+
 ## Structure
 
 - `index.html`, `style.css` — page shell, HUD, labels and content cards

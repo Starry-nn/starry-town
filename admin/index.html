@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Starry Town · 文字编辑</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root { --ink: #6b4f3a; --soft: #9a8068; --cream: #fffaf0; --cream2: #f8efd9; --line: #eadcc0; --green: #5cbf7c; --green-d: #46a368; --yellow: #ffd166; --red: #f0766a; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 700 15px/1.5 Nunito, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif; color: var(--ink); background: #e9f6ee; }
+  header { position: sticky; top: 0; z-index: 5; background: var(--cream); border-bottom: 3px solid var(--line); padding: 12px 20px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  h1 { font-size: 20px; font-weight: 900; margin: 0 8px 0 0; }
+  h1 span { color: #f5b01a; }
+  input[type=search], input[type=password], select { font: inherit; color: inherit; border: 2px solid var(--line); border-radius: 14px; padding: 8px 12px; background: #fff; min-width: 0; }
+  input[type=search] { flex: 1 1 200px; }
+  button { font: 800 14px/1 Nunito, "PingFang SC", sans-serif; color: var(--ink); border: 0; border-radius: 999px; padding: 10px 16px; background: var(--cream2); cursor: pointer; box-shadow: 0 3px 0 rgba(107, 79, 58, .18); }
+  button:hover { filter: brightness(1.03); }
+  button.main { background: var(--green); color: #fff; box-shadow: 0 3px 0 var(--green-d); }
+  button:disabled { opacity: .45; cursor: default; }
+  button:focus-visible, textarea:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--green-d); outline-offset: 2px; }
+  #status { flex-basis: 100%; font-size: 13.5px; color: var(--soft); min-height: 1.4em; }
+  #status.ok { color: var(--green-d); } #status.bad { color: #c9584e; }
+  main { max-width: 1100px; margin: 0 auto; padding: 18px 20px 80px; }
+  details.help { background: var(--cream); border-radius: 18px; padding: 12px 16px; margin-bottom: 16px; }
+  details.help summary { font-weight: 900; cursor: pointer; }
+  details.help ol { margin: 10px 0 4px; padding-left: 20px; }
+  details.help code { background: var(--cream2); border-radius: 6px; padding: 1px 6px; }
+  h2 { font-size: 16px; font-weight: 900; margin: 26px 0 10px; display: flex; gap: 8px; align-items: baseline; }
+  h2 small { font-weight: 700; color: var(--soft); }
+  .row { background: var(--cream); border-radius: 18px; padding: 10px 14px 12px; margin-bottom: 10px; border: 2px solid transparent; }
+  .row.changed { border-color: var(--yellow); background: #fffdf3; }
+  .row .key { font: 700 12px/1.4 ui-monospace, Menlo, monospace; color: var(--soft); display: flex; justify-content: space-between; gap: 10px; }
+  .row .key button { padding: 3px 10px; font-size: 12px; box-shadow: none; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px; }
+  label { font-size: 12px; font-weight: 900; color: var(--soft); display: block; }
+  textarea { width: 100%; font: inherit; color: inherit; border: 2px solid var(--line); border-radius: 12px; padding: 8px 10px; background: #fff; resize: vertical; min-height: 40px; }
+  .empty { text-align: center; color: var(--soft); padding: 40px 0; }
+  @media (max-width: 700px) { .cols { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <h1><span>★</span> Starry Town 文字编辑</h1>
+  <input type="search" id="q" placeholder="搜索文字或编号…" aria-label="搜索">
+  <select id="sec" aria-label="部分"></select>
+  <label style="display:flex;gap:6px;align-items:center;font-size:13px;color:var(--ink)"><input type="checkbox" id="onlyChanged"> 只看改过的</label>
+  <button id="btnToken">GitHub 令牌</button>
+  <button id="btnExport">导出备份</button>
+  <button class="main" id="btnSave" disabled>保存并发布</button>
+  <div id="status" role="status"></div>
+</header>
+<main>
+  <details class="help" id="help">
+    <summary>第一次用？点这里看怎么设置（只需要做一次）</summary>
+    <ol>
+      <li>打开 GitHub → 右上角头像 → Settings → Developer settings → Personal access tokens → <b>Fine-grained tokens</b> → Generate new token。</li>
+      <li>Repository access 选 <b>Only select repositories</b>，只勾 <code>starry-town</code>。</li>
+      <li>Permissions → Repository permissions → <b>Contents</b> 设为 <b>Read and write</b>，其他都不用动。</li>
+      <li>生成后复制令牌，回到这里点“GitHub 令牌”粘贴进去。</li>
+    </ol>
+    <p>令牌只保存在你这台电脑的这个浏览器里，不会上传到别处；任何没有令牌的人打开这个页面都保存不了。改完点“保存并发布”，一两分钟后线上就会更新。占位符 <code>{n}</code> <code>{a}</code> <code>{b}</code> 请保留。</p>
+  </details>
+  <div id="list"></div>
+</main>
+<script src="../js/data.js"></script>
+<script src="../js/extras.js"></script>
+<script src="../js/text-keys.js"></script>
+<script>document.write('<script src="../js/text-overrides.js?t=' + Date.now() + '"><\/script>');</script>
+<script>
+(async () => {
+  'use strict';
+  const REPO = 'Starry-nn/starry-town', BRANCH = 'main', FILE = 'js/text-overrides.js';
+  const $ = id => document.getElementById(id);
+  const status = (msg, cls) => { $('status').textContent = msg; $('status').className = cls || ''; };
+  const esc = v => String(v).replace(/[&<>"]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[m]);
+
+  // the built-in text: content files plus the interface strings inside game.js
+  let UI, SPOTS;
+  try {
+    const game = await (await fetch('../js/game.js?t=' + Date.now())).text();
+    const grab = (start, end) => { const a = game.indexOf(start), b = game.indexOf(end, a); if (a < 0 || b < 0) throw new Error(start); return new Function('return (' + game.slice(a + start.length, b) + ')')(); };
+    UI = grab('const UI = ', ';\nlet lang'); SPOTS = grab('const SPOTS = ', ';\nif (window.TextKeys)');
+  } catch (e) { status('读取网站文字失败：' + e.message, 'bad'); return; }
+  const base = TextKeys.flatten({ DATA: window.DATA, EXTRAS: window.EXTRAS, UI, SPOTS });
+  const saved = Object.assign({}, window.TEXT_OVERRIDES || {});            // what is live now
+  const draftKey = 'starry-town-admin-draft';
+  let edits = {};                                                          // key -> { en, zh } for anything that differs from the built-in text
+  for (const k of Object.keys(saved)) edits[k] = Object.assign({}, saved[k]);
+  try { const d = JSON.parse(localStorage.getItem(draftKey) || 'null'); if (d && typeof d === 'object') edits = d; } catch (e) {}
+  const byKey = Object.fromEntries(base.map(e => [e.key, e]));
+  for (const k of Object.keys(edits)) if (!byKey[k]) delete edits[k];
+  const value = (e, l) => edits[e.key] && typeof edits[e.key][l] === 'string' ? edits[e.key][l] : e[l];
+  const isChanged = e => value(e, 'en') !== e.en || value(e, 'zh') !== e.zh;
+  const dirty = () => JSON.stringify(clean(edits)) !== JSON.stringify(clean(saved));
+  function clean(o) { const out = {}; for (const k of Object.keys(o).sort()) { const e = byKey[k]; if (!e) continue; const v = {}; if (typeof o[k].en === 'string' && o[k].en !== e.en) v.en = o[k].en; if (typeof o[k].zh === 'string' && o[k].zh !== e.zh) v.zh = o[k].zh; if (Object.keys(v).length) out[k] = v; } return out; }
+
+  const sections = [...new Set(base.map(e => e.section))];
+  $('sec').innerHTML = '<option value="">全部部分</option>' + sections.map(s => `<option>${esc(s)}</option>`).join('');
+  function render() {
+    const q = $('q').value.trim().toLowerCase(), sec = $('sec').value, only = $('onlyChanged').checked;
+    const rows = base.filter(e => (!sec || e.section === sec) && (!only || isChanged(e)) && (!q || (e.key + '\n' + value(e, 'en') + '\n' + value(e, 'zh')).toLowerCase().includes(q)));
+    let html = '', cur = '';
+    for (const e of rows.slice(0, 400)) {
+      if (e.section !== cur) { cur = e.section; html += `<h2>${esc(cur)} <small>${rows.filter(r => r.section === cur).length} 条</small></h2>`; }
+      const n = t => Math.max(1, Math.ceil(t.length / 38));
+      html += `<div class="row${isChanged(e) ? ' changed' : ''}" data-key="${esc(e.key)}"><div class="key"><span>${esc(e.key)}</span><button data-reset hidden>恢复原文</button></div>
+        <div class="cols"><div><label>English<textarea data-l="en" rows="${n(value(e, 'en')) }">${esc(value(e, 'en'))}</textarea></label></div>
+        <div><label>中文<textarea data-l="zh" rows="${Math.max(1, Math.ceil(value(e, 'zh').length / 22))}">${esc(value(e, 'zh'))}</textarea></label></div></div></div>`;
+    }
+    $('list').innerHTML = html || '<p class="empty">没有符合条件的文字。</p>';
+    if (rows.length > 400) $('list').insertAdjacentHTML('beforeend', `<p class="empty">还有 ${rows.length - 400} 条没显示，用搜索或选择部分来缩小范围。</p>`);
+    document.querySelectorAll('.row.changed [data-reset]').forEach(b => { b.hidden = false; });
+    update();
+  }
+  function update() {
+    const n = Object.keys(clean(edits)).length, d = dirty();
+    $('btnSave').disabled = !d;
+    if (d) status(`有未发布的修改（共 ${n} 条和原文不同）。草稿已自动存在这个浏览器里。`);
+    else status(n ? `线上已是最新：${n} 条文字和原文不同。` : '线上使用的是原文，还没有修改。', 'ok');
+    try { if (d) localStorage.setItem(draftKey, JSON.stringify(edits)); else localStorage.removeItem(draftKey); } catch (e) {}
+  }
+  $('list').addEventListener('input', ev => {
+    const ta = ev.target.closest('textarea'); if (!ta) return;
+    const row = ta.closest('.row'), e = byKey[row.dataset.key];
+    edits[e.key] = Object.assign({}, edits[e.key], { [ta.dataset.l]: ta.value.replace(/\r?\n/g, ' ') });
+    row.classList.toggle('changed', isChanged(e)); row.querySelector('[data-reset]').hidden = !isChanged(e); update();
+  });
+  $('list').addEventListener('click', ev => {
+    const b = ev.target.closest('[data-reset]'); if (!b) return;
+    const row = b.closest('.row'), e = byKey[row.dataset.key]; delete edits[e.key];
+    row.querySelector('[data-l=en]').value = e.en; row.querySelector('[data-l=zh]').value = e.zh; row.classList.remove('changed'); b.hidden = true; update();
+  });
+  let timer = 0;
+  $('q').addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(render, 150); });
+  $('sec').addEventListener('change', render); $('onlyChanged').addEventListener('change', render);
+
+  const tokenKey = 'starry-town-admin-token';
+  const getToken = () => { try { return localStorage.getItem(tokenKey) || ''; } catch (e) { return ''; } };
+  $('btnToken').onclick = () => {
+    const cur = getToken(), v = prompt(cur ? '已保存令牌。粘贴新的可以替换；清空后确定可以删除。' : '粘贴 GitHub 令牌（只保存在这个浏览器里）：', '');
+    if (v === null) return;
+    try { if (v.trim()) localStorage.setItem(tokenKey, v.trim()); else localStorage.removeItem(tokenKey); } catch (e) {}
+    status(v.trim() ? '令牌已保存在这个浏览器里。' : '令牌已删除。', 'ok');
+  };
+  $('btnExport').onclick = () => {
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(clean(edits), null, 1)], { type: 'application/json' }));
+    a.download = 'starry-town-text-' + new Date().toISOString().slice(0, 10) + '.json'; a.click();
+  };
+  $('btnSave').onclick = async () => {
+    const token = getToken();
+    if (!token) { $('help').open = true; status('还没有设置 GitHub 令牌。先按上面的步骤生成一个，再点“GitHub 令牌”粘贴。', 'bad'); return; }
+    const out = clean(edits);
+    const body = '/* Text edited in /admin. Each key replaces one piece of the built-in text; leave empty to use the defaults. */\nwindow.TEXT_OVERRIDES = ' + JSON.stringify(out, null, 1) + ';\n';
+    const api = `https://api.github.com/repos/${REPO}/contents/${FILE}`, headers = { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' };
+    $('btnSave').disabled = true; status('正在发布…');
+    try {
+      const cur = await fetch(api + '?ref=' + BRANCH, { headers, cache: 'no-store' });
+      if (cur.status === 401 || cur.status === 403) throw new Error('令牌无效或权限不够（需要 starry-town 仓库的 Contents 读写权限）。');
+      const sha = cur.ok ? (await cur.json()).sha : undefined;
+      const bytes = new TextEncoder().encode(body); let bin = ''; bytes.forEach(b => { bin += String.fromCharCode(b); });
+      const put = await fetch(api, { method: 'PUT', headers, body: JSON.stringify({ message: 'Update site text from the editor', content: btoa(bin), branch: BRANCH, sha }) });
+      if (!put.ok) throw new Error((await put.json().catch(() => ({}))).message || ('GitHub 返回 ' + put.status));
+      for (const k of Object.keys(saved)) delete saved[k]; Object.assign(saved, JSON.parse(JSON.stringify(out)));
+      update(); status(`已发布 ${Object.keys(out).length} 条修改。线上大约一两分钟后更新，刷新小岛页面就能看到。`, 'ok');
+    } catch (e) { status('发布失败：' + e.message, 'bad'); $('btnSave').disabled = false; }
+  };
+  addEventListener('beforeunload', ev => { if (dirty()) { ev.preventDefault(); ev.returnValue = ''; } });
+  render();
+})();
+</script>
+</body>
+</html>
