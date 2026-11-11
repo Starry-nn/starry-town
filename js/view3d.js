@@ -327,6 +327,31 @@ export function createView(world, canvas) {
       const ball = new THREE.Mesh(sph(0.36), bend(new THREE.MeshLambertMaterial({ color: '#d9c8ff', emissive: '#8a5cf0', emissiveIntensity: 0.45 })));
       ball.castShadow = true; ball.position.set(x, 1.34, z); scene.add(ball); dyn.oracle = ball;
     },
+    xmas(x, z) {        // a Christmas tree with baubles, a star and presents
+      S.add(cyl(0.16, 0.2, 0.5, 10), '#8f6248', x, 0.25, z); S.add(cyl(0.5, 0.42, 0.22, 14), '#f0766a', x, 0.11, z);
+      [[1.25, 1.5, 0.85, '#2f9a6a'], [1.0, 1.35, 1.75, '#36a873'], [0.75, 1.2, 2.55, '#3fb57d'], [0.5, 1.0, 3.25, '#49c088']].forEach(([r, h, y, c]) => S.add(cone(r, h, 16), c, x, y, z));
+      const cols = ['#ff6b6b', '#ffd166', '#7fd1ff', '#ff9ad5', '#ffffff'];
+      dyn.xmas = [];
+      for (let k = 0; k < 26; k++) {
+        const u = k / 26, y = 0.55 + u * 2.9, r = 1.12 * (1 - u * 0.78) + 0.04, a = k * 2.4;
+        const m = new THREE.Mesh(sphS(0.085), bend(new THREE.MeshBasicMaterial({ color: cols[k % cols.length] }))); m.position.set(x + Math.cos(a) * r, y, z + Math.sin(a) * r); scene.add(m); dyn.xmas.push(m);
+      }
+      const st = new THREE.Mesh(extrude(starPts(0.3, 0.14), 0.1, 0.03), bend(new THREE.MeshBasicMaterial({ color: '#ffe066' }))); st.position.set(x, 3.95, z); scene.add(st); dyn.xmasStar = st;
+      [[-0.75, 0.45, '#ffd166', '#f590b2'], [0.7, 0.5, '#7fd1c0', '#ffffff'], [0.15, 0.85, '#f590b2', '#ffd166']].forEach(([ox, oz, c, rb]) => { S.add(rbox(0.36, 0.3, 0.36, 0.05), c, x + ox, 0.15, z + oz); S.add(rbox(0.38, 0.07, 0.1, 0.02), rb, x + ox, 0.2, z + oz); S.add(rbox(0.1, 0.07, 0.38, 0.02), rb, x + ox, 0.2, z + oz); });
+    },
+    fountain(x, z) {
+      S.add(cyl(1.0, 1.05, 0.3, 24), '#e8d5b5', x, 0.15, z); S.add(cyl(0.86, 0.86, 0.08, 24), '#8fd8ee', x, 0.3, z);
+      S.add(cyl(0.16, 0.2, 0.8, 12), '#e8d5b5', x, 0.6, z); S.add(cyl(0.5, 0.2, 0.14, 20), '#f3e6cd', x, 1.0, z); S.add(cyl(0.44, 0.44, 0.05, 20), '#8fd8ee', x, 1.07, z);
+      S.add(cyl(0.07, 0.09, 0.4, 10), '#e8d5b5', x, 1.25, z); S.add(sphS(0.12), '#ffffff', x, 1.5, z);
+      dyn.jets = [0, 1, 2, 3, 4, 5].map(k => { const m = new THREE.Mesh(sphS(0.06), bend(new THREE.MeshBasicMaterial({ color: '#e9fbff' }))); m.userData = { a: k / 6 * Math.PI * 2, x, z }; scene.add(m); return m; });
+    },
+    windmill(x, z) {
+      S.add(frustum(1.5, 1.5, 0.95, 0.95, 2.9), '#fff6e6', x, 1.45, z); S.add(cone(0.95, 0.9, 4), '#f0766a', x, 3.35, z, { ry: Math.PI / 4 });
+      S.add(rbox(0.5, 0.8, 0.06, 0.1), '#b9825a', x, 0.4, z + 0.74); S.add(rbox(0.4, 0.4, 0.05, 0.08), '#bfe9f7', x, 1.9, z + 0.6, { to: 'glass' });
+      const hub = new THREE.Group(); hub.position.set(x, 2.75, z + 0.62);
+      [0, 1, 2, 3].forEach(k => { const b = new THREE.Group(); b.rotation.z = k * Math.PI / 2; const arm = new THREE.Mesh(box(0.08, 1.7, 0.05), mat('#a9785a')); arm.position.y = 0.85; const sail = new THREE.Mesh(box(0.42, 1.2, 0.03), mat('#fffaf0')); sail.position.set(0.24, 1.05, 0); b.add(arm, sail); hub.add(b); });
+      const cap = new THREE.Mesh(sphS(0.13), mat('#f0766a')); hub.add(cap); hub.traverse(o => { o.castShadow = true; }); scene.add(hub); dyn.mill = hub;
+    },
     crossSign(x, z) {
       S.add(cyl(0.05, 0.06, 1.7, 8), '#a9785a', x, 0.85, z);
       S.add(rbox(0.9, 0.3, 0.08, 0.05), '#ffd166', x - 0.25, 1.5, z + 0.04); S.add(rbox(0.9, 0.3, 0.08, 0.05), '#f590b2', x + 0.25, 1.1, z + 0.04);
@@ -413,7 +438,7 @@ export function createView(world, canvas) {
   const softCache = {};
   const soft = (color, k = 0.3) => softCache[color + k] || (softCache[color + k] = bend(new THREE.MeshLambertMaterial({ color, emissive: color, emissiveIntensity: k })));
   const tube = (pts, r, seg = 24) => new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts.map(q => new THREE.Vector3(q[0], q[1], q[2]))), seg, r, 14, false);
-  const lathe = pts => new THREE.LatheGeometry(pts.map(q => new THREE.Vector2(q[0], q[1])), 36);
+  const lathe = pts => new THREE.LatheGeometry(pts.slice().reverse().map(q => new THREE.Vector2(q[0], q[1])), 36);   // bottom-up, so the outside faces out
   function makePerson() {     // Nan: ash-blonde hair with a parting and one long braid over the shoulder, grey hoodie, dark backpack
     const g = new THREE.Group(), body = new THREE.Group(); g.add(body);
     const skin = soft('#ffe1cc', 0.34), hair = soft('#dcc394', 0.2), hairD = soft('#c4a878', 0.2), hood = soft('#e3e6ee', 0.26), hoodD = soft('#cfd4df', 0.26), skirt = soft('#f590b2', 0.22),
@@ -430,7 +455,6 @@ export function createView(world, canvas) {
     part(rbox(0.012, 0.3, 0.012, 0.005), hoodD, 0, 0.74, 0.186, body); part(rbox(0.16, 0.07, 0.02, 0.01), hoodD, 0, 0.63, 0.183, body);
     part(sm(0.17), hood, 0, 0.9, -0.13, body).scale.set(1.15, 0.7, 0.8);                                        // the hood, folded down at the back
     [-1, 1].forEach(s => part(new THREE.CapsuleGeometry(0.008, 0.12, 3, 6), white, s * 0.045, 0.8, 0.172, body));   // drawstrings
-    part(rbox(0.25, 0.27, 0.13, 0.06), bag, 0, 0.7, -0.22, body);
     part(cyl(0.068, 0.076, 0.08, 16), skin, 0, 0.95, 0, body);
     const arms = [-1, 1].map(s => {
       const pv = new THREE.Group(); pv.position.set(s * 0.215, 0.83, 0); pv.rotation.z = s * 0.2; body.add(pv);
@@ -634,6 +658,12 @@ export function createView(world, canvas) {
     const gift = new THREE.Mesh(rbox(0.36, 0.3, 0.36, 0.05), soft('#ffd166', 0.2)); const rib = new THREE.Mesh(rbox(0.38, 0.08, 0.38, 0.03), soft('#f590b2', 0.2)); const rib2 = new THREE.Mesh(rbox(0.08, 0.32, 0.38, 0.03), soft('#f590b2', 0.2));
     balloon.add(b1, knot, str, gift, rib, rib2); balloon.traverse(o => { o.castShadow = true; }); balloon.visible = false; scene.add(balloon);
   })();
+  const snow = (() => {
+    const n = 420, pos = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) { pos[i * 3] = (hash(i, 1, 301) - 0.5) * 34; pos[i * 3 + 1] = hash(i, 2, 302) * 11; pos[i * 3 + 2] = (hash(i, 3, 303) - 0.5) * 26; }
+    const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    const pts = new THREE.Points(geo, bend(new THREE.PointsMaterial({ color: '#ffffff', size: 0.16, transparent: true, opacity: 0.95, depthWrite: false }))); pts.frustumCulled = false; pts.visible = false; scene.add(pts); return pts;
+  })();
   const ball = new THREE.Mesh(sm(0.1), soft('#d8f25a', 0.3)); ball.castShadow = true; ball.visible = false; scene.add(ball);
 
   /* ---------- per-frame ---------- */
@@ -699,6 +729,15 @@ export function createView(world, canvas) {
     });
 
     // world bits
+    if (dyn.xmas) { dyn.xmas.forEach((m, i) => { m.scale.setScalar(reduceMotion ? 1 : 0.75 + 0.45 * Math.max(0, Math.sin(t * (st.snow ? 7 : 2.4) + i * 1.7))); }); dyn.xmasStar.rotation.y = reduceMotion ? 0 : t * 1.2; }
+    if (dyn.mill && !reduceMotion) dyn.mill.rotation.z = -t * 0.9;
+    if (dyn.jets) dyn.jets.forEach((m, i) => { const u = reduceMotion ? 0.5 : (t * 0.9 + i * 0.37) % 1, r = 0.12 + u * 0.55; m.position.set(m.userData.x + Math.cos(m.userData.a) * r, 1.5 + Math.sin(u * Math.PI) * 0.35 - u * 0.75, m.userData.z + Math.sin(m.userData.a) * r); });
+    snow.visible = !!st.snow;
+    if (st.snow) {
+      const arr = snow.geometry.attributes.position.array;
+      for (let i = 0; i < arr.length; i += 3) { arr[i + 1] -= dt * (1.1 + (i % 7) * 0.12); arr[i] += Math.sin(t * 1.3 + i) * dt * 0.25; if (arr[i + 1] < 0) arr[i + 1] += 11; }
+      snow.geometry.attributes.position.needsUpdate = true; snow.position.set(camT.x, 0, camT.z);
+    }
     if (dyn.oracle) dyn.oracle.material.emissiveIntensity = reduceMotion ? 0.45 : 0.4 + Math.sin(t * 2.4) * 0.22;
     if (dyn.statue) { dyn.statue.rotation.y = reduceMotion ? 0.3 : t * 0.8; dyn.statue.position.y = 1.75 + (reduceMotion ? 0 : Math.sin(t * 2) * 0.08); dyn.statue.material.emissiveIntensity = 0.15 + st.foundRatio * 0.75; }
     if (orbitC) { const a = reduceMotion ? 0.8 : t * 1.1; planet.position.set(orbitC.x + Math.cos(a) * 2.45, orbitC.y + Math.sin(a) * 0.73, orbitC.z + Math.sin(a) * 2.34); }

@@ -1,5 +1,5 @@
 /* Starry Town — a walkable portfolio island. The rules live here; view3d.js draws the picture. */
-import { createView } from './view3d.js?v=17';
+import { createView } from './view3d.js?v=18';
 (() => {
 'use strict';
 
@@ -25,12 +25,13 @@ const UI = {
     kicker: "NAN YAO'S PORTFOLIO ISLAND",
     sub: 'My portfolio is a little island you can walk around. Here is how it works:',
     enter: '▶ Enter the island', quickLong: 'Short on time? Visit my classic site ↗',
-    how: [['🚶', 'Walk', 'Arrow keys or WASD, or click where you want to go. Scroll to zoom, press V to change the camera angle.'], ['🏠', 'Visit', 'Walk up to a building with a “?” and press E, or just click it, to read about my work. My favourite pieces are in the Showcase across the river.'], ['⛏', 'Dig', 'Press E where the ground sparkles to dig up a fun fact.'], ['🎣', 'Fish', 'Press E next to water, press again when the float dips, then keep pressing to reel it in.'], ['🍑', 'And more', 'Shake fruit trees for fruit and hidden notes, guess my MBTI at the crystal ball, pet the dog, press Q to dance.']],
+    how: [['🚶', 'Walk', 'Arrow keys or WASD, or click where you want to go. Scroll with two fingers (or the wheel) to tilt the camera, pinch or ＋ － to zoom.'], ['🏠', 'Visit', 'Walk up to a building with a “?” and press E, or just click it, to read about my work. My favourite pieces are in the Showcase across the river.'], ['⛏', 'Dig', 'Press E where the ground sparkles to dig up a fun fact.'], ['🎣', 'Fish', 'Press E next to water, press again when the float dips, then keep pressing to reel it in.'], ['🍑', 'And more', 'Shake fruit trees for fruit and hidden notes, guess my MBTI at the crystal ball, pet the dog, press Q to dance.']],
     howTouch: [['🚶', 'Walk', 'Tap where you want to go. Pinch or use ＋ － to zoom, 🎥 to change the camera angle.'], ['🏠', 'Visit', 'Tap a building with a “?” to read about my work. My favourite pieces are in the Showcase across the river.'], ['⛏', 'Dig', 'Tap a sparkle on the ground to dig up a fun fact.'], ['🎣', 'Fish', 'Stand by the water and tap the button, tap again when the float dips, then keep tapping to reel it in.'], ['🍑', 'And more', 'Shake fruit trees for fruit and hidden notes, guess my MBTI at the crystal ball, pet the dog, tap 💃 to dance.']],
     cont: '▶ Back to the island', subBack: 'Welcome back! Your progress is saved on this device: ★ {a} · 🎒 {b}.', helloBack: 'Welcome back! Everything is where you left it.',
     restart: 'Start over', resetTitle: 'Start over?', resetText: 'This clears everything saved on this device: stars, backpack, residents and the to-do list. It cannot be undone.', resetYes: 'Clear and start over', resetNo: 'Keep my progress',
     reel: 'Reel it in! Keep pressing', reelTouch: 'Reel it in! Keep tapping', homeOf: "{n}'s home", lot: 'Empty lot',
     views: ['Eye level', 'Classic', 'Bird\'s eye'], viewBtn: 'Change camera angle', zoomIn: 'Zoom in', zoomOut: 'Zoom out',
+    xmasOn: 'Merry Christmas! Let it snow.', xmasName: 'Christmas tree',
     sit: 'Sit for a while', sitHint: 'Take a seat. The music changes with the time of day.', ballBtn: 'Play fetch with Bingo', fetchGot: 'Good boy, Bingo!',
     balloonHint: 'A balloon is drifting by with a present. Click it!', balloonGot: 'Pop! The present had fruit in it: 🍑 × 2',
     shake: 'Shake the tree', give: 'Give fruit to', dance: 'Dance', tasks: 'To-do', taskDone: 'Done', allTasks: 'Every task done. You know this island better than I do!', nextTask: 'Next',
@@ -57,12 +58,13 @@ const UI = {
     kicker: '姚楠的作品集小岛',
     sub: '我把作品集做成了一座可以逛的小岛。玩法很简单：',
     enter: '▶ 进入小岛', quickLong: '赶时间？去看简洁版个人主页 ↗',
-    how: [['🚶', '走路', '方向键或 WASD，也可以直接点击想去的地方。滚轮缩放，按 V 切换视角。'], ['🏠', '拜访', '走到带“?”的建筑前按 E，或者直接点它，看我的经历和项目。最满意的作品放在河对岸的精选作品馆。'], ['⛏', '挖宝', '在地上闪光的地方按 E，挖出一个 fun fact。'], ['🎣', '钓鱼', '站在水边按 E 抛竿，浮标下沉时再按一次，然后连按把鱼拉上来。'], ['🍑', '还有', '摇果树会掉水果和小纸条，去水晶球猜我的 MBTI，摸摸狗，按 Q 跳舞。']],
+    how: [['🚶', '走路', '方向键或 WASD，也可以直接点击想去的地方。双指滑动（或滚轮）调视角，捏合或 ＋ － 缩放。'], ['🏠', '拜访', '走到带“?”的建筑前按 E，或者直接点它，看我的经历和项目。最满意的作品放在河对岸的精选作品馆。'], ['⛏', '挖宝', '在地上闪光的地方按 E，挖出一个 fun fact。'], ['🎣', '钓鱼', '站在水边按 E 抛竿，浮标下沉时再按一次，然后连按把鱼拉上来。'], ['🍑', '还有', '摇果树会掉水果和小纸条，去水晶球猜我的 MBTI，摸摸狗，按 Q 跳舞。']],
     howTouch: [['🚶', '走路', '点击想去的地方。双指或 ＋ － 缩放，点 🎥 切换视角。'], ['🏠', '拜访', '点带“?”的建筑，看我的经历和项目。最满意的作品放在河对岸的精选作品馆。'], ['⛏', '挖宝', '点地上闪光的地方，挖出一个 fun fact。'], ['🎣', '钓鱼', '站在水边点下方按钮，浮标下沉时再点一次，然后连点把鱼拉上来。'], ['🍑', '还有', '摇果树会掉水果和小纸条，去水晶球猜我的 MBTI，摸摸狗，点 💃 跳舞。']],
     cont: '▶ 继续逛小岛', subBack: '欢迎回来！进度保存在这台设备上：★ {a} · 🎒 {b}。', helloBack: '欢迎回来！岛上的一切都和你离开时一样。',
     restart: '重新开始', resetTitle: '要重新开始吗？', resetText: '这会清空这台设备上保存的全部进度：星星、背包、居民和任务清单。清空后无法恢复。', resetYes: '清空并重新开始', resetNo: '保留进度',
     reel: '收线！连续按', reelTouch: '收线！连续点', homeOf: '{n}的家', lot: '空地',
     views: ['平视', '经典', '俯视'], viewBtn: '切换视角', zoomIn: '放大', zoomOut: '缩小',
+    xmasOn: '圣诞快乐！下雪啦。', xmasName: '圣诞树',
     sit: '坐一会儿', sitHint: '坐下歇歇。音乐会跟着时间变化。', ballBtn: '和苹果玩接球', fetchGot: '苹果真棒！',
     balloonHint: '天上飘来一个带礼物的气球，点它试试！', balloonGot: '砰！礼物里是水果：🍑 × 2',
     shake: '摇一摇树', give: '送水果给', dance: '跳舞', tasks: '任务', taskDone: '完成', allTasks: '任务全部完成，你比我还熟悉这座岛了！', nextTask: '下一步',
@@ -113,7 +115,10 @@ const SPOTS = [
   { id: 'showcase', kind: 'showcase',     name: { en: 'Showcase', zh: '精选作品馆' } },
 ];
 const GUESS = { id: 'mbti', kind: 'mbti', name: EX.mbti.name };       // the guessing machine: a place to visit, but not one of the 16 stars
-const PLACES = [...SPOTS, GUESS];
+GUESS.badge = '🔮';
+const month = new Date().getMonth();
+const XMAS = month >= 10 || month === 0 ? { id: 'xmas', kind: 'xmas', badge: '🎄', name: { en: 'Christmas tree', zh: '圣诞树' } } : null;   // November to January
+const PLACES = [...SPOTS, GUESS].concat(XMAS ? [XMAS] : []);
 const spotById = Object.fromEntries(PLACES.map(s => [s.id, s]));
 const found = new Set(store.get('found', []).filter(id => spotById[id] && id !== 'mbti'));
 const dug = new Set(store.get('dug', []).filter(i => i >= 0 && i < EX.dig.length));
@@ -189,7 +194,7 @@ EX.residents.forEach(r => { const h = HOMES.find(q => q.id === r.id); if (h) r.h
 const TRIG = {
   skills: [5, 13], orbit: [10, 13], linear: [16, 13], monolith: [22, 11], crossing: [31, 13], waves: [38, 13],
   sync: [6, 23], agent: [15, 23], wavo: [30, 23], edu: [38, 23],
-  about: [20, 16], focus: [25, 16], mbti: [24, 15], showcase: [54, 13], manus: [26, 14], life: [13, 29], odyssey: [31, 30], contact: [23, 27],
+  about: [20, 16], focus: [25, 16], mbti: [24, 15], showcase: [54, 13], xmas: [26, 18], manus: [26, 14], life: [13, 29], odyssey: [31, 30], contact: [23, 27],
 };
 const OBJECTS = [
   { kind: 'sign',     tx: 20, ty: 15, fw: 1, fh: 1, spot: 'about' },
@@ -204,6 +209,9 @@ const OBJECTS = [
   { kind: 'mailbox',  tx: 24, ty: 27, fw: 1, fh: 1, spot: 'contact' },
   { kind: 'ship',     tx: 32, ty: 29, fw: 5, fh: 3, spot: 'odyssey' },
   { kind: 'oracle',   tx: 24, ty: 14, fw: 1, fh: 1, spot: 'mbti' },
+  ...(XMAS ? [{ kind: 'xmas', tx: 26, ty: 17, fw: 1, fh: 1, spot: 'xmas' }] : []),
+  { kind: 'fountain', tx: 49, ty: 13, fw: 2, fh: 2 },
+  { kind: 'windmill', tx: 59, ty: 5, fw: 2, fh: 2 },
   { kind: 'crossSign', tx: 28, ty: 13, fw: 1, fh: 1 },
   { kind: 'light',    tx: 12, ty: 23, fw: 1, fh: 1 },
   { kind: 'crates',   tx: 8,  ty: 12, fw: 1, fh: 1 },
@@ -233,7 +241,7 @@ OBJECTS.forEach(o => {
   rect(o.tx - 1, o.ty - 2, o.fw + 2, o.fh + 3, 1, reserved);
   if (o.spot) {
     const s = spotById[o.spot];
-    const hh = { booth: 2.7, ship: 4.6, doghouse: 2.1, sign: 1.9, scope: 2.0, mailbox: 1.9, oracle: 2.0 }[o.kind] || 2;
+    const hh = { booth: 2.7, ship: 4.6, doghouse: 2.1, sign: 1.9, scope: 2.0, mailbox: 1.9, oracle: 2.0, xmas: 3.9 }[o.kind] || 2;
     s.front = { x: (o.tx + o.fw / 2) * T, y: (o.ty + o.fh) * T };
     s.boxes = [o.kind === 'ship' ? { x0: o.tx + 0.3, x1: o.tx + 4.7, z0: o.ty + 0.7, z1: o.ty + 2.3, h: 4.5 } : { x0: o.tx - 0.1, x1: o.tx + o.fw + 0.1, z0: o.ty, z1: o.ty + o.fh, h: hh - 0.3 }];
     s.lab = { x: (o.tx + o.fw / 2) * T, y: (o.ty + o.fh / 2) * T, h: Math.min(hh, 3.3) };
@@ -442,12 +450,17 @@ document.body.dataset.mode = mode;
 if (view) { view.setMode(mode); addEventListener('resize', view.resize); }
 
 // camera: three angles from eye level to bird's eye, and a zoom, both eased in the view and remembered
-const PITCH = [0.42, 0.94, 1.38], cam = Object.assign({ v: 1, z: 1 }, store.get('cam', {}));
-if (![0, 1, 2].includes(cam.v)) cam.v = 1;
-cam.z = Math.min(1.5, Math.max(0.5, +cam.z || 1));
-const applyCam = now => { if (view) view.setCam(PITCH[cam.v], cam.z, now); store.set('cam', cam); };
+const PITCH = [0.42, 0.94, 1.38], cam = Object.assign({ p: 0.94, z: 1 }, store.get('cam', {}));
+if (cam.v != null && cam.p === 0.94) cam.p = PITCH[cam.v] || 0.94;
+delete cam.v;
+cam.p = Math.min(1.38, Math.max(0.42, +cam.p || 0.94)); cam.z = Math.min(1.5, Math.max(0.5, +cam.z || 1));
+const applyCam = now => { if (view) view.setCam(cam.p, cam.z, now); store.set('cam', cam); };
 applyCam(true);
-function nextView() { cam.v = (cam.v + 1) % 3; applyCam(); sfx('pick'); if (started && !cardEl.open) toast(`<span>🎥 <b>${esc(t().views[cam.v])}</b></span>`, 1400); }
+function nextView() {            // the button steps through three preset angles; scrolling tilts freely in between
+  const i = PITCH.findIndex(q => q > cam.p + 0.04), k = i < 0 ? 0 : i;
+  cam.p = PITCH[k]; applyCam(); sfx('pick'); if (started && !cardEl.open) toast(`<span>🎥 <b>${esc(t().views[k])}</b></span>`, 1400);
+}
+function tiltBy(d) { cam.p = Math.min(1.38, Math.max(0.42, cam.p + d)); applyCam(); }
 function zoomBy(k) { cam.z = Math.min(1.5, Math.max(0.5, cam.z * k)); applyCam(); }
 let pendingMove = null;
 function syncResidents(announce) {
@@ -553,6 +566,7 @@ const SFX = {
   wrong: () => { tone(330, 0.12, { type: 'triangle' }); tone(262, 0.2, { at: 0.13, type: 'triangle' }); },
   right: () => [523, 659, 784, 1047, 1319].forEach((f, i) => tone(f, i === 4 ? 0.5 : 0.12, { at: i * 0.08, type: 'triangle' })),
   reel: () => { noise(0.05, { f: 2600, q: 3, vol: 0.05 }); tone(820 + Math.random() * 120, 0.04, { vol: 0.03, type: 'square' }); },
+  jingle: () => [76, 76, 76, 0, 76, 76, 76, 0, 76, 79, 72, 74, 76].forEach((n, i) => { if (n) tone(NOTE(n), 0.2, { at: i * 0.17, type: 'triangle', vol: 0.06 }); }),
   pop: () => { noise(0.09, { f: 1800, q: 0.6, vol: 0.14 }); [784, 1047, 1319].forEach((f, i) => tone(f, 0.14, { at: 0.08 + i * 0.07, type: 'triangle' })); },
   throw: () => tone(380, 0.22, { to: 900, vol: 0.05 }),
   whoosh: () => noise(0.5, { f: 700, to: 1600, q: 0.8, vol: 0.03 }),
@@ -655,6 +669,7 @@ function checkTasks() {
   if (all) $('toastCard').onclick = () => { $('toast').hidden = true; openPostcard(); };
   sfx('task'); renderQuest();
 }
+let snowUntil = -1;
 let sitting = null, ballS = null, balloon = null, balloonAt = 22;
 function standUp() { if (sitting) { player.y = (sitting.ty + 1) * T + 10; sitting = null; } }
 function throwBall() {                      // fetch: the ball flies a few tiles ahead, the dog brings it back
@@ -873,23 +888,23 @@ function render(dt) {
   const gd = started ? guide() : null, nxt = gd && gd.spot || null;
   const far = gd && !cardEl.open && !dancing && Math.hypot(gd.x - player.x, gd.y - player.y) > 40;
   const talkNow = talking && !$('say').hidden ? { x: (player.x + talking.x) / 2, y: (player.y + talking.y) / 2 + 12 } : sitting ? { x: player.x, y: player.y - 6 } : null, quiet = !!(talking && talkNow);
-  view.render({ time, dt, talk: talkNow, sit: !!sitting, ball: ballS, balloon, player, dog, digging, fishing, dug: holes, shaking, dancing, foundRatio: found.size / SPOTS.length, residents: RES,
+  view.render({ time, dt, snow: time < snowUntil, talk: talkNow, sit: !!sitting, ball: ballS, balloon, player, dog, digging, fishing, dug: holes, shaking, dancing, foundRatio: found.size / SPOTS.length, residents: RES,
     target: path && path.length ? path[path.length - 1] : null,
     next: far ? { x: gd.x, y: gd.y } : null });
   for (const s of PLACES) {
-    const game = s === GUESS, has = game ? flags.has('mbti') : found.has(s.id), isN = s === nxt, isA = action && action.spot === s;
-    const farAway = !isN && !isA && Math.hypot(s.lab.x - player.x, s.lab.y - player.y) > 170;       // distant places shrink to a dot, so the screen stays calm
-    place(label(s.id, () => { if (!paused() && !busy()) visitSpot(s); }), started && !quiet ? view.project(s.lab.x, s.lab.y, s.lab.h) : OFF,
-      s.name[lang], (has ? 'has ' : '') + (isN ? 'next ' : '') + (isA ? 'on ' : '') + (farAway ? 'far' : ''), game ? (has ? '✓' : '🔮') : has ? '★' : isN ? '!' : '?');
+    const game = !!s.badge, has = s === GUESS ? flags.has('mbti') : game ? false : found.has(s.id), isN = s === nxt, isA = action && action.spot === s;
+    const away = Math.hypot(s.lab.x - player.x, s.lab.y - player.y), farAway = !isN && !isA && away > 120;       // nearby places show their name, further ones shrink to a dot, distant ones are left out
+    place(label(s.id, () => { if (!paused() && !busy()) visitSpot(s); }), started && !quiet && (isN || away < 340) ? view.project(s.lab.x, s.lab.y, s.lab.h) : OFF,
+      s.name[lang], (has ? 'has ' : '') + (isN ? 'next ' : '') + (isA ? 'on ' : '') + (farAway ? 'far' : ''), game ? (has ? '✓' : s.badge) : has ? '★' : isN ? '!' : '?');
   }
   if (fishing && fishing.phase === 'reel') $('prompt').style.setProperty('--p', Math.round(Math.min(1, fishing.p) * 100) + '%');
   place(label('dog', () => { if (!paused() && !busy()) petDog(); }), started && !quiet ? view.project(dog.x, dog.y, 1.2) : OFF, lang === 'zh' ? '苹果' : 'Bingo', 'res pet', '🐶');
   for (const h of HOMES) {
     const r = RES.find(q => q.def.id === h.id);
-    place(label('home-' + h.id, () => { if (paused() || busy()) return; if (r.here) goTalk(r); else walkTo(h.x + 1, h.y + 3); }), started && !quiet ? view.project((h.x + 1.5) * T, (h.y + 2) * T, 3.9) : OFF,
+    place(label('home-' + h.id, () => { if (paused() || busy()) return; if (r.here) goTalk(r); else walkTo(h.x + 1, h.y + 3); }), started && !quiet && Math.hypot((h.x + 1.5) * T - player.x, (h.y + 2) * T - player.y) < 150 ? view.project((h.x + 1.5) * T, (h.y + 2) * T, 3.9) : OFF,
       r.here ? t().homeOf.replace('{n}', r.def.name[lang]) : t().lot, 'res' + (Math.hypot((h.x + 1.5) * T - player.x, (h.y + 2) * T - player.y) > 170 ? ' far' : ''), r.here ? '🏠' : '🪧');
   }
-  for (const r of RES) place(label('res-' + r.def.id, () => { if (!paused() && !busy()) goTalk(r); }), started && r.here && !(quiet && r !== talking) ? view.project(r.x, r.y, 1.5) : OFF, r.def.name[lang] + ((gifts[r.def.id] || 0) >= 3 ? ' ♥' : ''), 'res', r.def.icon);
+  for (const r of RES) place(label('res-' + r.def.id, () => { if (!paused() && !busy()) goTalk(r); }), started && r.here && !(quiet && r !== talking) && Math.hypot(r.x - player.x, r.y - player.y) < 260 ? view.project(r.x, r.y, 1.5) : OFF, r.def.name[lang] + ((gifts[r.def.id] || 0) >= 3 ? ' ♥' : ''), 'res', r.def.icon);
 }
 function goTalk(r) {
   const rx = Math.floor(r.x / T), ry = Math.floor((r.y - 2) / T), [sx, sy] = playerTile();      // stand beside them, so both faces show in the close-up
@@ -986,6 +1001,7 @@ function tryGuess() {
 }
 function openSpot(s) {
   if (s === GUESS) { sfx('open'); return openMbti(); }
+  if (s === XMAS) { snowUntil = time + 25; flag('xmas'); sfx('jingle'); toast(`<span>🎄 <b>${esc(t().xmasOn)}</b></span>`, 3200); return; }
   const k = content(s);
   showCard(t().kick[s.kind], k.title, k.meta, k.body, '', () => openSpot(s));
   if (!found.has(s.id)) {
@@ -1273,7 +1289,11 @@ canvas.addEventListener('pointerdown', e => {
   if (free) walkTo(free[0], free[1]);
 });
 
-canvas.addEventListener('wheel', e => { if (paused()) return; e.preventDefault(); zoomBy(Math.exp(Math.max(-60, Math.min(60, e.deltaY)) * 0.004)); }, { passive: false });
+canvas.addEventListener('wheel', e => {       // two-finger scroll (or the wheel) tilts the camera; pinch (which browsers report as ctrl + wheel) zooms
+  if (paused()) return; e.preventDefault();
+  const d = Math.max(-60, Math.min(60, e.deltaY));
+  if (e.ctrlKey || e.metaKey) zoomBy(Math.exp(d * 0.012)); else tiltBy(d * 0.0032);
+}, { passive: false });
 let pinch = 0;
 canvas.addEventListener('touchmove', e => {       // two fingers: pinch to zoom
   if (e.touches.length !== 2 || paused()) return;
@@ -1300,5 +1320,5 @@ if (view) requestAnimationFrame(frame);
 else { $('btnStart').hidden = true; $('introHow').hidden = true; $('introSub').textContent = t().no3d; openQuick(); }
 
 // small hook for testing from the console
-window.__town = { throwBall, popBalloon, get balloon() { return balloon; }, set balloonAt(v) { balloonAt = v; }, get ball() { return ballS; }, get sitting() { return sitting; }, get talking() { return talking; }, get time() { return time; }, cam, nextView, zoomBy, holes, HOMES, hasProgress, askReset, at, map, MW, MH, findPath, shaken, PLACES, tryGuess, openMbti, TRACKS, music, get actx() { return actx; }, get guess() { return guess; }, set guess(v) { guess = v; }, startDance, openPostcard, makePostcard, flags, tasksSeen, FRUIT_TREES, get fruit() { return fruit; }, get mode() { return mode; }, get shaking() { return shaking; }, get dancing() { return dancing; }, step(n) { for (let i = 0; i < n; i++) { update(0.05); if (i % 6 === 0 || i === n - 1) render(0.3); } }, spotAt, keys, player, dog, SPOTS, DIGS, RES, view, walkTo, openSpot, act, start, found, dug, caught, showItem, talkTo, petDog, get fishing() { return fishing; }, get action() { return action; } };
+window.__town = { tiltBy, XMAS, get snow() { return time < snowUntil; }, throwBall, popBalloon, get balloon() { return balloon; }, set balloonAt(v) { balloonAt = v; }, get ball() { return ballS; }, get sitting() { return sitting; }, get talking() { return talking; }, get time() { return time; }, cam, nextView, zoomBy, holes, HOMES, hasProgress, askReset, at, map, MW, MH, findPath, shaken, PLACES, tryGuess, openMbti, TRACKS, music, get actx() { return actx; }, get guess() { return guess; }, set guess(v) { guess = v; }, startDance, openPostcard, makePostcard, flags, tasksSeen, FRUIT_TREES, get fruit() { return fruit; }, get mode() { return mode; }, get shaking() { return shaking; }, get dancing() { return dancing; }, step(n) { for (let i = 0; i < n; i++) { update(0.05); if (i % 6 === 0 || i === n - 1) render(0.3); } }, spotAt, keys, player, dog, SPOTS, DIGS, RES, view, walkTo, openSpot, act, start, found, dug, caught, showItem, talkTo, petDog, get fishing() { return fishing; }, get action() { return action; } };
 })();
