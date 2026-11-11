@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=16">
+<link rel="stylesheet" href="style.css?v=17">
 </head>
 <body>
 <canvas id="game" aria-label="An island map. Use the Quick view button for a plain version of the same content."></canvas>
@@ -35,10 +35,12 @@
 </header>
 
 <button class="prompt" id="prompt" hidden></button>
-<button class="emote" id="btnDance" hidden><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5" fill="currentColor"/><circle cx="16.5" cy="16" r="2.5" fill="currentColor"/></svg></button>
+<button class="emote" id="btnDance" hidden><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12.5" cy="4.2" r="2.1" fill="currentColor"/><path d="M12.3 7.5l-.6 6M5 5.5l6.8 3.2 6-4.4M11.7 13.5l-4.4 2.4.7 4.6M11.7 13.5l5 2-1.4 5"/></svg></button>
+<button class="emote emote-2 emote-ball" id="btnBall" hidden><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M5.2 6.8c3 2.4 3 8 0 10.4M18.8 6.8c-3 2.4-3 8 0 10.4"/></svg></button>
 <button class="emote emote-2" id="btnMute" hidden></button>
+<button class="emote emote-2 emote-card" id="btnCard" hidden><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5a2 2 0 0 1 2-2h2.2l1.3-2h7l1.3 2H19a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="12.6" r="3.4"/></svg></button>
 <div class="camctl" id="camCtl" hidden>
-  <button id="btnView" hidden><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5a2 2 0 0 1 2-2h2.2l1.3-2h7l1.3 2H19a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="12.6" r="3.4"/></svg></button>
+  <button id="btnView" hidden><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12s3.5-6.5 9.5-6.5 9.5 6.5 9.5 6.5-3.5 6.5-9.5 6.5S2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></svg></button>
   <button id="btnZoomIn" hidden><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
   <button id="btnZoomOut" hidden><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/></svg></button>
 </div>
@@ -83,8 +85,8 @@
   </div>
 </noscript>
 
-<script src="js/data.js?v=16"></script>
-<script src="js/extras.js?v=16"></script>
-<script type="module" src="js/game.js?v=16"></script>
+<script src="js/data.js?v=17"></script>
+<script src="js/extras.js?v=17"></script>
+<script type="module" src="js/game.js?v=17"></script>
 </body>
 </html>

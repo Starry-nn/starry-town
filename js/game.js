@@ -1,5 +1,5 @@
 /* Starry Town — a walkable portfolio island. The rules live here; view3d.js draws the picture. */
-import { createView } from './view3d.js?v=16';
+import { createView } from './view3d.js?v=17';
 (() => {
 'use strict';
 
@@ -31,6 +31,8 @@ const UI = {
     restart: 'Start over', resetTitle: 'Start over?', resetText: 'This clears everything saved on this device: stars, backpack, residents and the to-do list. It cannot be undone.', resetYes: 'Clear and start over', resetNo: 'Keep my progress',
     reel: 'Reel it in! Keep pressing', reelTouch: 'Reel it in! Keep tapping', homeOf: "{n}'s home", lot: 'Empty lot',
     views: ['Eye level', 'Classic', 'Bird\'s eye'], viewBtn: 'Change camera angle', zoomIn: 'Zoom in', zoomOut: 'Zoom out',
+    sit: 'Sit for a while', sitHint: 'Take a seat. The music changes with the time of day.', ballBtn: 'Play fetch with Bingo', fetchGot: 'Good boy, Bingo!',
+    balloonHint: 'A balloon is drifting by with a present. Click it!', balloonGot: 'Pop! The present had fruit in it: 🍑 × 2',
     shake: 'Shake the tree', give: 'Give fruit to', dance: 'Dance', tasks: 'To-do', taskDone: 'Done', allTasks: 'Every task done. You know this island better than I do!', nextTask: 'Next',
     thanks: ['Fruit! For me? You are my favourite visitor.', 'Fresh from the tree. Thank you!', 'I will save this one for later. Maybe.'],
     fruitLine: 'Fruit in your pocket', fruitHint: 'Shake a fruit tree, then give the fruit to a resident.',
@@ -61,6 +63,8 @@ const UI = {
     restart: '重新开始', resetTitle: '要重新开始吗？', resetText: '这会清空这台设备上保存的全部进度：星星、背包、居民和任务清单。清空后无法恢复。', resetYes: '清空并重新开始', resetNo: '保留进度',
     reel: '收线！连续按', reelTouch: '收线！连续点', homeOf: '{n}的家', lot: '空地',
     views: ['平视', '经典', '俯视'], viewBtn: '切换视角', zoomIn: '放大', zoomOut: '缩小',
+    sit: '坐一会儿', sitHint: '坐下歇歇。音乐会跟着时间变化。', ballBtn: '和苹果玩接球', fetchGot: '苹果真棒！',
+    balloonHint: '天上飘来一个带礼物的气球，点它试试！', balloonGot: '砰！礼物里是水果：🍑 × 2',
     shake: '摇一摇树', give: '送水果给', dance: '跳舞', tasks: '任务', taskDone: '完成', allTasks: '任务全部完成，你比我还熟悉这座岛了！', nextTask: '下一步',
     thanks: ['水果！给我的吗？你是我最喜欢的访客。', '刚摘的，谢谢你！', '这个我留着晚点吃。大概吧。'],
     fruitLine: '口袋里的水果', fruitHint: '摇一摇果树，再把水果送给居民。',
@@ -362,10 +366,10 @@ function findPath(sx, sy, gx, gy) {
 }
 const playerTile = () => [Math.floor(player.x / T), Math.floor((player.y - 2) / T)];
 function walkTo(tx, ty, then) {
-  const [sx, sy] = playerTile();
+  const [sx, sy] = sitting ? [Math.floor(player.x / T), sitting.ty + 1] : playerTile();
   const p = findPath(sx, sy, tx, ty);
   if (!p) return false;
-  fishing = null; dancing = null; path = p; autoAct = then || null;
+  standUp(); fishing = null; dancing = null; path = p; autoAct = then || null;
   if (!p.length && then) { autoAct = null; then(); }
   return true;
 }
@@ -474,8 +478,10 @@ function updateResidents(dt) {
   }
 }
 function flag(id) { if (!flags.has(id)) { flags.add(id); store.set('flags', [...flags]); } }
+let talking = null;
 function talkTo(r) {
-  flag('neighbor');
+  flag('neighbor'); path = null; autoAct = null;
+  talking = r; player.face = Math.atan2(r.x - player.x, r.y - player.y);     // face each other; the camera moves in while they talk
   if (fruit > 0) {
     fruit--; store.set('fruit', fruit);
     gifts[r.def.id] = (gifts[r.def.id] || 0) + 1; store.set('gifts', gifts); flag('gift');
@@ -547,6 +553,9 @@ const SFX = {
   wrong: () => { tone(330, 0.12, { type: 'triangle' }); tone(262, 0.2, { at: 0.13, type: 'triangle' }); },
   right: () => [523, 659, 784, 1047, 1319].forEach((f, i) => tone(f, i === 4 ? 0.5 : 0.12, { at: i * 0.08, type: 'triangle' })),
   reel: () => { noise(0.05, { f: 2600, q: 3, vol: 0.05 }); tone(820 + Math.random() * 120, 0.04, { vol: 0.03, type: 'square' }); },
+  pop: () => { noise(0.09, { f: 1800, q: 0.6, vol: 0.14 }); [784, 1047, 1319].forEach((f, i) => tone(f, 0.14, { at: 0.08 + i * 0.07, type: 'triangle' })); },
+  throw: () => tone(380, 0.22, { to: 900, vol: 0.05 }),
+  whoosh: () => noise(0.5, { f: 700, to: 1600, q: 0.8, vol: 0.03 }),
   step: () => noise(0.045, { f: 420 + Math.random() * 260, q: 0.7, vol: 0.022 }),
 };
 // Background music: three short original loops, written as notes and played by the same synth. One per time of day.
@@ -646,9 +655,23 @@ function checkTasks() {
   if (all) $('toastCard').onclick = () => { $('toast').hidden = true; openPostcard(); };
   sfx('task'); renderQuest();
 }
+let sitting = null, ballS = null, balloon = null, balloonAt = 22;
+function standUp() { if (sitting) { player.y = (sitting.ty + 1) * T + 10; sitting = null; } }
+function throwBall() {                      // fetch: the ball flies a few tiles ahead, the dog brings it back
+  if (paused() || busy() || ballS || fishing) return;
+  standUp(); dancing = null; hideSay();
+  const [dx, dy] = DIRS[player.dir]; let [tx, ty] = playerTile(), n = 0;
+  while (n < 5 && !tileSolid(tx + dx, ty + dy)) { tx += dx; ty += dy; n++; }
+  ballS = { x: player.x, y: player.y, x0: player.x, y0: player.y, x1: tx * T + 8, y1: ty * T + 10, h: 0.9, t: 0, phase: 'fly' };
+  sfx('throw');
+}
+function popBalloon() {
+  floatText(balloon.x, balloon.y, balloon.h + 0.8, '🎉', 'gold'); balloon = null; balloonAt = time + 55;
+  fruit += 2; store.set('fruit', fruit); flag('balloon'); sfx('pop'); renderHud(); toast(`<span>🎈 <b>${esc(t().balloonGot)}</b></span>`, 3200);
+}
 function startDance() {
   if (paused() || busy() || dancing) return;
-  path = null; autoAct = null; fishing = null; hideSay();
+  standUp(); path = null; autoAct = null; fishing = null; hideSay();
   dancing = { t: 0, beat: 0 }; flag('dance'); dog.pet = 2.4;
   for (const r of RES) if (r.here && Math.hypot(r.x - player.x, r.y - player.y) < 80) { r.dance = 2.4; r.tx = null; }
   sfx('dance');
@@ -668,6 +691,9 @@ function currentAction() {
   for (const r of RES) if (r.here && Math.hypot(r.x - player.x, r.y - player.y) < 20) return { type: 'talk', res: r };
   for (const g of DIGS) if (!holes.has(g.i) && Math.hypot(g.x - player.x, g.y - player.y) < 13) return { type: 'dig', dig: g };
   const [ptx, pty] = playerTile();
+  if (sitting) return null;
+  const bench = OBJECTS.find(o => o.kind === 'bench' && pty === o.ty + 1 && (ptx === o.tx || ptx === o.tx + 1));
+  if (bench) return { type: 'sit', bench };
   const tr = FRUIT_TREES.find(q => Math.abs(q.tx - ptx) + Math.abs(q.ty - pty) === 1 && time >= q.ready);
   if (tr) return { type: 'shake', tree: tr };
   if (waterDir()) return { type: 'fish' };
@@ -682,7 +708,7 @@ function update(dt) {
   }
   const px = player.x, py = player.y;
   if (mx || my) {
-    path = null; autoAct = null; fishing = null; dancing = null;
+    standUp(); path = null; autoAct = null; fishing = null; dancing = null;
     const len = Math.hypot(mx, my), sx = mx / len * SPEED * dt, sy = my / len * SPEED * dt;
     if (!blocked(player.x + sx, player.y)) player.x += sx;
     if (!blocked(player.x, player.y + sy)) player.y += sy;
@@ -708,16 +734,36 @@ function update(dt) {
     if (Math.hypot(player.x - last.x, player.y - last.y) >= 1) { trail.push({ x: player.x, y: player.y }); if (trail.length > 18) trail.shift(); }
     if (time - sayAt > 0.2) hideSay();   // a line spoken on arrival must not be wiped by that same last step
   }
-  const target = trail[0], ddx = target.x - dog.x, ddy = target.y - dog.y, dd = Math.hypot(ddx, ddy);
+  const fetching = ballS && ballS.phase !== 'fly';
+  const target = fetching ? (ballS.phase === 'wait' ? ballS : player) : trail[0], ddx = target.x - dog.x, ddy = target.y - dog.y, dd = Math.hypot(ddx, ddy);
   dog.moving = dd > 0.6;
   if (dog.moving) {
-    const s = Math.min(dd, SPEED * 1.15 * dt);
+    const s = Math.min(dd, SPEED * (fetching ? 1.7 : 1.15) * dt);
     dog.x += ddx / dd * s; dog.y += ddy / dd * s;
     dog.hx = ddx / dd; dog.hy = ddy / dd;
     dog.anim += dt;
   } else { dog.anim = 0; const fx = player.x - dog.x, fy = player.y - dog.y, fl = Math.hypot(fx, fy); if (fl > 8) { dog.hx = fx / fl; dog.hy = fy / fl; } }
   if (dog.pet > 0) dog.pet = Math.max(0, dog.pet - dt);
   updateResidents(dt);
+  if (ballS) {
+    ballS.t += dt;
+    if (ballS.phase === 'fly') {
+      const u = Math.min(1, ballS.t / 0.6); ballS.x = ballS.x0 + (ballS.x1 - ballS.x0) * u; ballS.y = ballS.y0 + (ballS.y1 - ballS.y0) * u; ballS.h = 0.9 * (1 - u) + Math.sin(u * Math.PI) * 1.3;
+      if (u >= 1) { ballS.phase = 'wait'; ballS.h = 0; sfx('step'); }
+    } else if (ballS.phase === 'wait') { if (Math.hypot(dog.x - ballS.x, dog.y - ballS.y) < 5) ballS.phase = 'carry'; }
+    else {
+      ballS.x = dog.x + dog.hx * 6; ballS.y = dog.y + dog.hy * 6; ballS.h = 0.5;
+      if (Math.hypot(dog.x - player.x, dog.y - player.y) < 20) { ballS = null; dog.pet = 0.9; flag('fetch'); floatText(dog.x, dog.y, 1.3, '♥', 'heart'); sfx('pet'); if (!flags.has('fetched')) { flag('fetched'); toast(`<span>🎾 <b>${esc(t().fetchGot)}</b></span>`, 2200); } }
+    }
+    if (ballS && ballS.t > 14) ballS = null;
+  }
+  if (started && !cardEl.open) {
+    if (!balloon && time > balloonAt) {
+      balloon = { x: player.x - 250, y: player.y - 30 + Math.random() * 70, h: 3.6 }; sfx('whoosh');
+      if (!flags.has('balloonSeen')) { flag('balloonSeen'); toast(`<span>🎈 ${esc(t().balloonHint)}</span>`, 5000); }
+    }
+    if (balloon) { balloon.x += 24 * dt; if (balloon.x > player.x + 330) { balloon = null; balloonAt = time + 40; } }
+  }
 
   if (digging) {
     digging.t += dt;
@@ -754,7 +800,7 @@ function update(dt) {
   }
 
   action = paused() ? null : currentAction();
-  const key = !action ? '' : action.type + (action.spot ? action.spot.id : '') + (action.dig ? action.dig.i : '') + (action.res ? action.res.def.id + (fruit > 0 ? 'f' : '') : '') + (action.tree ? action.tree.tx + '_' + action.tree.ty : '') + (fishing ? fishing.phase : '') + lang;
+  const key = !action ? '' : action.type + (action.spot ? action.spot.id : '') + (action.dig ? action.dig.i : '') + (action.res ? action.res.def.id + (fruit > 0 ? 'f' : '') : '') + (action.tree ? action.tree.tx + '_' + action.tree.ty : '') + (action.bench ? 'b' + action.bench.tx : '') + (fishing ? fishing.phase : '') + lang;
   if (key !== actionKey) { actionKey = key; renderPrompt(); }
 
 }
@@ -766,6 +812,11 @@ function act() {
   if (!action) return;
   if (action.type === 'spot') return openSpot(action.spot);
   if (action.type === 'talk') return talkTo(action.res);
+  if (action.type === 'sit') {
+    path = null; dancing = null; sitting = action.bench; player.y = action.bench.ty * T + 15; player.dir = 'down'; sfx('pick');
+    if (!flags.has('sit')) { flag('sit'); toast(`<span>🪑 ${esc(t().sitHint)}</span>`, 3600); }
+    return;
+  }
   if (action.type === 'dig') { path = null; dancing = null; digging = { g: action.dig, t: 0 }; player.dir = 'down'; sfx('dig'); return; }
   if (action.type === 'shake') {
     const tr = action.tree, [ptx, pty] = playerTile();
@@ -821,25 +872,29 @@ function floatText(x, y, h, text, cls) {
 function render(dt) {
   const gd = started ? guide() : null, nxt = gd && gd.spot || null;
   const far = gd && !cardEl.open && !dancing && Math.hypot(gd.x - player.x, gd.y - player.y) > 40;
-  view.render({ time, dt, player, dog, digging, fishing, dug: holes, shaking, dancing, foundRatio: found.size / SPOTS.length, residents: RES,
+  const talkNow = talking && !$('say').hidden ? { x: (player.x + talking.x) / 2, y: (player.y + talking.y) / 2 + 12 } : sitting ? { x: player.x, y: player.y - 6 } : null, quiet = !!(talking && talkNow);
+  view.render({ time, dt, talk: talkNow, sit: !!sitting, ball: ballS, balloon, player, dog, digging, fishing, dug: holes, shaking, dancing, foundRatio: found.size / SPOTS.length, residents: RES,
     target: path && path.length ? path[path.length - 1] : null,
     next: far ? { x: gd.x, y: gd.y } : null });
   for (const s of PLACES) {
     const game = s === GUESS, has = game ? flags.has('mbti') : found.has(s.id), isN = s === nxt, isA = action && action.spot === s;
-    place(label(s.id, () => { if (!paused() && !busy()) visitSpot(s); }), started ? view.project(s.lab.x, s.lab.y, s.lab.h) : OFF,
-      s.name[lang], (has ? 'has ' : '') + (isN ? 'next ' : '') + (isA ? 'on' : ''), game ? (has ? '✓' : '🔮') : has ? '★' : isN ? '!' : '?');
+    const farAway = !isN && !isA && Math.hypot(s.lab.x - player.x, s.lab.y - player.y) > 170;       // distant places shrink to a dot, so the screen stays calm
+    place(label(s.id, () => { if (!paused() && !busy()) visitSpot(s); }), started && !quiet ? view.project(s.lab.x, s.lab.y, s.lab.h) : OFF,
+      s.name[lang], (has ? 'has ' : '') + (isN ? 'next ' : '') + (isA ? 'on ' : '') + (farAway ? 'far' : ''), game ? (has ? '✓' : '🔮') : has ? '★' : isN ? '!' : '?');
   }
   if (fishing && fishing.phase === 'reel') $('prompt').style.setProperty('--p', Math.round(Math.min(1, fishing.p) * 100) + '%');
-  place(label('dog', () => { if (!paused() && !busy()) petDog(); }), started ? view.project(dog.x, dog.y, 1.2) : OFF, lang === 'zh' ? '苹果' : 'Bingo', 'res pet', '🐶');
+  place(label('dog', () => { if (!paused() && !busy()) petDog(); }), started && !quiet ? view.project(dog.x, dog.y, 1.2) : OFF, lang === 'zh' ? '苹果' : 'Bingo', 'res pet', '🐶');
   for (const h of HOMES) {
     const r = RES.find(q => q.def.id === h.id);
-    place(label('home-' + h.id, () => { if (paused() || busy()) return; if (r.here) goTalk(r); else walkTo(h.x + 1, h.y + 3); }), started ? view.project((h.x + 1.5) * T, (h.y + 2) * T, 3.9) : OFF,
-      r.here ? t().homeOf.replace('{n}', r.def.name[lang]) : t().lot, 'res', r.here ? '🏠' : '🪧');
+    place(label('home-' + h.id, () => { if (paused() || busy()) return; if (r.here) goTalk(r); else walkTo(h.x + 1, h.y + 3); }), started && !quiet ? view.project((h.x + 1.5) * T, (h.y + 2) * T, 3.9) : OFF,
+      r.here ? t().homeOf.replace('{n}', r.def.name[lang]) : t().lot, 'res' + (Math.hypot((h.x + 1.5) * T - player.x, (h.y + 2) * T - player.y) > 170 ? ' far' : ''), r.here ? '🏠' : '🪧');
   }
-  for (const r of RES) place(label('res-' + r.def.id, () => { if (!paused() && !busy()) goTalk(r); }), started && r.here ? view.project(r.x, r.y, 1.5) : OFF, r.def.name[lang] + ((gifts[r.def.id] || 0) >= 3 ? ' ♥' : ''), 'res', r.def.icon);
+  for (const r of RES) place(label('res-' + r.def.id, () => { if (!paused() && !busy()) goTalk(r); }), started && r.here && !(quiet && r !== talking) ? view.project(r.x, r.y, 1.5) : OFF, r.def.name[lang] + ((gifts[r.def.id] || 0) >= 3 ? ' ♥' : ''), 'res', r.def.icon);
 }
 function goTalk(r) {
-  const free = nearestFree(Math.floor(r.x / T), Math.floor((r.y - 2) / T) + 1) || [Math.floor(r.x / T), Math.floor(r.y / T)];
+  const rx = Math.floor(r.x / T), ry = Math.floor((r.y - 2) / T), [sx, sy] = playerTile();      // stand beside them, so both faces show in the close-up
+  const side = [[rx - 1, ry], [rx + 1, ry], [rx, ry + 1]].find(([x, y]) => !tileSolid(x, y) && findPath(sx, sy, x, y));
+  const free = side || nearestFree(rx, ry + 1) || [rx, ry];
   walkTo(free[0], free[1], () => talkTo(r));
 }
 
@@ -1063,6 +1118,7 @@ function renderPrompt() {
   if (action.type === 'spot') label = `${u.visit} · ${action.spot.name[lang]}`;
   else if (action.type === 'talk') label = fruit > 0 ? `🎁 ${u.give} ${action.res.def.name[lang]}` : `💬 ${u.talk} ${action.res.def.name[lang]}`;
   else if (action.type === 'shake') label = `🌳 ${u.shake}`;
+  else if (action.type === 'sit') label = `🪑 ${u.sit}`;
   else if (action.type === 'dig') label = `⛏ ${u.dig}`;
   else if (!fishing) label = `🎣 ${u.fish}`;
   else if (fishing.phase === 'wait') { label = `🎣 ${u.wait}`; cls = 'calm'; }
@@ -1089,6 +1145,7 @@ function renderHud() {
   $('btnReset').hidden = started || !hasProgress(); $('btnReset').textContent = '↺ ' + u.restart;
   $('btnMute').hidden = !started; $('btnMute').innerHTML = soundOn || musicOn ? ICON.sound : ICON.mute; $('camCtl').hidden = !started; $('btnMute').setAttribute('aria-label', u.mute); $('btnMute').title = u.mute;
   [['btnView', u.viewBtn + (touch ? '' : ' (V)')], ['btnZoomIn', u.zoomIn], ['btnZoomOut', u.zoomOut]].forEach(([id, tip]) => { $(id).hidden = !started; $(id).title = tip; $(id).setAttribute('aria-label', tip); });
+  [['btnBall', u.ballBtn + (touch ? '' : ' (F)')], ['btnCard', u.postcard]].forEach(([id, tip]) => { $(id).hidden = !started; $(id).title = tip; $(id).setAttribute('aria-label', tip); });
   $('btnDance').hidden = !started; $('btnDance').setAttribute('aria-label', u.dance); $('btnDance').title = u.dance + (touch ? '' : ' (Q)');
   $('btnCv').textContent = u.cv; $('btnCv').href = lang === 'zh' ? 'assets/Nan_Yao_Resume_CN.pdf' : 'assets/Nan_Yao_Resume_EN.pdf';
   $('btnLang').textContent = u.lang; $('btnLang2').textContent = u.lang;
@@ -1121,7 +1178,7 @@ function say(text, instant, who, pitch) {
     if (i >= text.length) clearInterval(sayTimer);
   }, 22);
 }
-function hideSay() { if (!$('say').hidden) { $('say').hidden = true; clearInterval(sayTimer); renderPrompt(); } }
+function hideSay() { talking = null; player.face = null; if (!$('say').hidden) { $('say').hidden = true; clearInterval(sayTimer); renderPrompt(); } }
 function start() {
   if (started || !view) return;
   const back = hasProgress();
@@ -1131,6 +1188,8 @@ function start() {
 }
 $('btnView').onclick = () => { $('btnView').blur(); nextView(); };
 $('btnZoomIn').onclick = () => { $('btnZoomIn').blur(); zoomBy(1 / 1.2); }; $('btnZoomOut').onclick = () => { $('btnZoomOut').blur(); zoomBy(1.2); };
+$('btnBall').onclick = () => { $('btnBall').blur(); throwBall(); };
+$('btnCard').onclick = () => { $('btnCard').blur(); if (started && !cardEl.open) openPostcard(); };
 $('btnStart').onclick = start; $('btnReset').onclick = askReset;
 $('btnDance').onclick = () => { $('btnDance').blur(); startDance(); };
 $('btnMute').onclick = () => { $('btnMute').blur(); const on = !(soundOn || musicOn); soundOn = on; store.set('sound', on); setMusic(on); renderHud(); };
@@ -1150,6 +1209,7 @@ addEventListener('keydown', e => {
   if (e.key === 'v' || e.key === 'V') { e.preventDefault(); if (!e.repeat) nextView(); return; }
   if (e.key === '=' || e.key === '+') { e.preventDefault(); zoomBy(1 / 1.12); return; }
   if (e.key === '-' || e.key === '_') { e.preventDefault(); zoomBy(1.12); return; }
+  if (e.key === 'f' || e.key === 'F') { e.preventDefault(); if (!e.repeat) throwBall(); return; }
   if (e.key === 'q' || e.key === 'Q') { e.preventDefault(); if (!e.repeat) startDance(); return; }
   if (e.key === 'e' || e.key === 'E' || ((e.key === ' ' || e.key === 'Enter') && !onButton)) {
     e.preventDefault();
@@ -1194,6 +1254,7 @@ canvas.addEventListener('pointerdown', e => {
   if (paused() || busy()) return;
   hideSay();
   const mx = e.clientX, my = e.clientY;
+  if (balloon) { const q = view.project(balloon.x, balloon.y, balloon.h + 0.9, true); if (Math.hypot(mx - q.x, my - q.y) < 40) { popBalloon(); return; } }
   if (onBody(dog.x, dog.y, 0.95, mx, my)) { petDog(); return; }
   const who = RES.find(r => r.here && onBody(r.x, r.y, 1.25, mx, my));
   if (who) { goTalk(who); return; }
@@ -1239,5 +1300,5 @@ if (view) requestAnimationFrame(frame);
 else { $('btnStart').hidden = true; $('introHow').hidden = true; $('introSub').textContent = t().no3d; openQuick(); }
 
 // small hook for testing from the console
-window.__town = { cam, nextView, zoomBy, holes, HOMES, hasProgress, askReset, at, map, MW, MH, findPath, shaken, PLACES, tryGuess, openMbti, TRACKS, music, get actx() { return actx; }, get guess() { return guess; }, set guess(v) { guess = v; }, startDance, openPostcard, makePostcard, flags, tasksSeen, FRUIT_TREES, get fruit() { return fruit; }, get mode() { return mode; }, get shaking() { return shaking; }, get dancing() { return dancing; }, step(n) { for (let i = 0; i < n; i++) { update(0.05); if (i % 6 === 0 || i === n - 1) render(0.3); } }, spotAt, keys, player, dog, SPOTS, DIGS, RES, view, walkTo, openSpot, act, start, found, dug, caught, showItem, talkTo, petDog, get fishing() { return fishing; }, get action() { return action; } };
+window.__town = { throwBall, popBalloon, get balloon() { return balloon; }, set balloonAt(v) { balloonAt = v; }, get ball() { return ballS; }, get sitting() { return sitting; }, get talking() { return talking; }, get time() { return time; }, cam, nextView, zoomBy, holes, HOMES, hasProgress, askReset, at, map, MW, MH, findPath, shaken, PLACES, tryGuess, openMbti, TRACKS, music, get actx() { return actx; }, get guess() { return guess; }, set guess(v) { guess = v; }, startDance, openPostcard, makePostcard, flags, tasksSeen, FRUIT_TREES, get fruit() { return fruit; }, get mode() { return mode; }, get shaking() { return shaking; }, get dancing() { return dancing; }, step(n) { for (let i = 0; i < n; i++) { update(0.05); if (i % 6 === 0 || i === n - 1) render(0.3); } }, spotAt, keys, player, dog, SPOTS, DIGS, RES, view, walkTo, openSpot, act, start, found, dug, caught, showItem, talkTo, petDog, get fishing() { return fishing; }, get action() { return action; } };
 })();

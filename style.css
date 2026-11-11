@@ -155,7 +155,9 @@ body[data-mode="night"] {
 .emote-2:hover { background: #fff; }
 .emote { color: #fff; }
 .emote-2 { color: var(--ink); }
-.camctl { position: fixed; right: 17px; bottom: calc(max(24px, env(safe-area-inset-bottom)) + 120px); z-index: 6; display: flex; flex-direction: column; background: var(--cream); border: 4px solid #fff; border-radius: 28px; box-shadow: 0 5px 0 rgba(107, 79, 58, .25); overflow: hidden; }
+.emote-ball { right: 80px; bottom: calc(max(24px, env(safe-area-inset-bottom)) + 5px); }
+.emote-card { bottom: calc(max(24px, env(safe-area-inset-bottom)) + 116px); }
+.camctl { position: fixed; right: 17px; bottom: calc(max(24px, env(safe-area-inset-bottom)) + 174px); z-index: 6; display: flex; flex-direction: column; background: var(--cream); border: 4px solid #fff; border-radius: 28px; box-shadow: 0 5px 0 rgba(107, 79, 58, .25); overflow: hidden; }
 .camctl button { width: 40px; height: 40px; border: 0; background: transparent; color: var(--ink); display: grid; place-items: center; cursor: pointer; }
 .camctl button + button { border-top: 2px solid var(--line); }
 .camctl button:hover { background: #fff; }
@@ -275,3 +277,15 @@ button.slot:hover { background: #fff1b8; }
 @media (prefers-reduced-motion: reduce) {
   .prompt, .card[open], .item-big, .label.next { animation: none; }
 }
+
+/* ---- polish pass ---- */
+.label { border: 2px solid #fff; box-shadow: 0 3px 8px rgba(107, 79, 58, .16), 0 1px 0 rgba(107, 79, 58, .12); padding: 3px 11px 3px 3px; transition: opacity .2s; }
+.label.far { padding: 2px; opacity: .85; }
+.label.far span { display: none; }
+.label.far i { width: 15px; height: 15px; font-size: 9px; }
+.label.res.far i { font-size: 10px; }
+.say { border: 3px solid #fff; box-shadow: 0 10px 30px rgba(107, 79, 58, .22), 0 5px 0 rgba(107, 79, 58, .16); }
+.say-name { transform: rotate(-2deg); box-shadow: 0 3px 0 rgba(107, 79, 58, .18); }
+.emote, .camctl { box-shadow: 0 5px 0 rgba(107, 79, 58, .22), 0 10px 22px rgba(107, 79, 58, .16); }
+.hud-brand, .chip, .hud .btn { box-shadow: 0 3px 0 rgba(107, 79, 58, .18), 0 6px 16px rgba(107, 79, 58, .1); }
+.toast { box-shadow: 0 4px 0 rgba(107, 79, 58, .16), 0 10px 24px rgba(107, 79, 58, .16); }
