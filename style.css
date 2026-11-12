@@ -301,3 +301,4 @@ button.slot:hover { background: #fff1b8; }
 .g-sw button[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--ink); }
 .g-sp button:focus-visible, .g-sw button:focus-visible, .g-l input:focus-visible, .g-l textarea:focus-visible { outline: 3px solid var(--green-d); outline-offset: 2px; }
 .g-check { display: flex; gap: 8px; align-items: center; font: 700 14px/1.4 var(--font); margin-top: 12px; }
+.g-copy { display: block; width: 100%; margin-top: 8px; font: 600 12.5px/1.5 var(--font); color: var(--ink-soft); border: 2px dashed var(--line); border-radius: 14px; padding: 9px 12px; background: #fff; resize: none; }

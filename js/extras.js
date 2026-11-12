@@ -119,18 +119,21 @@ window.EXTRAS = {
     { id: 'guest', species: 'cat', icon: '🐱', color: '#f6c89f', accent: '#7fd1c0', unlock: 'guest',
       name: { en: 'You', zh: '你' },
       lines: {
-        en: ['This is my house now. Nan built it the moment I signed the board!', 'I left Nan a note. She reads every one of them.', 'Go on, keep exploring. I will keep an eye on the place.'],
-        zh: ['这是我的小房子！我在留言板上一签名，姚楠就给我盖好了。', '我给姚楠留了言，她每一条都会看。', '你继续逛吧，我帮你看家。'],
+        en: ['This is my house now. Nan built it the moment I signed the board!', 'Nan reads every note that reaches her inbox.', 'Go on, keep exploring. I will keep an eye on the place.'],
+        zh: ['这是我的小房子！我在留言板上一签名，姚楠就给我盖好了。', '寄到姚楠邮箱的留言，她每一条都会看。', '你继续逛吧，我帮你看家。'],
       } },
   ],
   // The guest board on the plaza: visitors make an avatar, move in and can leave Nan a private note
   guestbook: {
     name: { en: 'Guest board', zh: '留言板' },
-    intro: { en: 'Make a little character of your own and move into the island. You can leave me a note too. Only I can read it.', zh: '捏一个自己的小形象，搬进这座岛。也可以给我留言，留言只有我本人能看到。' },
+    intro: { en: 'Make a little character of your own and move into the island. You can send me a note too. It goes straight to my inbox.', zh: '捏一个自己的小形象，搬进这座岛。也可以给我留言，留言会直接发到我的邮箱。' },
     askNote: { en: '{n}, welcome to the island! Want to leave me a note?', zh: '{n}，欢迎搬来小岛！要不要给我留句话？' },
-    privacy: { en: 'Your note, avatar and contact go only to Nan and are never shown on the site. Contact is optional; leave it if you would like a reply.', zh: '留言、形象和联系方式只会发给姚楠本人，不会在网站上公开。联系方式选填，想收到回复再留。' },
-    sent: { en: 'Got it, thank you! If you left a way to reach you, I will write back.', zh: '收到啦，谢谢你！如果留了联系方式，我会回复你。' },
-    closed: { en: 'Notes are not open yet. Your character and house are still yours to keep.', zh: '留言功能还没开放，不过你的形象和小房子已经留在岛上了。' },
+    privacy: { en: 'This opens your own email app with the note ready to send to Nan. Nothing is stored on this site. Leave a way to reach you if you would like a reply.', zh: '点击后会打开你自己的邮箱，留言已经写好，发给姚楠就行。网站不会保存任何内容。想收到回复就留个联系方式。' },
+    sent: { en: 'Your email app should have opened with the note. Press send and it is on its way!', zh: '你的邮箱应该已经打开并写好了留言，点发送就寄出啦！' },
+    fallback: { en: 'Nothing opened? Copy the note below and email it to {mail}.', zh: '没有弹出邮箱？复制下面的内容，发到 {mail} 就可以。' },
+    mailSubject: { en: 'A note from {n}, your new island neighbour', zh: '来自小岛新邻居 {n} 的留言' },
+    mailContact: { en: 'Reach me at: ', zh: '联系方式：' },
+    mailLink: { en: 'Nan, open this to meet me on the island:', zh: '姚楠，点这个链接可以在岛上见到我：' },
   },
   // Island to-do list: gives every visitor something to aim for. Ids are wired up in game.js.
   tasks: [

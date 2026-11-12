@@ -1,11 +1,11 @@
 /* Starry Town — a walkable portfolio island. The rules live here; view3d.js draws the picture. */
-import { createView } from './view3d.js?v=21';
+import { createView } from './view3d.js?v=22';
 (() => {
 'use strict';
 
-const DATA = window.DATA, EX = window.EXTRAS, GA = window.GuestAvatar, GCONF = window.GUEST_CONFIG || {};
+const DATA = window.DATA, EX = window.EXTRAS, GA = window.GuestAvatar;
 // The guest resident takes the look the visitor designed. A link from the private town (#g=...) shows one visitor's avatar and note instead;
-// that data sits in the part of the address that is never sent to a server.
+// that data sits in the part of the address that is never sent to a server. The link arrives in the visitor's email.
 const guestDef = EX.residents.find(r => r.id === 'guest');
 let ownerGuest = null;
 try {
@@ -48,7 +48,7 @@ const UI = {
     fruitLine: 'Fruit in your pocket', fruitHint: 'Shake a fruit tree, then give the fruit to a resident.',
     settings: 'Island settings', soundOn: 'Sound effects: on', soundOff: 'Sound effects: off', musicOn: 'Music: on', musicOff: 'Music: off', mute: 'Sound on / off',
     treeTitle: 'A note fell out of the tree!', notes: 'Shaken out of trees', lockedMbti: 'Moves in when the MBTI is guessed', lockedGuest: 'This one is you: sign the guest board',
-    gName: 'Your name', gSpecies: 'Who are you?', gFur: 'Colour', gShirt: 'Shirt', gJoin: 'Move in', gEdit: 'Change my look', gNote: 'Leave Nan a note', gMsg: 'Your note', gContact: 'Email or any way to reach you (optional)', gCard: 'Attach a postcard of the island as it looks now', gSend: 'Send', gLater: 'Maybe later', gSending: 'Sending…', gFail: 'That did not go through. Please try again in a moment.', gWait: 'You just sent one. Give it a minute.', gNeedName: 'Give your character a name first.', gNeedMsg: 'Write a few words first.', gYours: 'Your character lives on the island.', guess: 'Guess', socials: 'Find me elsewhere', xhs: 'Xiaohongshu', modes: { day: 'Day', dusk: 'Dusk', night: 'Night' }, postcard: 'Postcard',
+    gName: 'Your name', gSpecies: 'Who are you?', gFur: 'Colour', gShirt: 'Shirt', gJoin: 'Move in', gEdit: 'Change my look', gNote: 'Leave Nan a note', gMsg: 'Your note', gContact: 'Email or any way to reach you (optional)', gSend: 'Write the email', gLater: 'Maybe later', gCopy: 'Copy the note', gCopied: 'Copied', gSaveCard: 'Get a postcard to attach', gNeedName: 'Give your character a name first.', gNeedMsg: 'Write a few words first.', gYours: 'Your character lives on the island.', guess: 'Guess', socials: 'Find me elsewhere', xhs: 'Xiaohongshu', modes: { day: 'Day', dusk: 'Dusk', night: 'Night' }, postcard: 'Postcard',
     postcardTitle: 'A postcard from the island', postcardMeta: 'Save it or send it to a friend', save: 'Save image', greet: 'Greetings from Starry Town', back: 'Back to backpack',
     quick: 'Quick view', cv: 'CV', lang: '中文', bag: 'Backpack',
     goSee: 'Take me there', visit: 'Visit', talk: 'Talk to', movedIn: 'just moved to the island! Go say hi.', neighbours: 'Residents', lockedRes: 'Moves in after {n} finds', no3d: 'This browser cannot show the 3D island, so here is everything on one page.', dig: 'Dig here', fish: 'Go fishing', wait: 'Waiting for a bite…', pull: 'Pull!',
@@ -82,7 +82,7 @@ const UI = {
     fruitLine: '口袋里的水果', fruitHint: '摇一摇果树，再把水果送给居民。',
     settings: '小岛设置', soundOn: '音效：开', soundOff: '音效：关', musicOn: '音乐：开', musicOff: '音乐：关', mute: '声音开关',
     treeTitle: '树上掉下一张纸条！', notes: '树上摇下来的', lockedMbti: '猜对 MBTI 后搬来', lockedGuest: '这是你：去留言板签个名',
-    gName: '你的名字', gSpecies: '你是谁？', gFur: '颜色', gShirt: '衣服', gJoin: '搬进小岛', gEdit: '修改形象', gNote: '给姚楠留言', gMsg: '想说的话', gContact: '邮箱或其他联系方式（选填）', gCard: '附上一张此刻的小岛明信片', gSend: '发送', gLater: '以后再说', gSending: '发送中…', gFail: '没发出去，请稍后再试。', gWait: '刚刚已经发过一条了，过一分钟再发。', gNeedName: '先给你的形象起个名字。', gNeedMsg: '先写几句话吧。', gYours: '你的形象已经住在岛上了。', guess: '猜一下', socials: '在别处找到我', xhs: '小红书', modes: { day: '白天', dusk: '黄昏', night: '夜晚' }, postcard: '明信片',
+    gName: '你的名字', gSpecies: '你是谁？', gFur: '颜色', gShirt: '衣服', gJoin: '搬进小岛', gEdit: '修改形象', gNote: '给姚楠留言', gMsg: '想说的话', gContact: '邮箱或其他联系方式（选填）', gSend: '写成邮件', gLater: '以后再说', gCopy: '复制留言', gCopied: '已复制', gSaveCard: '拍张明信片附上', gNeedName: '先给你的形象起个名字。', gNeedMsg: '先写几句话吧。', gYours: '你的形象已经住在岛上了。', guess: '猜一下', socials: '在别处找到我', xhs: '小红书', modes: { day: '白天', dusk: '黄昏', night: '夜晚' }, postcard: '明信片',
     postcardTitle: '一张小岛明信片', postcardMeta: '保存下来，或者发给朋友', save: '保存图片', greet: '来自 Starry Town 的问候', back: '回到背包',
     quick: '快速浏览', cv: '简历', lang: 'EN', bag: '背包',
     goSee: '带我过去', visit: '拜访', talk: '聊聊', movedIn: '搬到岛上来了！去打个招呼吧。', neighbours: '居民', lockedRes: '找到 {n} 样东西后搬来', no3d: '这个浏览器显示不了 3D 小岛，所以把全部内容放在这一页。', dig: '挖一挖', fish: '钓鱼', wait: '等鱼上钩…', pull: '拉！',
@@ -1022,14 +1022,14 @@ function openGuest(step, msg) {
       <div class="links center"><button class="btn btn-main" data-act="g-join">${esc(u.gJoin)} 🏡</button></div>`, 'mini', () => openGuest('design'));
   }
   if (step === 'note') {
-    const open = !!(GCONF.url && GCONF.key);
-    return showCard('✍️', G.name[lang], '', `<div class="g-face">${GA.svg(guestLook, 84)}</div><p class="lead center">${esc(G.askNote[lang].replace('{n}', guestLook.name))}</p>` + (open
-      ? `<label class="g-l">${esc(u.gMsg)}<textarea id="gMsg" maxlength="500" rows="4"></textarea></label><label class="g-l">${esc(u.gContact)}<input id="gContact" maxlength="120" autocomplete="email"></label>
-         <label class="g-check"><input type="checkbox" id="gCard" checked> ${esc(u.gCard)}</label><p class="caption">${esc(G.privacy[lang])}</p>${note}
-         <div class="links center"><button class="btn btn-main" data-act="g-send">${esc(u.gSend)} ✉</button><button class="btn" data-act="close">${esc(u.gLater)}</button></div>`
-      : `<p class="caption center">${esc(G.closed[lang])}</p><div class="links center"><button class="btn" data-act="close">OK</button></div>`), 'mini', () => openGuest('note'));
+    return showCard('✍️', G.name[lang], '', `<div class="g-face">${GA.svg(guestLook, 84)}</div><p class="lead center">${esc(G.askNote[lang].replace('{n}', guestLook.name))}</p>
+      <label class="g-l">${esc(u.gMsg)}<textarea id="gMsg" maxlength="500" rows="4"></textarea></label><label class="g-l">${esc(u.gContact)}<input id="gContact" maxlength="120" autocomplete="email"></label>
+      <p class="caption">${esc(G.privacy[lang])}</p>${note}
+      <div class="links center"><button class="btn btn-main" data-act="g-send">${esc(u.gSend)} ✉</button><button class="btn" data-act="close">${esc(u.gLater)}</button></div>`, 'mini', () => openGuest('note'));
   }
-  if (step === 'sent') return showCard('✍️', G.name[lang], '', `<div class="item-big" aria-hidden="true">💌</div><p class="lead center">${esc(G.sent[lang])}</p>`, 'mini', () => openGuest('sent'));
+  if (step === 'sent') return showCard('✍️', G.name[lang], '', `<div class="item-big" aria-hidden="true">💌</div><p class="lead center">${esc(G.sent[lang])}</p>
+    <p class="caption center">${esc(G.fallback[lang].replace('{mail}', d().mail))}</p><textarea class="g-copy" id="gCopy" readonly rows="5">${esc(lastMail)}</textarea>
+    <div class="links center"><button class="btn" data-act="g-copy">${esc(u.gCopy)}</button><button class="btn" data-act="postcard">📸 ${esc(u.gSaveCard)}</button></div>`, 'mini', () => openGuest('sent'));
   showCard('✍️', G.name[lang], '', `<div class="g-face">${GA.svg(guestLook, 110)}</div><p class="lead center"><b>${esc(guestLook.name)}</b></p><p class="center">${esc(u.gYours)}</p>
     <div class="links center"><button class="btn btn-main" data-act="g-note">${esc(u.gNote)} ✉</button><button class="btn" data-act="g-edit">${esc(u.gEdit)}</button></div>`, 'mini', () => openGuest('home'));
 }
@@ -1041,19 +1041,17 @@ function joinGuest() {
   const first = !flags.has('guest'); flag('guest'); syncResidents(first); sfx('right'); renderHud();
   openGuest('note');
 }
-async function sendNote() {
-  const u = t(), message = ($('gMsg').value || '').trim().slice(0, 500), contact = ($('gContact').value || '').trim().slice(0, 120);
+let lastMail = '';
+function sendNote() {            // opens the visitor's own mail app with the note ready to send; nothing is stored anywhere else
+  const u = t(), G = EX.guestbook, message = ($('gMsg').value || '').trim().slice(0, 500), contact = ($('gContact').value || '').trim().slice(0, 120);
   if (!message) return openGuest('note', u.gNeedMsg);
-  if (Date.now() - store.get('noteAt', 0) < 60000) return openGuest('note', u.gWait);
-  let postcard = null;
-  if ($('gCard').checked) { try { const big = makePostcard(), sm = document.createElement('canvas'); sm.width = 900; sm.height = 600; sm.getContext('2d').drawImage(big, 0, 0, 900, 600); postcard = sm.toDataURL('image/jpeg', 0.72); if (postcard.length > 380000) postcard = null; } catch (e) {} }
-  const btn = document.querySelector('[data-act="g-send"]'); btn.disabled = true; btn.textContent = u.gSending;
-  try {
-    const res = await fetch(GCONF.url.replace(/\/$/, '') + '/rest/v1/guests', { method: 'POST', headers: { apikey: GCONF.key, Authorization: 'Bearer ' + GCONF.key, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
-      body: JSON.stringify({ name: guestLook.name, species: guestLook.species, color: guestLook.color, accent: guestLook.accent, message, contact: contact || null, postcard, lang }) });
-    if (!res.ok) throw new Error(String(res.status));
-    store.set('noteAt', Date.now()); sfx('item'); openGuest('sent');
-  } catch (e) { $('gMsg') && ($('gMsg').dataset.keep = '1'); const keepM = message, keepC = contact; openGuest('note', u.gFail); $('gMsg').value = keepM; $('gContact').value = keepC; }
+  const code = btoa(unescape(encodeURIComponent(JSON.stringify({ name: guestLook.name, species: guestLook.species, color: guestLook.color, accent: guestLook.accent, message })))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  const link = 'https://starry-nn.github.io/starry-town/#g=' + code;
+  lastMail = [message, '', '— ' + guestLook.name + ' (' + GA.icon(guestLook.species) + ')', contact ? G.mailContact[lang] + contact : '', '', G.mailLink[lang], link].filter((x, i) => x !== '' || i === 1 || i === 4).join('\n');
+  const subject = G.mailSubject[lang].replace('{n}', guestLook.name);
+  sfx('item'); openGuest('sent');
+  const url = 'mailto:' + d().mail + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(lastMail);
+  if (window.__town.openMail) window.__town.openMail(url); else location.href = url;
 }
 let guess = ['', '', '', ''];
 function openMbti(msg, cls) {
@@ -1130,6 +1128,7 @@ $('cardBody').addEventListener('click', e => {
     if (a === 'g-join') joinGuest();
     if (a === 'g-send') sendNote();
     if (a === 'g-note') openGuest('note');
+    if (a === 'g-copy') { const ta = $('gCopy'); ta.select(); try { navigator.clipboard.writeText(ta.value); } catch (e) { document.execCommand('copy'); } btn.textContent = '✓ ' + t().gCopied; }
     if (a === 'g-edit') { draft = null; openGuest('design'); }
     if (a === 'reset') askReset();
     if (a === 'reset-yes') resetAll();

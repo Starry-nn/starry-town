@@ -26,7 +26,7 @@ Open `/admin/` on the live site. It lists every piece of text in English and Chi
 
 ## Guest board
 
-At the board on the plaza a visitor designs a small avatar, moves into a house on the island and can leave a private note (optionally with a postcard and a way to reach them). Notes go to a Supabase table that visitors can only insert into; `supabase/setup.sql` creates it. Put the project URL and anon key in `js/guest-config.js`. The owner signs in at `/admin/town.html` to read notes and to open the island with a visitor's avatar standing by their house.
+At the board on the plaza a visitor designs a small avatar, moves into a house on the island and can send a note. The note opens in the visitor's own email app (`mailto:`), so nothing is stored by the site. The email carries a link ending in `#g=…`; opening it shows the island with that visitor's avatar standing by their house, saying their note.
 
 ## Structure
 
