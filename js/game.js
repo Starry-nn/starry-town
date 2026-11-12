@@ -1,5 +1,5 @@
 /* Starry Town — a walkable portfolio island. The rules live here; view3d.js draws the picture. */
-import { createView } from './view3d.js?v=19';
+import { createView } from './view3d.js?v=20';
 (() => {
 'use strict';
 
@@ -41,7 +41,7 @@ const UI = {
     treeTitle: 'A note fell out of the tree!', notes: 'Shaken out of trees', lockedMbti: 'Moves in when the MBTI is guessed', guess: 'Guess', socials: 'Find me elsewhere', xhs: 'Xiaohongshu', modes: { day: 'Day', dusk: 'Dusk', night: 'Night' }, postcard: 'Postcard',
     postcardTitle: 'A postcard from the island', postcardMeta: 'Save it or send it to a friend', save: 'Save image', greet: 'Greetings from Starry Town', back: 'Back to backpack',
     quick: 'Quick view', cv: 'CV', lang: '中文', bag: 'Backpack',
-    visit: 'Visit', talk: 'Talk to', movedIn: 'just moved to the island! Go say hi.', neighbours: 'Residents', lockedRes: 'Moves in after {n} finds', no3d: 'This browser cannot show the 3D island, so here is everything on one page.', dig: 'Dig here', fish: 'Go fishing', wait: 'Waiting for a bite…', pull: 'Pull!',
+    goSee: 'Take me there', visit: 'Visit', talk: 'Talk to', movedIn: 'just moved to the island! Go say hi.', neighbours: 'Residents', lockedRes: 'Moves in after {n} finds', no3d: 'This browser cannot show the 3D island, so here is everything on one page.', dig: 'Dig here', fish: 'Go fishing', wait: 'Waiting for a bite…', pull: 'Pull!',
     hello: "Hi, I'm Nan! Welcome to my island. The to-do list in the top left will show you around. Bingo insists on coming along.",
     next: 'tap or press any key ▸', speaker: 'Nan',
     newStar: 'New star', allDone: 'All {n} stars found. Thanks for walking the whole island!', sayHi: 'Say hi',
@@ -74,7 +74,7 @@ const UI = {
     treeTitle: '树上掉下一张纸条！', notes: '树上摇下来的', lockedMbti: '猜对 MBTI 后搬来', guess: '猜一下', socials: '在别处找到我', xhs: '小红书', modes: { day: '白天', dusk: '黄昏', night: '夜晚' }, postcard: '明信片',
     postcardTitle: '一张小岛明信片', postcardMeta: '保存下来，或者发给朋友', save: '保存图片', greet: '来自 Starry Town 的问候', back: '回到背包',
     quick: '快速浏览', cv: '简历', lang: 'EN', bag: '背包',
-    visit: '拜访', talk: '聊聊', movedIn: '搬到岛上来了！去打个招呼吧。', neighbours: '居民', lockedRes: '找到 {n} 样东西后搬来', no3d: '这个浏览器显示不了 3D 小岛，所以把全部内容放在这一页。', dig: '挖一挖', fish: '钓鱼', wait: '等鱼上钩…', pull: '拉！',
+    goSee: '带我过去', visit: '拜访', talk: '聊聊', movedIn: '搬到岛上来了！去打个招呼吧。', neighbours: '居民', lockedRes: '找到 {n} 样东西后搬来', no3d: '这个浏览器显示不了 3D 小岛，所以把全部内容放在这一页。', dig: '挖一挖', fish: '钓鱼', wait: '等鱼上钩…', pull: '拉！',
     hello: '嗨，我是姚楠！欢迎来我的小岛。左上角的任务清单会带你逛一圈。苹果一定要跟着。',
     next: '点击或按任意键 ▸', speaker: '姚楠',
     newStar: '新的星星', allDone: '{n} 颗星全部找到，谢谢你逛完整座小岛！', sayHi: '打个招呼',
@@ -751,7 +751,12 @@ function update(dt) {
     if (time - sayAt > 0.2) hideSay();   // a line spoken on arrival must not be wiped by that same last step
   }
   const fetching = ballS && ballS.phase !== 'fly';
-  const target = fetching ? (ballS.phase === 'wait' ? ballS : player) : trail[0], ddx = target.x - dog.x, ddy = target.y - dog.y, dd = Math.hypot(ddx, ddy);
+  let aside = null;
+  if (talking) { const ux = player.x - talking.x, uy = player.y - talking.y, ul = Math.hypot(ux, uy) || 1; aside = { x: player.x + ux / ul * 22, y: player.y + uy / ul * 22 + 4 };
+    if (tileSolid(Math.floor(aside.x / T), Math.floor(aside.y / T))) aside = { x: player.x - uy / ul * 20, y: player.y + ux / ul * 20 };        // no room behind (water, a wall): wait beside instead
+    if (tileSolid(Math.floor(aside.x / T), Math.floor(aside.y / T))) aside = { x: player.x + uy / ul * 20, y: player.y - ux / ul * 20 };
+    if (tileSolid(Math.floor(aside.x / T), Math.floor(aside.y / T))) aside = { x: dog.x, y: dog.y }; }
+  const target = fetching ? (ballS.phase === 'wait' ? ballS : player) : aside || trail[0], ddx = target.x - dog.x, ddy = target.y - dog.y, dd = Math.hypot(ddx, ddy);
   dog.moving = dd > 0.6;
   if (dog.moving) {
     const s = Math.min(dd, SPEED * (fetching ? 1.7 : 1.15) * dt);
@@ -759,6 +764,11 @@ function update(dt) {
     dog.hx = ddx / dd; dog.hy = ddy / dd;
     dog.anim += dt;
   } else { dog.anim = 0; const fx = player.x - dog.x, fy = player.y - dog.y, fl = Math.hypot(fx, fy); if (fl > 8) { dog.hx = fx / fl; dog.hy = fy / fl; } }
+  for (const r of RES) {            // never stand inside a resident
+    if (!r.here) continue;
+    const ox = dog.x - r.x, oy = dog.y - r.y, ol = Math.hypot(ox, oy);
+    if (ol < 17) { const push = (17 - ol) * Math.min(1, dt * 10), nx = ol > 0.01 ? ox / ol : 1, ny = ol > 0.01 ? oy / ol : 0; dog.x += nx * push; dog.y += ny * push; }
+  }
   if (dog.pet > 0) dog.pet = Math.max(0, dog.pet - dt);
   updateResidents(dt);
   if (ballS) {
@@ -1102,14 +1112,16 @@ function openQuick() {
     group(u.sec.edu, ['edu']) + group(u.sec.skills, ['skills']) + group(u.sec.life, ['life']) + group(u.sec.contact, ['contact']), 'wide', openQuick);
 }
 function toast(html, ms) {
-  const e = $('toast'); e.innerHTML = html; e.hidden = false;
+  const e = $('toast'); e.onclick = null; e.style.cursor = ''; e.innerHTML = html; e.hidden = false;
   clearTimeout(toastTimer); if (ms) toastTimer = setTimeout(() => { e.hidden = true; }, ms);
 }
 cardEl.addEventListener('close', () => {
   reopen = null; keys.clear(); sfx('close');
   if (pendingMove) {
     const r = pendingMove; pendingMove = null; pendingToast = null;
-    toast(`<span>🏡 <b>${esc(r.def.name[lang])}</b> ${esc(t().movedIn)}</span>`, 6000); sfx('move');
+    toast(`<span>🏡 <b>${esc(r.def.name[lang])}</b> ${esc(t().movedIn)}</span><button class="btn" id="toastGo">${esc(t().goSee)} →</button>`, 9000); sfx('move');
+    const go = () => { $('toast').hidden = true; $('toast').onclick = null; if (!paused() && !busy()) goTalk(r); };
+    $('toast').onclick = go; $('toast').style.cursor = 'pointer';
     return;
   }
   if (pendingToast === 'all') {
