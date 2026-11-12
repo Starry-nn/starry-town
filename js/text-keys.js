@@ -3,7 +3,7 @@
 window.TextKeys = (() => {
   const skip = v => typeof v !== 'string' || !v.trim() || /^(https?:|mailto:|tel:|assets\/|\+?[\d\s-]+$)/.test(v) || /^[\w.+-]+@[\w.-]+$/.test(v);
   const SECTIONS = [['data', '个人资料与经历'], ['spots', '地点名称'], ['extras.dig', 'Fun fact：挖地'], ['extras.fish', 'Fun fact：钓鱼'], ['extras.tree', 'Fun fact：摇果树'],
-    ['extras.mbti', 'MBTI 竞猜'], ['extras.showcase', '精选作品馆'], ['extras.residents', '居民'], ['extras.tasks', '任务清单'], ['extras.notes', '设计说明'], ['ui', '界面文字']];
+    ['extras.mbti', 'MBTI 竞猜'], ['extras.showcase', '精选作品馆'], ['extras.residents', '居民'], ['extras.guestbook', '留言板'], ['extras.tasks', '任务清单'], ['extras.notes', '设计说明'], ['ui', '界面文字']];
   function flatten({ DATA, EXTRAS, UI, SPOTS }) {
     const out = [];
     const emit = (key, en, zh) => { if (!(skip(en) && skip(zh))) out.push({ key, en: String(en ?? ''), zh: String(zh ?? '') }); };
@@ -15,7 +15,7 @@ window.TextKeys = (() => {
     };
     pair('data', DATA.en, DATA.zh);
     SPOTS.forEach(s => pair('spots.' + s.id, s.name.en, s.name.zh));
-    ['dig', 'fish', 'tree', 'mbti', 'showcase', 'residents', 'tasks', 'notes'].forEach(k => walk('extras.' + k, EXTRAS[k]));
+    ['dig', 'fish', 'tree', 'mbti', 'showcase', 'residents', 'guestbook', 'tasks', 'notes'].forEach(k => walk('extras.' + k, EXTRAS[k]));
     pair('ui', UI.en, UI.zh);
     out.forEach(e => { e.section = (SECTIONS.find(s => e.key === s[0] || e.key.startsWith(s[0] + '.')) || ['', '其他'])[1]; });
     return out;

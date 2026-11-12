@@ -327,6 +327,12 @@ export function createView(world, canvas) {
       const ball = new THREE.Mesh(sph(0.36), bend(new THREE.MeshLambertMaterial({ color: '#d9c8ff', emissive: '#8a5cf0', emissiveIntensity: 0.45 })));
       ball.castShadow = true; ball.position.set(x, 1.34, z); scene.add(ball); dyn.oracle = ball;
     },
+    board(x, z) {       // the guest board: cork, pinned notes and a pencil
+      [-0.5, 0.5].forEach(o => S.add(cyl(0.05, 0.06, 1.5, 8), '#a9785a', x + o, 0.75, z));
+      S.add(rbox(1.5, 1.0, 0.1, 0.06), '#b9825a', x, 1.2, z + 0.02); S.add(rbox(1.34, 0.84, 0.1, 0.04), '#e9c48e', x, 1.2, z + 0.05);
+      S.add(frustum(1.7, 0.3, 1.5, 0.2, 0.16), '#f590b2', x, 1.8, z + 0.02);
+      [[-0.42, 1.38, '#fffaf0'], [0.0, 1.42, '#ffd9e6'], [0.42, 1.36, '#d6f5cf'], [-0.25, 1.02, '#fff1b8'], [0.22, 1.0, '#dff1fb']].forEach(([ox, y, c], k) => { S.add(rbox(0.3, 0.3, 0.02, 0.01), c, x + ox, y, z + 0.11, { rz: (k % 2 ? 1 : -1) * 0.08 }); S.add(sphS(0.03), '#f0766a', x + ox, y + 0.11, z + 0.13); });
+    },
     xmas(x, z) {        // a Christmas tree with baubles, a star and presents
       S.add(cyl(0.16, 0.2, 0.5, 10), '#8f6248', x, 0.25, z); S.add(cyl(0.5, 0.42, 0.22, 14), '#f0766a', x, 0.11, z);
       [[1.25, 1.5, 0.85, '#2f9a6a'], [1.0, 1.35, 1.75, '#36a873'], [0.75, 1.2, 2.55, '#3fb57d'], [0.5, 1.0, 3.25, '#49c088']].forEach(([r, h, y, c]) => S.add(cone(r, h, 16), c, x, y, z));
@@ -553,6 +559,7 @@ export function createView(world, canvas) {
     });
   });
   const critters = world.RESIDENTS.map(def => { const c = makeCritter(def); scene.add(c.g); return c; });
+  function setCritter(i, def) { if (!critters[i]) return; scene.remove(critters[i].g); critters[i] = makeCritter(def); scene.add(critters[i].g); }      // a guest changed their look
 
   /* ---------- small moving things ---------- */
   const digs = world.DIGS.map(dg => {
@@ -798,5 +805,5 @@ export function createView(world, canvas) {
     renderer.render(scene, camera);
   }
   resize();
-  return { render, resize, project, pick, setMode, setCam };
+  return { render, resize, project, pick, setMode, setCam, setCritter };
 }

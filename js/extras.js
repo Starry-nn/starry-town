@@ -115,7 +115,23 @@ window.EXTRAS = {
         en: ['You guessed it! I came as soon as the crystal ball lit up.', 'Between us: ask her again next month and the answer may be different.', 'Some fruit trees hide little notes. Give them a good shake.'],
         zh: ['你猜对啦！水晶球一亮我就赶来了。', '悄悄说：下个月再问她，答案可能又不一样了。', '有些果树里藏着小纸条，用力摇一摇。'],
       } },
+    // The visitor's own avatar. Name, species and colours come from what they design at the guest board.
+    { id: 'guest', species: 'cat', icon: '🐱', color: '#f6c89f', accent: '#7fd1c0', unlock: 'guest',
+      name: { en: 'You', zh: '你' },
+      lines: {
+        en: ['This is my house now. Nan built it the moment I signed the board!', 'I left Nan a note. She reads every one of them.', 'Go on, keep exploring. I will keep an eye on the place.'],
+        zh: ['这是我的小房子！我在留言板上一签名，姚楠就给我盖好了。', '我给姚楠留了言，她每一条都会看。', '你继续逛吧，我帮你看家。'],
+      } },
   ],
+  // The guest board on the plaza: visitors make an avatar, move in and can leave Nan a private note
+  guestbook: {
+    name: { en: 'Guest board', zh: '留言板' },
+    intro: { en: 'Make a little character of your own and move into the island. You can leave me a note too. Only I can read it.', zh: '捏一个自己的小形象，搬进这座岛。也可以给我留言，留言只有我本人能看到。' },
+    askNote: { en: '{n}, welcome to the island! Want to leave me a note?', zh: '{n}，欢迎搬来小岛！要不要给我留句话？' },
+    privacy: { en: 'Your note, avatar and contact go only to Nan and are never shown on the site. Contact is optional; leave it if you would like a reply.', zh: '留言、形象和联系方式只会发给姚楠本人，不会在网站上公开。联系方式选填，想收到回复再留。' },
+    sent: { en: 'Got it, thank you! If you left a way to reach you, I will write back.', zh: '收到啦，谢谢你！如果留了联系方式，我会回复你。' },
+    closed: { en: 'Notes are not open yet. Your character and house are still yours to keep.', zh: '留言功能还没开放，不过你的形象和小房子已经留在岛上了。' },
+  },
   // Island to-do list: gives every visitor something to aim for. Ids are wired up in game.js.
   tasks: [
     { id: 'sign',     icon: '👋', en: 'Read the welcome sign', zh: '看看小岛路牌' },

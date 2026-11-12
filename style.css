@@ -289,3 +289,15 @@ button.slot:hover { background: #fff1b8; }
 .emote, .camctl { box-shadow: 0 5px 0 rgba(107, 79, 58, .22), 0 10px 22px rgba(107, 79, 58, .16); }
 .hud-brand, .chip, .hud .btn { box-shadow: 0 3px 0 rgba(107, 79, 58, .18), 0 6px 16px rgba(107, 79, 58, .1); }
 .toast { box-shadow: 0 4px 0 rgba(107, 79, 58, .16), 0 10px 24px rgba(107, 79, 58, .16); }
+
+/* ---- guest board ---- */
+.g-face { display: grid; place-items: center; margin: 6px 0 10px; }
+.g-l { display: block; font: 900 13px/1.4 var(--font); color: var(--ink-soft); margin-top: 12px; }
+.g-l input, .g-l textarea { display: block; width: 100%; margin-top: 5px; font: 700 15px/1.5 var(--font); color: var(--ink); border: 2.5px solid var(--line); border-radius: 14px; padding: 9px 12px; background: #fff; resize: vertical; }
+.g-sp, .g-sw { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.g-sp button { font-size: 24px; line-height: 1; width: 48px; height: 48px; border-radius: 16px; border: 3px solid var(--line); background: #fff; cursor: pointer; }
+.g-sw button { width: 34px; height: 34px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 2px var(--line); cursor: pointer; }
+.g-sp button[aria-pressed="true"] { border-color: var(--yellow); background: #fff7d6; }
+.g-sw button[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--ink); }
+.g-sp button:focus-visible, .g-sw button:focus-visible, .g-l input:focus-visible, .g-l textarea:focus-visible { outline: 3px solid var(--green-d); outline-offset: 2px; }
+.g-check { display: flex; gap: 8px; align-items: center; font: 700 14px/1.4 var(--font); margin-top: 12px; }

@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Starry Town · 我的私人小镇</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root { --ink: #6b4f3a; --soft: #9a8068; --cream: #fffaf0; --cream2: #f8efd9; --line: #eadcc0; --green: #5cbf7c; --green-d: #46a368; --yellow: #ffd166; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 700 15px/1.55 Nunito, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif; color: var(--ink); background: #e9f6ee; }
+  header { background: var(--cream); border-bottom: 3px solid var(--line); padding: 14px 20px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  h1 { font-size: 20px; font-weight: 900; margin: 0; flex: 1; } h1 span { color: #f5b01a; }
+  main { max-width: 1100px; margin: 0 auto; padding: 20px 20px 80px; }
+  button, .btn { font: 800 14px/1 Nunito, "PingFang SC", sans-serif; color: var(--ink); border: 0; border-radius: 999px; padding: 10px 16px; background: var(--cream2); cursor: pointer; box-shadow: 0 3px 0 rgba(107, 79, 58, .18); text-decoration: none; display: inline-block; }
+  button.main, .btn.main { background: var(--green); color: #fff; box-shadow: 0 3px 0 var(--green-d); }
+  button:focus-visible, .btn:focus-visible, input:focus-visible { outline: 3px solid var(--green-d); outline-offset: 2px; }
+  .panel { background: var(--cream); border-radius: 22px; padding: 22px; max-width: 420px; margin: 40px auto; }
+  .panel label { display: block; font-size: 13px; font-weight: 900; color: var(--soft); margin-top: 12px; }
+  .panel input { display: block; width: 100%; margin-top: 5px; font: inherit; color: inherit; border: 2px solid var(--line); border-radius: 14px; padding: 9px 12px; background: #fff; }
+  #msg { min-height: 1.5em; font-size: 13.5px; color: #c9584e; margin: 10px 0 0; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+  .card { background: var(--cream); border-radius: 22px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+  .who { display: flex; gap: 12px; align-items: center; } .who b { font-size: 17px; font-weight: 900; } .who small { display: block; color: var(--soft); font-size: 12.5px; }
+  .note { background: #fff; border-radius: 16px; padding: 12px 14px; white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; }
+  .card img { width: 100%; border-radius: 14px; display: block; }
+  .acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; }
+  .empty { text-align: center; color: var(--soft); padding: 50px 0; }
+</style>
+</head>
+<body>
+<header><h1><span>★</span> 我的私人小镇</h1><span id="count"></span><button id="btnOut" hidden>退出登录</button></header>
+<main>
+  <div class="panel" id="login" hidden>
+    <b>登录后查看访客留下的形象和留言</b>
+    <label>邮箱<input id="email" type="email" autocomplete="username"></label>
+    <label>密码<input id="pass" type="password" autocomplete="current-password"></label>
+    <p id="msg" role="status"></p>
+    <button class="main" id="btnIn">登录</button>
+  </div>
+  <div class="panel" id="noconf" hidden><b>留言功能还没接上 Supabase。</b><p>把项目地址和公开密钥填进 <code>js/guest-config.js</code> 之后，这里就能用了。</p></div>
+  <div class="grid" id="list"></div>
+</main>
+<script src="../js/avatar.js"></script>
+<script>document.write('<script src="../js/guest-config.js?t=' + Date.now() + '"><\/script>');</script>
+<script>
+(() => {
+  'use strict';
+  const C = window.GUEST_CONFIG || {}, GA = window.GuestAvatar, $ = id => document.getElementById(id);
+  const esc = v => String(v ?? '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
+  if (!C.url || !C.key) { $('noconf').hidden = false; return; }
+  const base = C.url.replace(/\/$/, ''), KEY = 'starry-town-owner';
+  let session = null; try { session = JSON.parse(sessionStorage.getItem(KEY) || 'null'); } catch (e) {}
+  const api = (path, opt = {}) => fetch(base + path, Object.assign({}, opt, { headers: Object.assign({ apikey: C.key, Authorization: 'Bearer ' + (session ? session.access_token : C.key), 'Content-Type': 'application/json' }, opt.headers || {}) }));
+  const b64 = o => btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  let rows = [];
+  function show() {
+    $('login').hidden = !!session; $('btnOut').hidden = !session;
+    if (!session) { $('list').innerHTML = ''; $('count').textContent = ''; }
+  }
+  async function load() {
+    const res = await api('/rest/v1/guests?select=*&order=created_at.desc');
+    if (res.status === 401) { session = null; sessionStorage.removeItem(KEY); show(); $('msg').textContent = '登录已过期，请重新登录。'; return; }
+    rows = res.ok ? await res.json() : [];
+    $('count').textContent = rows.length + ' 位访客';
+    $('list').innerHTML = rows.length ? rows.map(r => {
+      const mail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(r.contact || '');
+      const pc = /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(r.postcard || '') ? r.postcard : '';
+      return `<article class="card"><div class="who">${GA.svg(r, 64)}<div><b>${esc(r.name)}</b><small>${esc(new Date(r.created_at).toLocaleString())} · ${esc(r.lang || '')}</small></div></div>
+        <p class="note">${esc(r.message)}</p>${r.contact ? `<div>联系方式：${mail ? `<a href="mailto:${esc(r.contact)}">${esc(r.contact)}</a>` : esc(r.contact)}</div>` : ''}
+        ${pc ? `<img src="${pc}" alt="访客留下的明信片">` : ''}
+        <div class="acts"><a class="btn main" target="_blank" rel="noopener" href="../#g=${b64({ name: r.name, species: r.species, color: r.color, accent: r.accent, message: r.message })}">在小岛上见 TA ↗</a><button data-del="${esc(r.id)}">删除</button></div></article>`;
+    }).join('') : '<p class="empty">还没有访客留言。</p>';
+  }
+  $('btnIn').onclick = async () => {
+    $('msg').textContent = '';
+    const res = await fetch(base + '/auth/v1/token?grant_type=password', { method: 'POST', headers: { apikey: C.key, 'Content-Type': 'application/json' }, body: JSON.stringify({ email: $('email').value.trim(), password: $('pass').value }) });
+    if (!res.ok) { $('msg').textContent = '登录失败，请检查邮箱和密码。'; return; }
+    session = await res.json(); $('pass').value = ''; try { sessionStorage.setItem(KEY, JSON.stringify({ access_token: session.access_token })); } catch (e) {}
+    show(); load();
+  };
+  $('pass').addEventListener('keydown', e => { if (e.key === 'Enter') $('btnIn').click(); });
+  $('btnOut').onclick = () => { session = null; sessionStorage.removeItem(KEY); show(); };
+  $('list').addEventListener('click', async e => {
+    const b = e.target.closest('[data-del]'); if (!b) return;
+    if (!confirm('删除这条留言？删除后无法恢复。')) return;
+    const res = await api('/rest/v1/guests?id=eq.' + encodeURIComponent(b.dataset.del), { method: 'DELETE' });
+    if (res.ok) load();
+  });
+  show(); if (session) load();
+})();
+</script>
+</body>
+</html>

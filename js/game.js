@@ -1,9 +1,18 @@
 /* Starry Town — a walkable portfolio island. The rules live here; view3d.js draws the picture. */
-import { createView } from './view3d.js?v=20';
+import { createView } from './view3d.js?v=21';
 (() => {
 'use strict';
 
-const DATA = window.DATA, EX = window.EXTRAS;
+const DATA = window.DATA, EX = window.EXTRAS, GA = window.GuestAvatar, GCONF = window.GUEST_CONFIG || {};
+// The guest resident takes the look the visitor designed. A link from the private town (#g=...) shows one visitor's avatar and note instead;
+// that data sits in the part of the address that is never sent to a server.
+const guestDef = EX.residents.find(r => r.id === 'guest');
+let ownerGuest = null;
+try {
+  const m = /[#&]g=([\w-]+)/.exec(location.hash);
+  if (m) { const j = JSON.parse(decodeURIComponent(escape(atob(m[1].replace(/-/g, '+').replace(/_/g, '/'))))); ownerGuest = Object.assign(GA.clean(j), { message: String(j.message || '').slice(0, 600) }); }
+} catch (e) {}
+function dressGuest(d) { Object.assign(guestDef, { species: d.species, color: d.color, accent: d.accent, icon: GA.icon(d.species) }); if (d.name) guestDef.name = { en: d.name, zh: d.name }; }
 const T = 16, MW = 64, MH = 34;
 const $ = id => document.getElementById(id);
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -38,7 +47,8 @@ const UI = {
     thanks: ['Fruit! For me? You are my favourite visitor.', 'Fresh from the tree. Thank you!', 'I will save this one for later. Maybe.'],
     fruitLine: 'Fruit in your pocket', fruitHint: 'Shake a fruit tree, then give the fruit to a resident.',
     settings: 'Island settings', soundOn: 'Sound effects: on', soundOff: 'Sound effects: off', musicOn: 'Music: on', musicOff: 'Music: off', mute: 'Sound on / off',
-    treeTitle: 'A note fell out of the tree!', notes: 'Shaken out of trees', lockedMbti: 'Moves in when the MBTI is guessed', guess: 'Guess', socials: 'Find me elsewhere', xhs: 'Xiaohongshu', modes: { day: 'Day', dusk: 'Dusk', night: 'Night' }, postcard: 'Postcard',
+    treeTitle: 'A note fell out of the tree!', notes: 'Shaken out of trees', lockedMbti: 'Moves in when the MBTI is guessed', lockedGuest: 'This one is you: sign the guest board',
+    gName: 'Your name', gSpecies: 'Who are you?', gFur: 'Colour', gShirt: 'Shirt', gJoin: 'Move in', gEdit: 'Change my look', gNote: 'Leave Nan a note', gMsg: 'Your note', gContact: 'Email or any way to reach you (optional)', gCard: 'Attach a postcard of the island as it looks now', gSend: 'Send', gLater: 'Maybe later', gSending: 'Sending…', gFail: 'That did not go through. Please try again in a moment.', gWait: 'You just sent one. Give it a minute.', gNeedName: 'Give your character a name first.', gNeedMsg: 'Write a few words first.', gYours: 'Your character lives on the island.', guess: 'Guess', socials: 'Find me elsewhere', xhs: 'Xiaohongshu', modes: { day: 'Day', dusk: 'Dusk', night: 'Night' }, postcard: 'Postcard',
     postcardTitle: 'A postcard from the island', postcardMeta: 'Save it or send it to a friend', save: 'Save image', greet: 'Greetings from Starry Town', back: 'Back to backpack',
     quick: 'Quick view', cv: 'CV', lang: '中文', bag: 'Backpack',
     goSee: 'Take me there', visit: 'Visit', talk: 'Talk to', movedIn: 'just moved to the island! Go say hi.', neighbours: 'Residents', lockedRes: 'Moves in after {n} finds', no3d: 'This browser cannot show the 3D island, so here is everything on one page.', dig: 'Dig here', fish: 'Go fishing', wait: 'Waiting for a bite…', pull: 'Pull!',
@@ -71,7 +81,8 @@ const UI = {
     thanks: ['水果！给我的吗？你是我最喜欢的访客。', '刚摘的，谢谢你！', '这个我留着晚点吃。大概吧。'],
     fruitLine: '口袋里的水果', fruitHint: '摇一摇果树，再把水果送给居民。',
     settings: '小岛设置', soundOn: '音效：开', soundOff: '音效：关', musicOn: '音乐：开', musicOff: '音乐：关', mute: '声音开关',
-    treeTitle: '树上掉下一张纸条！', notes: '树上摇下来的', lockedMbti: '猜对 MBTI 后搬来', guess: '猜一下', socials: '在别处找到我', xhs: '小红书', modes: { day: '白天', dusk: '黄昏', night: '夜晚' }, postcard: '明信片',
+    treeTitle: '树上掉下一张纸条！', notes: '树上摇下来的', lockedMbti: '猜对 MBTI 后搬来', lockedGuest: '这是你：去留言板签个名',
+    gName: '你的名字', gSpecies: '你是谁？', gFur: '颜色', gShirt: '衣服', gJoin: '搬进小岛', gEdit: '修改形象', gNote: '给姚楠留言', gMsg: '想说的话', gContact: '邮箱或其他联系方式（选填）', gCard: '附上一张此刻的小岛明信片', gSend: '发送', gLater: '以后再说', gSending: '发送中…', gFail: '没发出去，请稍后再试。', gWait: '刚刚已经发过一条了，过一分钟再发。', gNeedName: '先给你的形象起个名字。', gNeedMsg: '先写几句话吧。', gYours: '你的形象已经住在岛上了。', guess: '猜一下', socials: '在别处找到我', xhs: '小红书', modes: { day: '白天', dusk: '黄昏', night: '夜晚' }, postcard: '明信片',
     postcardTitle: '一张小岛明信片', postcardMeta: '保存下来，或者发给朋友', save: '保存图片', greet: '来自 Starry Town 的问候', back: '回到背包',
     quick: '快速浏览', cv: '简历', lang: 'EN', bag: '背包',
     goSee: '带我过去', visit: '拜访', talk: '聊聊', movedIn: '搬到岛上来了！去打个招呼吧。', neighbours: '居民', lockedRes: '找到 {n} 样东西后搬来', no3d: '这个浏览器显示不了 3D 小岛，所以把全部内容放在这一页。', dig: '挖一挖', fish: '钓鱼', wait: '等鱼上钩…', pull: '拉！',
@@ -117,9 +128,10 @@ const SPOTS = [
 if (window.TextKeys) window.TextKeys.apply({ DATA, EXTRAS: EX, UI, SPOTS }, window.TEXT_OVERRIDES);     // text edited in /admin
 const GUESS = { id: 'mbti', kind: 'mbti', name: EX.mbti.name };       // the guessing machine: a place to visit, but not one of the 16 stars
 GUESS.badge = '🔮';
+const BOARD = { id: 'guest', kind: 'guest', badge: '✍️', name: EX.guestbook.name };
 const month = new Date().getMonth();
 const XMAS = month >= 10 || month === 0 ? { id: 'xmas', kind: 'xmas', badge: '🎄', name: { en: 'Christmas tree', zh: '圣诞树' } } : null;   // November to January
-const PLACES = [...SPOTS, GUESS].concat(XMAS ? [XMAS] : []);
+const PLACES = [...SPOTS, GUESS, BOARD].concat(XMAS ? [XMAS] : []);
 const spotById = Object.fromEntries(PLACES.map(s => [s.id, s]));
 const found = new Set(store.get('found', []).filter(id => spotById[id] && id !== 'mbti'));
 const dug = new Set(store.get('dug', []).filter(i => i >= 0 && i < EX.dig.length));
@@ -188,14 +200,17 @@ const BUILDINGS = [
   { id: 'edu',      kind: 'campus', x: 35, y: 18, w: 7, h: 5, door: 3, wall: '#fbf1dc', roof: '#9a6fd6', roofL: '#b390e6', doorC: '#7a4fb8', sign: '#e6d6ff' },
 ];
 // one house per resident, east of the river; it is built when its owner moves in
-const HOME_AT = { mochi: [47, 26], pip: [51, 26], bao: [57, 26], rana: [57, 20], kiki: [58, 12] };
+const HOME_AT = { mochi: [47, 26], pip: [51, 26], bao: [57, 26], rana: [57, 20], kiki: [58, 12], guest: [47, 8] };
+let guestLook = ownerGuest || store.get('guest', null);
+if (guestLook) { guestLook = Object.assign(GA.clean(guestLook), { message: guestLook.message }); dressGuest(guestLook); }
+if (ownerGuest) guestDef.lines = { en: [ownerGuest.message || '…'], zh: [ownerGuest.message || '…'] };
 const HOMES = EX.residents.filter(r => HOME_AT[r.id]).map(r => ({ id: r.id, kind: 'house', x: HOME_AT[r.id][0], y: HOME_AT[r.id][1], w: 3, h: 3, door: 1,
   wall: '#fffaf0', roof: r.accent, roofL: r.accent, doorC: '#a9785a', sign: r.color }));
 EX.residents.forEach(r => { const h = HOMES.find(q => q.id === r.id); if (h) r.home = [h.x + 1, h.y + 3]; });
 const TRIG = {
   skills: [5, 13], orbit: [10, 13], linear: [16, 13], monolith: [22, 11], crossing: [31, 13], waves: [38, 13],
   sync: [6, 23], agent: [15, 23], wavo: [30, 23], edu: [38, 23],
-  about: [20, 16], focus: [25, 16], mbti: [24, 15], showcase: [54, 13], xmas: [26, 18], manus: [26, 14], life: [13, 29], odyssey: [31, 30], contact: [23, 27],
+  about: [20, 16], focus: [25, 16], mbti: [24, 15], guest: [21, 15], showcase: [54, 13], xmas: [26, 18], manus: [26, 14], life: [13, 29], odyssey: [31, 30], contact: [23, 27],
 };
 const OBJECTS = [
   { kind: 'sign',     tx: 20, ty: 15, fw: 1, fh: 1, spot: 'about' },
@@ -211,6 +226,7 @@ const OBJECTS = [
   { kind: 'ship',     tx: 32, ty: 29, fw: 5, fh: 3, spot: 'odyssey' },
   { kind: 'oracle',   tx: 24, ty: 14, fw: 1, fh: 1, spot: 'mbti' },
   ...(XMAS ? [{ kind: 'xmas', tx: 26, ty: 17, fw: 1, fh: 1, spot: 'xmas' }] : []),
+  { kind: 'board', tx: 21, ty: 14, fw: 1, fh: 1, spot: 'guest' },
   { kind: 'fountain', tx: 49, ty: 13, fw: 2, fh: 2 },
   { kind: 'windmill', tx: 59, ty: 5, fw: 2, fh: 2 },
   { kind: 'crossSign', tx: 28, ty: 13, fw: 1, fh: 1 },
@@ -242,7 +258,7 @@ OBJECTS.forEach(o => {
   rect(o.tx - 1, o.ty - 2, o.fw + 2, o.fh + 3, 1, reserved);
   if (o.spot) {
     const s = spotById[o.spot];
-    const hh = { booth: 2.7, ship: 4.6, doghouse: 2.1, sign: 1.9, scope: 2.0, mailbox: 1.9, oracle: 2.0, xmas: 3.9 }[o.kind] || 2;
+    const hh = { booth: 2.7, ship: 4.6, doghouse: 2.1, sign: 1.9, scope: 2.0, mailbox: 1.9, oracle: 2.0, xmas: 3.9, board: 2.1 }[o.kind] || 2;
     s.front = { x: (o.tx + o.fw / 2) * T, y: (o.ty + o.fh) * T };
     s.boxes = [o.kind === 'ship' ? { x0: o.tx + 0.3, x1: o.tx + 4.7, z0: o.ty + 0.7, z1: o.ty + 2.3, h: 4.5 } : { x0: o.tx - 0.1, x1: o.tx + o.fw + 0.1, z0: o.ty, z1: o.ty + o.fh, h: hh - 0.3 }];
     s.lab = { x: (o.tx + o.fw / 2) * T, y: (o.ty + o.fh / 2) * T, h: Math.min(hh, 3.3) };
@@ -465,7 +481,7 @@ function tiltBy(d) { cam.p = Math.min(1.38, Math.max(0.42, cam.p + d)); applyCam
 function zoomBy(k) { cam.z = Math.min(1.5, Math.max(0.5, cam.z * k)); applyCam(); }
 let pendingMove = null;
 function syncResidents(announce) {
-  for (const r of RES) if (!r.here && (r.def.unlock === 'mbti' ? flags.has('mbti') : itemCount() >= r.def.at)) { r.here = true; if (announce) pendingMove = r; }
+  for (const r of RES) if (!r.here && (r.def.unlock === 'mbti' ? flags.has('mbti') : r.def.unlock === 'guest' ? (!!ownerGuest || flags.has('guest')) : itemCount() >= r.def.at)) { r.here = true; if (announce) pendingMove = r; }
 }
 function segFree(x0, y0, x1, y1) {
   const n = Math.ceil(Math.hypot(x1 - x0, y1 - y0) / 4);
@@ -988,6 +1004,57 @@ function showCard(kicker, title, meta, body, cls, again) {
   if (!cardEl.open) cardEl.showModal();
   keys.clear();
 }
+/* ---- guest board: design an avatar, move in, leave a private note ---- */
+let draft = null;
+const guestIdx = RES.findIndex(r => r.def.id === 'guest');
+function openGuest(step, msg) {
+  const u = t(), G = EX.guestbook, joined = flags.has('guest') && guestLook;
+  if (ownerGuest) return showCard('✍️', G.name[lang], '', `<div class="g-face">${GA.svg(ownerGuest, 110)}</div><p class="lead center"><b>${esc(ownerGuest.name)}</b></p><p class="center">${esc(ownerGuest.message || '')}</p>`, 'mini', () => openGuest());
+  if (!step) step = joined ? 'home' : 'design';
+  const note = msg ? `<p class="mbti-msg" style="color:#c9584e">${esc(msg)}</p>` : '';
+  if (step === 'design') {
+    draft = draft || Object.assign({ name: '', species: 'cat', color: GA.FUR[0], accent: GA.SHIRT[0] }, guestLook || {});
+    const sw = (list, key) => `<div class="g-sw">${list.map(c => `<button data-g="${key}:${c}" aria-pressed="${draft[key] === c}" aria-label="${c}" style="background:${c}"></button>`).join('')}</div>`;
+    return showCard('✍️', G.name[lang], '', `<p class="center">${esc(G.intro[lang])}</p><div class="g-face" id="gFace">${GA.svg(draft, 110)}</div>
+      <label class="g-l">${esc(u.gName)}<input id="gName" maxlength="24" autocomplete="off" value="${esc(draft.name)}"></label>
+      <div class="g-l">${esc(u.gSpecies)}<div class="g-sp">${GA.SPECIES.map(([id, ic]) => `<button data-g="species:${id}" aria-pressed="${draft.species === id}">${ic}</button>`).join('')}</div></div>
+      <div class="g-l">${esc(u.gFur)}${sw(GA.FUR, 'color')}</div><div class="g-l">${esc(u.gShirt)}${sw(GA.SHIRT, 'accent')}</div>${note}
+      <div class="links center"><button class="btn btn-main" data-act="g-join">${esc(u.gJoin)} 🏡</button></div>`, 'mini', () => openGuest('design'));
+  }
+  if (step === 'note') {
+    const open = !!(GCONF.url && GCONF.key);
+    return showCard('✍️', G.name[lang], '', `<div class="g-face">${GA.svg(guestLook, 84)}</div><p class="lead center">${esc(G.askNote[lang].replace('{n}', guestLook.name))}</p>` + (open
+      ? `<label class="g-l">${esc(u.gMsg)}<textarea id="gMsg" maxlength="500" rows="4"></textarea></label><label class="g-l">${esc(u.gContact)}<input id="gContact" maxlength="120" autocomplete="email"></label>
+         <label class="g-check"><input type="checkbox" id="gCard" checked> ${esc(u.gCard)}</label><p class="caption">${esc(G.privacy[lang])}</p>${note}
+         <div class="links center"><button class="btn btn-main" data-act="g-send">${esc(u.gSend)} ✉</button><button class="btn" data-act="close">${esc(u.gLater)}</button></div>`
+      : `<p class="caption center">${esc(G.closed[lang])}</p><div class="links center"><button class="btn" data-act="close">OK</button></div>`), 'mini', () => openGuest('note'));
+  }
+  if (step === 'sent') return showCard('✍️', G.name[lang], '', `<div class="item-big" aria-hidden="true">💌</div><p class="lead center">${esc(G.sent[lang])}</p>`, 'mini', () => openGuest('sent'));
+  showCard('✍️', G.name[lang], '', `<div class="g-face">${GA.svg(guestLook, 110)}</div><p class="lead center"><b>${esc(guestLook.name)}</b></p><p class="center">${esc(u.gYours)}</p>
+    <div class="links center"><button class="btn btn-main" data-act="g-note">${esc(u.gNote)} ✉</button><button class="btn" data-act="g-edit">${esc(u.gEdit)}</button></div>`, 'mini', () => openGuest('home'));
+}
+function joinGuest() {
+  draft.name = ($('gName').value || '').replace(/[<>]/g, '').trim().slice(0, 24);
+  if (!draft.name) return openGuest('design', t().gNeedName);
+  guestLook = GA.clean(draft); draft = null; store.set('guest', guestLook); dressGuest(guestLook);
+  if (view && guestIdx >= 0) view.setCritter(guestIdx, guestDef);
+  const first = !flags.has('guest'); flag('guest'); syncResidents(first); sfx('right'); renderHud();
+  openGuest('note');
+}
+async function sendNote() {
+  const u = t(), message = ($('gMsg').value || '').trim().slice(0, 500), contact = ($('gContact').value || '').trim().slice(0, 120);
+  if (!message) return openGuest('note', u.gNeedMsg);
+  if (Date.now() - store.get('noteAt', 0) < 60000) return openGuest('note', u.gWait);
+  let postcard = null;
+  if ($('gCard').checked) { try { const big = makePostcard(), sm = document.createElement('canvas'); sm.width = 900; sm.height = 600; sm.getContext('2d').drawImage(big, 0, 0, 900, 600); postcard = sm.toDataURL('image/jpeg', 0.72); if (postcard.length > 380000) postcard = null; } catch (e) {} }
+  const btn = document.querySelector('[data-act="g-send"]'); btn.disabled = true; btn.textContent = u.gSending;
+  try {
+    const res = await fetch(GCONF.url.replace(/\/$/, '') + '/rest/v1/guests', { method: 'POST', headers: { apikey: GCONF.key, Authorization: 'Bearer ' + GCONF.key, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+      body: JSON.stringify({ name: guestLook.name, species: guestLook.species, color: guestLook.color, accent: guestLook.accent, message, contact: contact || null, postcard, lang }) });
+    if (!res.ok) throw new Error(String(res.status));
+    store.set('noteAt', Date.now()); sfx('item'); openGuest('sent');
+  } catch (e) { $('gMsg') && ($('gMsg').dataset.keep = '1'); const keepM = message, keepC = contact; openGuest('note', u.gFail); $('gMsg').value = keepM; $('gContact').value = keepC; }
+}
 let guess = ['', '', '', ''];
 function openMbti(msg, cls) {
   const M = EX.mbti, u = t(), done = flags.has('mbti');
@@ -1012,6 +1079,7 @@ function tryGuess() {
 }
 function openSpot(s) {
   if (s === GUESS) { sfx('open'); return openMbti(); }
+  if (s === BOARD) { sfx('open'); return openGuest(); }
   if (s === XMAS) { snowUntil = time + 25; flag('xmas'); sfx('jingle'); toast(`<span>🎄 <b>${esc(t().xmasOn)}</b></span>`, 3200); return; }
   const k = content(s);
   showCard(t().kick[s.kind], k.title, k.meta, k.body, '', () => openSpot(s));
@@ -1042,7 +1110,7 @@ function openBag() {
     `<h3>${esc(u.tasks)} · ${nDone}/${EX.tasks.length}</h3><ul class="tasks">${EX.tasks.map(k => `<li class="${taskDone(k.id) ? 'done' : ''}"><i>${taskDone(k.id) ? '✓' : ''}</i><span>${k.icon}</span>${esc(k[lang])}</li>`).join('')}</ul>
      <h3>${esc(u.neighbours)} · ${RES.filter(r => r.here).length}/${RES.length}</h3><div class="bag-grid">${RES.map(r => r.here
        ? `<div class="slot"><span>${r.def.icon}</span><small>${esc(r.def.name[lang])}</small></div>`
-       : `<div class="slot empty"><span>?</span><small>${esc(r.def.unlock === 'mbti' ? u.lockedMbti : u.lockedRes.replace('{n}', r.def.at))}</small></div>`).join('')}</div>
+       : `<div class="slot empty"><span>?</span><small>${esc(r.def.unlock === 'mbti' ? u.lockedMbti : r.def.unlock === 'guest' ? u.lockedGuest : u.lockedRes.replace('{n}', r.def.at))}</small></div>`).join('')}</div>
      <h3>${esc(u.treasures)} · ${dug.size}/${EX.dig.length}</h3>${grid('dig', dug)}
      <h3>${esc(u.catches)} · ${caught.size}/${EX.fish.length}</h3>${grid('fish', caught)}
      <h3>${esc(u.notes)} · ${shaken.size}/${EX.tree.length}</h3>${grid('tree', shaken)}
@@ -1053,10 +1121,16 @@ function openBag() {
 }
 $('cardBody').addEventListener('click', e => {
   const slot = e.target.closest('.slot[data-kind]'), btn = e.target.closest('[data-act]'), pick = e.target.closest('[data-mbti]');
+  const gp = e.target.closest('[data-g]');
+  if (gp && draft) { const [k, v] = gp.dataset.g.split(/:(.+)/); draft.name = $('gName').value; draft[k] = v; sfx('pick'); openGuest('design'); return; }
   if (pick) { const v = pick.dataset.mbti; guess[+v[0]] = v[1]; sfx('pick'); openMbti(); return; }
   if (btn) {
     const a = btn.dataset.act;
     if (a === 'guess') tryGuess();
+    if (a === 'g-join') joinGuest();
+    if (a === 'g-send') sendNote();
+    if (a === 'g-note') openGuest('note');
+    if (a === 'g-edit') { draft = null; openGuest('design'); }
     if (a === 'reset') askReset();
     if (a === 'reset-yes') resetAll();
     if (a === 'close') cardEl.close();
@@ -1092,7 +1166,7 @@ function askReset() {
 }
 function resetAll() {
   leaving = true;
-  ['found', 'dug', 'holes', 'digs', 'caught', 'shaken', 'fruit', 'flags', 'tasks', 'gifts', 'pos'].forEach(k => { try { localStorage.removeItem('starry-town-' + k); } catch (e) {} });
+  ['found', 'dug', 'holes', 'digs', 'caught', 'shaken', 'fruit', 'flags', 'tasks', 'gifts', 'pos', 'guest'].forEach(k => { try { localStorage.removeItem('starry-town-' + k); } catch (e) {} });
   location.reload();
 }
 function openPostcard() {
@@ -1333,5 +1407,5 @@ if (view) requestAnimationFrame(frame);
 else { $('btnStart').hidden = true; $('introHow').hidden = true; $('introSub').textContent = t().no3d; openQuick(); }
 
 // small hook for testing from the console
-window.__town = { tiltBy, XMAS, get snow() { return time < snowUntil; }, throwBall, popBalloon, get balloon() { return balloon; }, set balloonAt(v) { balloonAt = v; }, get ball() { return ballS; }, get sitting() { return sitting; }, get talking() { return talking; }, get time() { return time; }, cam, nextView, zoomBy, holes, HOMES, hasProgress, askReset, at, map, MW, MH, findPath, shaken, PLACES, tryGuess, openMbti, TRACKS, music, get actx() { return actx; }, get guess() { return guess; }, set guess(v) { guess = v; }, startDance, openPostcard, makePostcard, flags, tasksSeen, FRUIT_TREES, get fruit() { return fruit; }, get mode() { return mode; }, get shaking() { return shaking; }, get dancing() { return dancing; }, step(n) { for (let i = 0; i < n; i++) { update(0.05); if (i % 6 === 0 || i === n - 1) render(0.3); } }, spotAt, keys, player, dog, SPOTS, DIGS, RES, view, walkTo, openSpot, act, start, found, dug, caught, showItem, talkTo, petDog, get fishing() { return fishing; }, get action() { return action; } };
+window.__town = { openGuest, get guestLook() { return guestLook; }, ownerGuest, guestDef, tiltBy, XMAS, get snow() { return time < snowUntil; }, throwBall, popBalloon, get balloon() { return balloon; }, set balloonAt(v) { balloonAt = v; }, get ball() { return ballS; }, get sitting() { return sitting; }, get talking() { return talking; }, get time() { return time; }, cam, nextView, zoomBy, holes, HOMES, hasProgress, askReset, at, map, MW, MH, findPath, shaken, PLACES, tryGuess, openMbti, TRACKS, music, get actx() { return actx; }, get guess() { return guess; }, set guess(v) { guess = v; }, startDance, openPostcard, makePostcard, flags, tasksSeen, FRUIT_TREES, get fruit() { return fruit; }, get mode() { return mode; }, get shaking() { return shaking; }, get dancing() { return dancing; }, step(n) { for (let i = 0; i < n; i++) { update(0.05); if (i % 6 === 0 || i === n - 1) render(0.3); } }, spotAt, keys, player, dog, SPOTS, DIGS, RES, view, walkTo, openSpot, act, start, found, dug, caught, showItem, talkTo, petDog, get fishing() { return fishing; }, get action() { return action; } };
 })();

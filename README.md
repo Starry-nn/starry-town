@@ -24,6 +24,10 @@ A small 3D island. Walk with the arrow keys or WASD (or click / tap where you wa
 
 Open `/admin/` on the live site. It lists every piece of text in English and Chinese; saving commits `js/text-overrides.js` to `main` through the GitHub API with a fine-grained token (Contents: read and write on this repository) that stays in the editor's browser. `node tools/export-text.mjs` writes the same text to one file.
 
+## Guest board
+
+At the board on the plaza a visitor designs a small avatar, moves into a house on the island and can leave a private note (optionally with a postcard and a way to reach them). Notes go to a Supabase table that visitors can only insert into; `supabase/setup.sql` creates it. Put the project URL and anon key in `js/guest-config.js`. The owner signs in at `/admin/town.html` to read notes and to open the island with a visitor's avatar standing by their house.
+
 ## Structure
 
 - `index.html`, `style.css` — page shell, HUD, labels and content cards
