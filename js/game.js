@@ -1,5 +1,5 @@
 /* Starry Town — a walkable portfolio island. The rules live here; view3d.js draws the picture. */
-import { createView } from './view3d.js?v=23';
+import { createView } from './view3d.js?v=24';
 (() => {
 'use strict';
 
@@ -12,14 +12,20 @@ try {
   const m = /[#&]g=([\w-]+)/.exec(location.hash);
   if (m) { const j = JSON.parse(decodeURIComponent(escape(atob(m[1].replace(/-/g, '+').replace(/_/g, '/'))))); ownerGuest = Object.assign(GA.clean(j), { message: String(j.message || '').slice(0, 600) }); }
 } catch (e) {}
-function dressGuest(d) { Object.assign(guestDef, { species: d.species, color: d.color, accent: d.accent, icon: GA.icon(d.species) }); if (d.name) guestDef.name = { en: d.name, zh: d.name }; }
-const T = 16, MW = 64, MH = 34;
+const guestLines = { en: guestDef.lines.en.slice(), zh: guestDef.lines.zh.slice() };
+function dressGuest(d) {
+  Object.assign(guestDef, { species: d.species, color: d.color, accent: d.accent, acc: d.acc, icon: GA.icon(d.species) });
+  if (d.name) guestDef.name = { en: d.name, zh: d.name };
+  guestDef.lines = d.line ? { en: [d.line, ...guestLines.en], zh: [d.line, ...guestLines.zh] } : { en: guestLines.en.slice(), zh: guestLines.zh.slice() };      // their own catchphrase comes first
+}
+const T = 16, MW = 84, MH = 54, OX = 10, OY = 10;      // the town keeps its own tile coordinates and sits OX / OY tiles into a larger island
 const $ = id => document.getElementById(id);
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const store = {
   get(k, f) { try { const v = localStorage.getItem('starry-town-' + k); return v == null ? f : JSON.parse(v); } catch (e) { return f; } },
   set(k, v) { try { localStorage.setItem('starry-town-' + k, JSON.stringify(v)); } catch (e) {} },
 };
+if (store.get('layout', 0) !== 3) { ['pos', 'digs'].forEach(k => { try { localStorage.removeItem('starry-town-' + k); } catch (e) {} }); store.set('layout', 3); }   // the island grew: old positions no longer fit
 if (!CanvasRenderingContext2D.prototype.roundRect) {
   CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
     const q = Array.isArray(r) ? r : [r, r, r, r], [a, b, c2, d2] = q.length === 4 ? q : [q[0], q[0], q[0], q[0]];
@@ -50,7 +56,7 @@ const UI = {
     fruitLine: 'Fruit in your pocket', fruitHint: 'Shake a fruit tree, then give the fruit to a resident.',
     settings: 'Island settings', soundOn: 'Sound effects: on', soundOff: 'Sound effects: off', musicOn: 'Music: on', musicOff: 'Music: off', mute: 'Sound on / off',
     treeTitle: 'A note fell out of the tree!', notes: 'Shaken out of trees', lockedMbti: 'Moves in when the MBTI is guessed', lockedGuest: 'This one is you: sign the guest board',
-    gName: 'Your name', gSpecies: 'Who are you?', gFur: 'Colour', gShirt: 'Shirt', gJoin: 'Move in', gEdit: 'Change my look', gNote: 'Leave Nan a note', gMsg: 'Your note', gContact: 'Email or any way to reach you (optional)', gSend: 'Write the email', gLater: 'Maybe later', gCopy: 'Copy the note', gCopied: 'Copied', gSaveCard: 'Get a postcard to attach', gNeedName: 'Give your character a name first.', gNeedMsg: 'Write a few words first.', gYours: 'Your character lives on the island.', guess: 'Guess', socials: 'Find me elsewhere', xhs: 'Xiaohongshu', modes: { day: 'Day', dusk: 'Dusk', night: 'Night' }, postcard: 'Postcard',
+    gName: 'Your name', gSpecies: 'Who are you?', gFur: 'Colour', gShirt: 'Shirt', gAcc: 'Something to wear', gLine: 'Your catchphrase (your character will say it)', gLineEx: 'e.g. Nice to meet you!', gJoin: 'Move in', gEdit: 'Change my look', gNote: 'Leave Nan a note', gMsg: 'Your note', gContact: 'Email or any way to reach you (optional)', gSend: 'Write the email', gLater: 'Maybe later', gCopy: 'Copy the note', gCopied: 'Copied', gSaveCard: 'Get a postcard to attach', gNeedName: 'Give your character a name first.', gNeedMsg: 'Write a few words first.', gYours: 'Your character lives on the island.', guess: 'Guess', socials: 'Find me elsewhere', xhs: 'Xiaohongshu', modes: { day: 'Day', dusk: 'Dusk', night: 'Night' }, postcard: 'Postcard',
     postcardTitle: 'A postcard from the island', postcardMeta: 'Save it or send it to a friend', save: 'Save image', greet: 'Greetings from Starry Town', back: 'Back to backpack',
     quick: 'Quick view', cv: 'CV', lang: '中文', bag: 'Backpack',
     goSee: 'Take me there', visit: 'Visit', talk: 'Talk to', movedIn: 'just moved to the island! Go say hi.', neighbours: 'Residents', lockedRes: 'Moves in after {n} finds', no3d: 'This browser cannot show the 3D island, so here is everything on one page.', dig: 'Dig here', fish: 'Go fishing', wait: 'Waiting for a bite…', pull: 'Pull!',
@@ -86,7 +92,7 @@ const UI = {
     fruitLine: '口袋里的水果', fruitHint: '摇一摇果树，再把水果送给居民。',
     settings: '小岛设置', soundOn: '音效：开', soundOff: '音效：关', musicOn: '音乐：开', musicOff: '音乐：关', mute: '声音开关',
     treeTitle: '树上掉下一张纸条！', notes: '树上摇下来的', lockedMbti: '猜对 MBTI 后搬来', lockedGuest: '这是你：去留言板签个名',
-    gName: '你的名字', gSpecies: '你是谁？', gFur: '颜色', gShirt: '衣服', gJoin: '搬进小岛', gEdit: '修改形象', gNote: '给姚楠留言', gMsg: '想说的话', gContact: '邮箱或其他联系方式（选填）', gSend: '写成邮件', gLater: '以后再说', gCopy: '复制留言', gCopied: '已复制', gSaveCard: '拍张明信片附上', gNeedName: '先给你的形象起个名字。', gNeedMsg: '先写几句话吧。', gYours: '你的形象已经住在岛上了。', guess: '猜一下', socials: '在别处找到我', xhs: '小红书', modes: { day: '白天', dusk: '黄昏', night: '夜晚' }, postcard: '明信片',
+    gName: '你的名字', gSpecies: '你是谁？', gFur: '颜色', gShirt: '衣服', gAcc: '配饰', gLine: '口头禅（你的形象会说这句话）', gLineEx: '比如：很高兴认识你！', gJoin: '搬进小岛', gEdit: '修改形象', gNote: '给姚楠留言', gMsg: '想说的话', gContact: '邮箱或其他联系方式（选填）', gSend: '写成邮件', gLater: '以后再说', gCopy: '复制留言', gCopied: '已复制', gSaveCard: '拍张明信片附上', gNeedName: '先给你的形象起个名字。', gNeedMsg: '先写几句话吧。', gYours: '你的形象已经住在岛上了。', guess: '猜一下', socials: '在别处找到我', xhs: '小红书', modes: { day: '白天', dusk: '黄昏', night: '夜晚' }, postcard: '明信片',
     postcardTitle: '一张小岛明信片', postcardMeta: '保存下来，或者发给朋友', save: '保存图片', greet: '来自 Starry Town 的问候', back: '回到背包',
     quick: '快速浏览', cv: '简历', lang: 'EN', bag: '背包',
     goSee: '带我过去', visit: '拜访', talk: '聊聊', movedIn: '搬到岛上来了！去打个招呼吧。', neighbours: '居民', lockedRes: '找到 {n} 样东西后搬来', no3d: '这个浏览器显示不了 3D 小岛，所以把全部内容放在这一页。', dig: '挖一挖', fish: '钓鱼', wait: '等鱼上钩…', pull: '拉！',
@@ -151,7 +157,7 @@ let soundOn = store.get('sound', true) !== false, musicOn = store.get('music', t
 const itemCount = () => dug.size + caught.size + shaken.size, itemTotal = EX.dig.length + EX.fish.length + EX.tree.length;
 
 /* ------------------------------------------------------------------ world */
-const G = 0, P = 1, Z = 2, W = 3, D = 4;
+const G = 0, P = 1, Z = 2, W = 3, D = 4, SAND = 5;
 const map = new Uint8Array(MW * MH), solid = new Uint8Array(MW * MH), reserved = new Uint8Array(MW * MH), flowers = new Uint8Array(MW * MH);
 const I = (x, y) => y * MW + x;
 const inMap = (x, y) => x >= 0 && y >= 0 && x < MW && y < MH;
@@ -164,31 +170,42 @@ function hash(x, y, s = 0) {
 function rect(x, y, w, h, v, arr = map) {
   for (let j = y; j < y + h; j++) for (let i = x; i < x + w; i++) if (inMap(i, j)) arr[I(i, j)] = v;
 }
-for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) {
-  if (x < 2 || x >= MW - 2 || y < 2 || y >= 32) map[I(x, y)] = W;
-  else if ((x === 2 || x === MW - 3 || y === 2 || y === 31) && hash(x, y, 7) < 0.3) map[I(x, y)] = W;
+// The island: an organic outline around the town, with a beach all the way round.
+const TW = 64, TH = 34, R = (x, y, w, h, v, arr) => rect(x + OX, y + OY, w, h, v, arr);
+const coastA = (x, y) => Math.atan2(y + 0.5 - (OY + TH / 2), x + 0.5 - (OX + TW / 2));
+function coast(x, y) {            // below 0: grass. A little above 0: sand. Beyond that: sea.
+  const hx = TW / 2 + 2.5, hy = TH / 2 + 2.5, r = 11;
+  const qx = Math.abs(x + 0.5 - (OX + TW / 2)) - (hx - r), qy = Math.abs(y + 0.5 - (OY + TH / 2)) - (hy - r);
+  const sdf = Math.hypot(Math.max(qx, 0), Math.max(qy, 0)) + Math.min(Math.max(qx, qy), 0) - r, a = coastA(x, y);
+  return sdf - (1.3 * Math.sin(3 * a + 1) + 0.9 * Math.sin(5 * a + 2.3) + 0.6 * Math.sin(9 * a + 0.7));
 }
-const E0 = MW - 3;
-[[2, 2], [3, 2], [2, 3], [E0, 2], [E0 - 1, 2], [E0, 3], [2, 31], [3, 31], [2, 30], [E0, 31], [E0 - 1, 31], [E0, 30]].forEach(([x, y]) => map[I(x, y)] = W);
-rect(27, 29, 10, 3, W);
-rect(4, 16, 56, 2, P); rect(4, 24, 56, 2, P);
-rect(22, 11, 2, 17, P);
-rect(10, 16, 2, 10, P); rect(33, 16, 2, 10, P);
-rect(19, 14, 8, 6, Z);
-[5, 10, 16, 31, 38].forEach(x => rect(x, 13, 1, 3, P));
-[6, 15, 30, 38].forEach(x => rect(x, 23, 1, 1, P));
-rect(11, 26, 1, 4, P); rect(8, 29, 8, 1, P);
-rect(30, 26, 2, 3, P); rect(30, 29, 2, 2, D);
+const beachW = (x, y) => 2.7 + 1.0 * Math.sin(7 * coastA(x, y) + 2) + 0.5 * Math.sin(13 * coastA(x, y));
+for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) { const c = coast(x, y); map[I(x, y)] = c < 0 ? G : c < beachW(x, y) ? SAND : W; }
+// the harbour: a cove cut into the south shore, open to the sea
+R(27, 29, 10, 3, W);
+for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) if (((x - OX - 32) / 6.2) ** 2 + ((y - OY - 36) / 8.5) ** 2 <= 1 && y - OY >= 31) map[I(x, y)] = W;
+R(4, 16, 56, 2, P); R(4, 24, 56, 2, P);
+R(22, 11, 2, 17, P);
+R(10, 16, 2, 10, P); R(33, 16, 2, 10, P);
+R(19, 14, 8, 6, Z);
+[5, 10, 16, 31, 38].forEach(x => R(x, 13, 1, 3, P));
+[6, 15, 30, 38].forEach(x => R(x, 23, 1, 1, P));
+R(11, 26, 1, 4, P); R(8, 29, 8, 1, P);
+R(30, 26, 2, 3, P); R(30, 29, 2, 2, D);
 // east bank: the Showcase and the residents' village
-rect(54, 16, 2, 10, P); rect(54, 13, 1, 3, P); rect(55, 26, 1, 3, P); rect(47, 29, 13, 1, P); rect(59, 15, 1, 1, P); rect(58, 23, 1, 1, P);
-// a river splits the island, widening into a lake between the two roads; a pond sits south of the plaza
-for (let y = 2; y < 32; y++) { const cx = 45 + Math.round(Math.sin(y * 0.45)); rect(cx - 1, y, 3, 1, W); }
-for (let y = 17; y < 24; y++) for (let x = 44; x < 54; x++) if (((x - 48.5) / 3.9) ** 2 + ((y - 20.5) / 2.7) ** 2 <= 1) map[I(x, y)] = W;
-rect(24, 21, 3, 2, W); map[I(25, 20)] = W;
+R(54, 16, 2, 10, P); R(54, 13, 1, 3, P); R(55, 26, 1, 3, P); R(47, 29, 13, 1, P); R(59, 15, 1, 1, P); R(58, 23, 1, 1, P);
+// footpaths down to the beach at both ends of the main road and south from the campsite lane
+R(-2, 16, 6, 2, P); R(60, 24, 6, 2, P); R(11, 30, 1, 6, P);
+for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) if (map[I(x, y)] === P && coast(x, y) >= 0) map[I(x, y)] = SAND;      // paths end where the sand begins
+// a river splits the island from shore to shore, widening into a lake between the two roads; a pond sits south of the plaza
+for (let y = 0; y < MH; y++) { const cx = OX + 45 + Math.round(Math.sin((y - OY) * 0.45)); for (let x = cx - 1; x <= cx + 1; x++) if (inMap(x, y)) map[I(x, y)] = W; }
+for (let y = 17; y < 24; y++) for (let x = 44; x < 54; x++) if (((x - 48.5) / 3.9) ** 2 + ((y - 20.5) / 2.7) ** 2 <= 1) map[I(x + OX, y + OY)] = W;
+R(24, 21, 3, 2, W); map[I(25 + OX, 20 + OY)] = W;
 // bridges: the two roads cross the river, and a plank walk crosses the lake
-for (const y of [16, 17, 24, 25]) for (let x = 42; x < 49; x++) if (map[I(x, y)] === W) map[I(x, y)] = D;
-for (let y = 17; y < 24; y++) if (map[I(49, y)] === W) map[I(49, y)] = D;
-const LILIES = [[46.6, 19.6], [47.3, 21.7], [50.6, 19.2], [51.4, 21.4], [50.3, 22.3], [46.2, 21.2], [24.6, 21.5], [26.3, 22.4], [25.5, 20.6]];
+for (const y of [16, 17, 24, 25]) for (let x = 42; x < 49; x++) if (map[I(x + OX, y + OY)] === W) map[I(x + OX, y + OY)] = D;
+for (let y = 17; y < 24; y++) if (map[I(49 + OX, y + OY)] === W) map[I(49 + OX, y + OY)] = D;
+const PIER = [30 + OX, 29 + OY, 32 + OX, 31 + OY];
+const LILIES = [[46.6, 19.6], [47.3, 21.7], [50.6, 19.2], [51.4, 21.4], [50.3, 22.3], [46.2, 21.2], [24.6, 21.5], [26.3, 22.4], [25.5, 20.6]].map(([x, y]) => [x + OX, y + OY]);
 
 const BUILDINGS = [
   { id: 'skills',   kind: 'house',  x: 4,  y: 9,  w: 4, h: 4, door: 1, wall: '#f3d9a8', roof: '#b9825a', roofL: '#cf9a70', doorC: '#8a5a3c', sign: '#7fd1c0' },
@@ -203,12 +220,13 @@ const BUILDINGS = [
   { id: 'showcase', kind: 'house',  x: 51, y: 8,  w: 6, h: 5, door: 3, wall: '#fffaf0', roof: '#f5b01a', roofL: '#ffd166', doorC: '#b9825a', sign: '#fff3a8' },
   { id: 'edu',      kind: 'campus', x: 35, y: 18, w: 7, h: 5, door: 3, wall: '#fbf1dc', roof: '#9a6fd6', roofL: '#b390e6', doorC: '#7a4fb8', sign: '#e6d6ff' },
 ];
+BUILDINGS.forEach(b => { b.x += OX; b.y += OY; });
 // one house per resident, east of the river; it is built when its owner moves in
 const HOME_AT = { mochi: [47, 26], pip: [51, 26], bao: [57, 26], rana: [57, 20], kiki: [58, 12], guest: [47, 8] };
 let guestLook = ownerGuest || store.get('guest', null);
 if (guestLook) { guestLook = Object.assign(GA.clean(guestLook), { message: guestLook.message }); dressGuest(guestLook); }
-if (ownerGuest) guestDef.lines = { en: [ownerGuest.message || '…'], zh: [ownerGuest.message || '…'] };
-const HOMES = EX.residents.filter(r => HOME_AT[r.id]).map(r => ({ id: r.id, kind: 'house', x: HOME_AT[r.id][0], y: HOME_AT[r.id][1], w: 3, h: 3, door: 1,
+if (ownerGuest) { const L = [ownerGuest.message || '…'].concat(ownerGuest.line ? [ownerGuest.line] : []); guestDef.lines = { en: L, zh: L }; }
+const HOMES = EX.residents.filter(r => HOME_AT[r.id]).map(r => ({ id: r.id, kind: 'house', x: HOME_AT[r.id][0] + OX, y: HOME_AT[r.id][1] + OY, w: 3, h: 3, door: 1,
   wall: '#fffaf0', roof: r.accent, roofL: r.accent, doorC: '#a9785a', sign: r.color }));
 EX.residents.forEach(r => { const h = HOMES.find(q => q.id === r.id); if (h) r.home = [h.x + 1, h.y + 3]; });
 const TRIG = {
@@ -216,6 +234,7 @@ const TRIG = {
   sync: [6, 23], agent: [15, 23], wavo: [30, 23], edu: [38, 23],
   about: [20, 16], focus: [25, 16], mbti: [24, 15], guest: [21, 15], showcase: [54, 13], xmas: [26, 18], manus: [26, 14], life: [13, 29], odyssey: [31, 30], contact: [23, 27],
 };
+Object.values(TRIG).forEach(v => { v[0] += OX; v[1] += OY; });
 const OBJECTS = [
   { kind: 'sign',     tx: 20, ty: 15, fw: 1, fh: 1, spot: 'about' },
   { kind: 'scope',    tx: 25, ty: 15, fw: 1, fh: 1, spot: 'focus' },
@@ -241,6 +260,7 @@ const OBJECTS = [
 ];
 [[7, 15], [13, 15], [18, 15], [28, 15], [35, 15], [41, 15], [9, 23], [18, 23], [27, 23], [36, 23], [21, 12], [24, 12], [12, 26], [21, 27], [29, 27], [50, 15], [57, 15], [53, 23], [60, 23], [41, 23], [53, 28]]
   .forEach(([tx, ty]) => OBJECTS.push({ kind: 'lamp', tx, ty, fw: 1, fh: 1 }));
+OBJECTS.forEach(o => { o.tx += OX; o.ty += OY; });
 const DIGS = [];   // filled in further down, once paths can be checked
 
 for (let i = 0; i < map.length; i++) if (map[i] === W) solid[i] = 1;
@@ -270,25 +290,32 @@ OBJECTS.forEach(o => {
 });
 PLACES.forEach(s => { s.trig = TRIG[s.id]; });
 DIGS.forEach(g => rect(g.tx - 1, g.ty - 1, 3, 3, 1, reserved));
-rect(4, 26, 15, 5, 1, reserved);
+R(4, 26, 15, 5, 1, reserved);
 for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) {
   const v = map[I(x, y)];
   if (v === P || v === Z || v === D) rect(x - 1, y - 1, 3, 3, 1, reserved);
 }
-const TREES = [];
-for (let y = 2; y < 32; y++) for (let x = 2; x < MW - 2; x++) {
+const TREES = [], PALMS = [], ROCKS = [], SHELLS = [];
+for (let y = 1; y < MH - 1; y++) for (let x = 1; x < MW - 1; x++) {
   const i = I(x, y);
+  if (map[i] === SAND && !reserved[i] && !solid[i]) {               // the beach: a few palms and rocks, shells and starfish in the sand
+    if (hash(x, y, 11) < 0.035 && coast(x, y) < 1.6) { PALMS.push({ tx: x, ty: y, v: hash(x, y, 12) }); solid[i] = 1; }
+    else if (hash(x, y, 13) < 0.03) { ROCKS.push({ x: x + 0.5, y: y + 0.5, s: 0.55 + hash(x, y, 14) * 0.5, v: hash(x, y, 15) }); solid[i] = 1; }
+    else if (hash(x, y, 16) < 0.07) SHELLS.push({ x: x + 0.2 + hash(x, y, 17) * 0.6, y: y + 0.2 + hash(x, y, 18) * 0.6, k: Math.floor(hash(x, y, 19) * 3) });
+    continue;
+  }
+  if (map[i] === W && coast(x, y) < beachW(x, y) + 3.2 && coast(x, y) > beachW(x, y) + 0.8 && hash(x, y, 21) < 0.03) ROCKS.push({ x: x + 0.5, y: y + 0.5, s: 0.6 + hash(x, y, 14) * 0.8, v: hash(x, y, 15), sea: true });
   if (map[i] !== G) continue;
   if (!reserved[i] && !solid[i]) {
-    const edge = y <= 4 || x <= 3 || x >= MW - 4 || y >= 30;
-    if (hash(x, y, 1) < (edge ? 0.55 : 0.24)) { TREES.push({ tx: x, ty: y, type: hash(x, y, 2) < 0.3 ? 'pine' : hash(x, y, 5) < 0.45 ? 'fruit' : 'round', v: hash(x, y, 8) }); solid[i] = 1; continue; }
+    const edge = coast(x, y) > -3.4;
+    if (hash(x, y, 1) < (edge ? 0.3 : 0.17)) { TREES.push({ tx: x, ty: y, type: hash(x, y, 2) < 0.3 ? 'pine' : hash(x, y, 5) < 0.45 ? 'fruit' : 'round', v: hash(x, y, 8) }); solid[i] = 1; continue; }
   }
   if (!solid[i] && !DIGS.some(g => g.tx === x && g.ty === y) && hash(x, y, 3) < 0.1) flowers[i] = 1 + Math.floor(hash(x, y, 4) * 4);
 }
 
 // a few fruit trees in easy reach, so shaking one is never a hunt
-[[20, 22], [19, 27], [36, 27], [3, 18], [51, 15], [57, 23], [50, 27]].forEach(([x, y]) => {
-  const i = I(x, y);
+[[20, 22], [19, 27], [36, 27], [3, 18], [51, 15], [57, 23], [50, 27]].forEach(([tx0, ty0]) => {
+  const x = tx0 + OX, y = ty0 + OY, i = I(x, y);
   if (map[i] !== G || solid[i]) return;
   TREES.push({ tx: x, ty: y, type: 'fruit', v: hash(x, y, 8) }); solid[i] = 1; flowers[i] = 0;
 });
@@ -315,7 +342,7 @@ const C = {
 };
 
 /* ------------------------------------------------------------------ ground cache */
-const GS = 4;
+const GS = 3;
 const ground = document.createElement('canvas');
 ground.width = MW * T * GS; ground.height = MH * T * GS;
 (function paintGround() {
@@ -331,8 +358,11 @@ ground.width = MW * T * GS; ground.height = MH * T * GS;
     c.fillStyle = fill; c.fill();
   };
   const land = (x, y) => at(x, y) !== W && at(x, y) !== D;
-  shape(land, 0, 0, C.grass);            // the shore itself (lip, bank, sand, foam) is modelled in 3D
-  c.save(); c.globalCompositeOperation = 'source-atop';          // broad, soft patches of lighter and deeper green, only where there is land
+  const grassy = (x, y) => land(x, y) && at(x, y) !== SAND;
+  shape(land, 0, 9, C.sand);              // the beach, with round corners; the bank, wet sand and foam below it are modelled in 3D
+  for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) if (at(x, y) === SAND) for (let k = 0; k < 3; k++) { if (hash(x, y, 80 + k) < 0.5) el(c, x * T + hash(x, y, 83 + k) * 16, y * T + hash(x, y, 86 + k) * 16, 1.1, 0.8, k ? '#fff6d8' : '#ecd9a0'); }
+  shape(grassy, 1.6, 9, '#e3cf98'); shape(grassy, 0.8, 9, '#74c276'); shape(grassy, 0, 8, C.grass);
+  c.save(); c.beginPath(); for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) if (grassy(x, y)) c.rect(x * T, y * T, T, T); c.clip();          // broad, soft patches of lighter and deeper green, on the grass only
   for (let k = 0; k < 150; k++) {
     const px = hash(k, 1, 90) * MW * T, py = hash(k, 2, 91) * MH * T, rx = 18 + hash(k, 3, 92) * 34, ry = 12 + hash(k, 4, 93) * 22, light = hash(k, 5, 94) < 0.5;
     const g = c.createRadialGradient(px, py, 0, px, py, rx); g.addColorStop(0, light ? 'rgba(178,232,160,.5)' : 'rgba(104,186,116,.34)'); g.addColorStop(1, light ? 'rgba(178,232,160,0)' : 'rgba(104,186,116,0)');
@@ -340,10 +370,10 @@ ground.width = MW * T * GS; ground.height = MH * T * GS;
   }
   c.restore();
   HOMES.forEach(h => rr(c, h.x * T + 3, h.y * T + 12, h.w * T - 6, h.h * T - 14, 7, C.pathD));
-  for (let y = 2; y < 32; y++) for (let x = 2; x < MW - 2; x++) {
-    if (!land(x, y)) continue;
+  for (let y = 1; y < MH - 1; y++) for (let x = 1; x < MW - 1; x++) {
+    if (!grassy(x, y)) continue;
     const px = x * T, py = y * T;
-    if (hash(x, y, 20) < 0.16 && land(x - 1, y) && land(x + 1, y) && land(x, y - 1) && land(x, y + 1)) el(c, px + 8, py + 8, 13, 9, 'rgba(124,201,124,.35)');
+    if (hash(x, y, 20) < 0.16 && grassy(x - 1, y) && grassy(x + 1, y) && grassy(x, y - 1) && grassy(x, y + 1)) el(c, px + 8, py + 8, 13, 9, 'rgba(124,201,124,.35)');
     if (at(x, y) !== G) continue;
     for (let k = 0; k < 2; k++) {
       if (hash(x, y, 30 + k) > 0.55) continue;
@@ -361,16 +391,17 @@ ground.width = MW * T * GS; ground.height = MH * T * GS;
   // plaza cobbles
   const isZ = (x, y) => at(x, y) === Z;
   shape(isZ, -0.5, 6, C.plazaD);
-  c.save(); c.beginPath(); c.roundRect(19 * T + 1, 14 * T + 1, 8 * T - 2, 6 * T - 2, 5); c.clip();
-  for (let j = 0; j < 12; j++) for (let i = -1; i < 17; i++) rr(c, 19 * T + i * 8 + (j % 2 ? 4 : 0) + 0.8, 14 * T + j * 8 + 0.8, 6.4, 6.4, 2, hash(i, j, 70) < 0.5 ? C.plaza : C.plazaL);
+  c.save(); c.beginPath(); c.roundRect((19 + OX) * T + 1, (14 + OY) * T + 1, 8 * T - 2, 6 * T - 2, 5); c.clip();
+  for (let j = 0; j < 12; j++) for (let i = -1; i < 17; i++) rr(c, (19 + OX) * T + i * 8 + (j % 2 ? 4 : 0) + 0.8, (14 + OY) * T + j * 8 + 0.8, 6.4, 6.4, 2, hash(i, j, 70) < 0.5 ? C.plaza : C.plazaL);
   c.restore();
-  rr(c, 13 * T + 4, 30 * T + 13.5, 5 * T - 8, 1, 0.5, 'rgba(255,255,255,.75)');
+  rr(c, (13 + OX) * T + 4, (30 + OY) * T + 13.5, 5 * T - 8, 1, 0.5, 'rgba(255,255,255,.75)');
 })();
 
-const FISHES = [[33, 30.6, 34], [40, 33, 44], [10, 33, 50], [45, 12, 0], [45, 24, 0], [1, 18, 0], [22, 33, 60], [28.5, 30.2, 8], [47.5, 20, 22], [51, 21.3, 14], [45, 8, 0], [44, 28, 0]].map(([fx, fy, span], i) => ({ x: fx * T, y: fy * T, span, p: i * 1.7, vert: span === 0 }));
+const FISHES = [[33, 33.5, 30], [40, 43, 44], [10, 43, 50], [45, 12, 0], [45, 24, 0], [-8, 18, 0], [22, 43.5, 60], [28.5, 30.2, 8], [47.5, 20, 22], [51, 21.3, 14], [45, 8, 0], [44, 28, 0], [72, 14, 0]].map(([fx, fy, span], i) => ({ x: (fx + OX) * T, y: (fy + OY) * T, span, p: i * 1.7, vert: span === 0 }));
 
 /* ------------------------------------------------------------------ player / dog */
-const player = { x: 21 * T + 8, y: 18 * T + 10, dir: 'down', moving: false, anim: 0 };
+const HOME = [21 + OX, 18 + OY];
+const player = { x: HOME[0] * T + 8, y: HOME[1] * T + 10, dir: 'down', moving: false, anim: 0 };
 const dog = { x: player.x - 16, y: player.y + 2, hx: 1, hy: 0, anim: 0, moving: false, pet: 0 };
 const trail = [];
 for (let i = 0; i < 16; i++) trail.push({ x: player.x - 16 + i, y: player.y + 2 });
@@ -430,22 +461,22 @@ function waterDir() {
 
 /* dig spots: eight random patches of grass that can be walked to, different for every visitor and kept until they start over */
 (function placeDigs() {
-  const reach = new Uint8Array(MW * MH), q = [I(21, 18)]; reach[q[0]] = 1;
+  const reach = new Uint8Array(MW * MH), q = [I(HOME[0], HOME[1])]; reach[q[0]] = 1;
   for (let qi = 0; qi < q.length; qi++) {
     const cx = q[qi] % MW, cy = (q[qi] / MW) | 0;
     for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = cx + dx, ny = cy + dy; if (!tileSolid(nx, ny) && !reach[I(nx, ny)]) { reach[I(nx, ny)] = 1; q.push(I(nx, ny)); } }
   }
   const hidden = (x, y) => inMap(x, y) && solid[I(x, y)] && at(x, y) !== W;      // something tall that would cover the sparkle
-  const ok = (x, y) => Number.isInteger(x) && Number.isInteger(y) && x > 3 && x < MW - 4 && y > 3 && y < 30 && map[I(x, y)] === G && !solid[I(x, y)] && reach[I(x, y)]
+  const ok = (x, y) => Number.isInteger(x) && Number.isInteger(y) && x > 3 && x < MW - 4 && y > 3 && y < MH - 4 && map[I(x, y)] === G && !solid[I(x, y)] && reach[I(x, y)]
     && ![[0, 1], [-1, 1], [1, 1], [0, 2]].some(([dx, dy]) => hidden(x + dx, y + dy))
-    && !PLACES.some(s => Math.abs(s.trig[0] - x) + Math.abs(s.trig[1] - y) < 3) && !HOMES.some(h => Math.abs(h.x + 1 - x) + Math.abs(h.y + 3 - y) < 3) && Math.abs(x - 21) + Math.abs(y - 18) > 2;
+    && !PLACES.some(s => Math.abs(s.trig[0] - x) + Math.abs(s.trig[1] - y) < 3) && !HOMES.some(h => Math.abs(h.x + 1 - x) + Math.abs(h.y + 3 - y) < 3) && Math.abs(x - HOME[0]) + Math.abs(y - HOME[1]) > 2;
   let saved = store.get('digs', null);
   if (!Array.isArray(saved) || saved.length !== EX.dig.length || !saved.every(p => Array.isArray(p) && ok(p[0], p[1]))) {
     const cand = [];
     for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) if (ok(x, y)) cand.push([x, y]);
     for (let i = cand.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [cand[i], cand[j]] = [cand[j], cand[i]]; }
     saved = [];
-    const near = cand.find(c => Math.abs(c[0] - 21) + Math.abs(c[1] - 18) < 9); if (near) saved.push(near);   // one close to the start, so the first dig is easy to find
+    const near = cand.find(c => Math.abs(c[0] - HOME[0]) + Math.abs(c[1] - HOME[1]) < 9); if (near) saved.push(near);   // one close to the start, so the first dig is easy to find
     for (let gap = 9; gap >= 1 && saved.length < EX.dig.length; gap -= 4) for (const c of cand) {
       if (saved.length >= EX.dig.length) break;
       if (saved.every(p => Math.abs(p[0] - c[0]) + Math.abs(p[1] - c[1]) >= gap)) saved.push(c);
@@ -469,7 +500,7 @@ const hasProgress = () => found.size + itemCount() + flags.size > 0;
 const canvas = $('game');
 const RES = EX.residents.map(def => ({ def, x: def.home[0] * T + 8, y: def.home[1] * T + 10, hx: 0, hy: 1, moving: false, here: false, wait: 1 + Math.random() * 2, tx: null, ty: 0, line: 0 }));
 let view = null;
-try { view = createView({ MW, MH, hash, reduceMotion, ground, at, D, W, BUILDINGS, HOMES, LILIES, OBJECTS, TREES, DIGS, FISHES, FLOWERS, RESIDENTS: EX.residents }, canvas); }
+try { view = createView({ MW, MH, hash, reduceMotion, ground, at, D, W, SAND, PIER, PALMS, ROCKS, SHELLS, BUILDINGS, HOMES, LILIES, OBJECTS, TREES, DIGS, FISHES, FLOWERS, RESIDENTS: EX.residents }, canvas); }
 catch (err) { console.warn('3D view unavailable', err); }
 const hour = new Date().getHours() + new Date().getMinutes() / 60;
 const askedMode = new URLSearchParams(location.search).get('time');
@@ -680,7 +711,7 @@ function taskTarget(k) {            // where the guide arrow points, and what cl
     case 'dance': return { x: player.x, y: player.y, go: startDance };
     case 'stars': { const c = closest(SPOTS.filter(s => !found.has(s.id)), s => s.trig[0] * T + 8, s => s.trig[1] * T + 10); return c && spot(c.o.id); }
     case 'dig': { const c = closest(DIGS.filter(g => !holes.has(g.i)), g => g.x, g => g.y); return c && { x: c.o.x, y: c.o.y, go: () => walkTo(c.o.tx, c.o.ty, () => { action = currentAction(); if (action && action.type === 'dig') act(); }) }; }
-    case 'fish': return { x: 30 * T + 8, y: 30 * T + 10, go: () => walkTo(30, 30, () => { player.dir = 'down'; }) };
+    case 'fish': return { x: (30 + OX) * T + 8, y: (30 + OY) * T + 10, go: () => walkTo(30 + OX, 30 + OY, () => { player.dir = 'down'; }) };
     case 'fruit': return tree();
     case 'neighbor': return res();
     case 'gift': return fruit > 0 ? res() : tree();
@@ -1024,12 +1055,14 @@ function openGuest(step, msg) {
   if (!step) step = joined ? 'home' : 'design';
   const note = msg ? `<p class="mbti-msg" style="color:#c9584e">${esc(msg)}</p>` : '';
   if (step === 'design') {
-    draft = draft || Object.assign({ name: '', species: 'cat', color: GA.FUR[0], accent: GA.SHIRT[0] }, guestLook || {});
+    draft = draft || Object.assign({ name: '', species: 'cat', color: GA.FUR[0], accent: GA.SHIRT[0], acc: 'none', line: '' }, guestLook || {});
     const sw = (list, key) => `<div class="g-sw">${list.map(c => `<button data-g="${key}:${c}" aria-pressed="${draft[key] === c}" aria-label="${c}" style="background:${c}"></button>`).join('')}</div>`;
-    return showCard('✍️', G.name[lang], '', `<p class="center">${esc(G.intro[lang])}</p><div class="g-face" id="gFace">${GA.svg(draft, 110)}</div>
+    return showCard('✍️', G.name[lang], '', `<p class="center">${esc(G.intro[lang])}</p><div class="g-face g-stage" id="gFace">${GA.svg(draft, 132)}</div>
       <label class="g-l">${esc(u.gName)}<input id="gName" maxlength="24" autocomplete="off" value="${esc(draft.name)}"></label>
       <div class="g-l">${esc(u.gSpecies)}<div class="g-sp">${GA.SPECIES.map(([id, ic]) => `<button data-g="species:${id}" aria-pressed="${draft.species === id}">${ic}</button>`).join('')}</div></div>
-      <div class="g-l">${esc(u.gFur)}${sw(GA.FUR, 'color')}</div><div class="g-l">${esc(u.gShirt)}${sw(GA.SHIRT, 'accent')}</div>${note}
+      <div class="g-l">${esc(u.gFur)}${sw(GA.FUR, 'color')}</div><div class="g-l">${esc(u.gShirt)}${sw(GA.SHIRT, 'accent')}</div>
+      <div class="g-l">${esc(u.gAcc)}<div class="g-sp">${GA.ACC.map(([id, ic]) => `<button data-g="acc:${id}" aria-pressed="${draft.acc === id}">${ic}</button>`).join('')}</div></div>
+      <label class="g-l">${esc(u.gLine)}<input id="gLine" maxlength="60" autocomplete="off" value="${esc(draft.line || '')}" placeholder="${esc(u.gLineEx)}"></label>${note}
       <div class="links center"><button class="btn btn-main" data-act="g-join">${esc(u.gJoin)} 🏡</button></div>`, 'mini', () => openGuest('design'));
   }
   if (step === 'note') {
@@ -1045,7 +1078,7 @@ function openGuest(step, msg) {
     <div class="links center"><button class="btn btn-main" data-act="g-note">${esc(u.gNote)} ✉</button><button class="btn" data-act="g-edit">${esc(u.gEdit)}</button></div>`, 'mini', () => openGuest('home'));
 }
 function joinGuest() {
-  draft.name = ($('gName').value || '').replace(/[<>]/g, '').trim().slice(0, 24);
+  draft.name = ($('gName').value || '').replace(/[<>]/g, '').trim().slice(0, 24); draft.line = $('gLine').value || '';
   if (!draft.name) return openGuest('design', t().gNeedName);
   guestLook = GA.clean(draft); draft = null; store.set('guest', guestLook); dressGuest(guestLook);
   if (view && guestIdx >= 0) view.setCritter(guestIdx, guestDef);
@@ -1056,7 +1089,7 @@ let lastMail = '';
 function sendNote() {            // opens the visitor's own mail app with the note ready to send; nothing is stored anywhere else
   const u = t(), G = EX.guestbook, message = ($('gMsg').value || '').trim().slice(0, 500), contact = ($('gContact').value || '').trim().slice(0, 120);
   if (!message) return openGuest('note', u.gNeedMsg);
-  const code = btoa(unescape(encodeURIComponent(JSON.stringify({ name: guestLook.name, species: guestLook.species, color: guestLook.color, accent: guestLook.accent, message })))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  const code = btoa(unescape(encodeURIComponent(JSON.stringify({ name: guestLook.name, species: guestLook.species, color: guestLook.color, accent: guestLook.accent, acc: guestLook.acc, line: guestLook.line, message })))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   const link = 'https://starry-nn.github.io/starry-town/#g=' + code;
   lastMail = [message, '', '— ' + guestLook.name + ' (' + GA.icon(guestLook.species) + ')', contact ? G.mailContact[lang] + contact : '', '', G.mailLink[lang], link].filter((x, i) => x !== '' || i === 1 || i === 4).join('\n');
   const subject = G.mailSubject[lang].replace('{n}', guestLook.name);
@@ -1133,7 +1166,7 @@ $('cardBody').addEventListener('click', e => {
   const go = e.target.closest('[data-go]');
   if (go) { const s = spotById[go.dataset.go]; cardEl.close(); if (s && !busy()) visitSpot(s); return; }
   const gp = e.target.closest('[data-g]');
-  if (gp && draft) { const [k, v] = gp.dataset.g.split(/:(.+)/); draft.name = $('gName').value; draft[k] = v; sfx('pick'); openGuest('design'); return; }
+  if (gp && draft) { const [k, v] = gp.dataset.g.split(/:(.+)/); draft.name = $('gName').value; draft.line = $('gLine').value; draft[k] = v; sfx('pick'); openGuest('design'); return; }
   if (pick) { const v = pick.dataset.mbti; guess[+v[0]] = v[1]; sfx('pick'); openMbti(); return; }
   if (btn) {
     const a = btn.dataset.act;
@@ -1419,9 +1452,9 @@ canvas.addEventListener('touchmove', e => {       // two fingers: pinch to zoom
 canvas.addEventListener('touchend', () => { pinch = 0; });
 
 /* ------------------------------------------------------------------ boot */
-PLACES.forEach(s => { if (!findPath(21, 18, s.trig[0], s.trig[1])) console.warn('Unreachable spot:', s.id); });
-EX.residents.forEach(r => { if (!findPath(21, 18, r.home[0], r.home[1])) console.warn('Unreachable resident home:', r.id); });
-DIGS.forEach(g => { if (!findPath(21, 18, g.tx, g.ty)) console.warn('Unreachable dig spot:', g.i); });
+PLACES.forEach(s => { if (!findPath(HOME[0], HOME[1], s.trig[0], s.trig[1])) console.warn('Unreachable spot:', s.id); });
+EX.residents.forEach(r => { if (!findPath(HOME[0], HOME[1], r.home[0], r.home[1])) console.warn('Unreachable resident home:', r.id); });
+DIGS.forEach(g => { if (!findPath(HOME[0], HOME[1], g.tx, g.ty)) console.warn('Unreachable dig spot:', g.i); });
 renderHud();
 let lastT = performance.now();
 function frame(now) {
@@ -1434,5 +1467,5 @@ if (view) requestAnimationFrame(frame);
 else { $('btnStart').hidden = true; $('introHow').hidden = true; $('introSub').textContent = t().no3d; openQuick(); }
 
 // small hook for testing from the console
-window.__town = { openMap, openGuest, get guestLook() { return guestLook; }, ownerGuest, guestDef, tiltBy, XMAS, get snow() { return time < snowUntil; }, throwBall, popBalloon, get balloon() { return balloon; }, set balloonAt(v) { balloonAt = v; }, get ball() { return ballS; }, get sitting() { return sitting; }, get talking() { return talking; }, get time() { return time; }, cam, nextView, zoomBy, holes, HOMES, hasProgress, askReset, at, map, MW, MH, findPath, shaken, PLACES, tryGuess, openMbti, TRACKS, music, get actx() { return actx; }, get guess() { return guess; }, set guess(v) { guess = v; }, startDance, openPostcard, makePostcard, flags, tasksSeen, FRUIT_TREES, get fruit() { return fruit; }, get mode() { return mode; }, get shaking() { return shaking; }, get dancing() { return dancing; }, step(n) { for (let i = 0; i < n; i++) { update(0.05); if (i % 6 === 0 || i === n - 1) render(0.3); } }, spotAt, keys, player, dog, SPOTS, DIGS, RES, view, walkTo, openSpot, act, start, found, dug, caught, showItem, talkTo, petDog, get fishing() { return fishing; }, get action() { return action; } };
+window.__town = { OX, OY, HOME, PALMS, ROCKS, openMap, openGuest, get guestLook() { return guestLook; }, ownerGuest, guestDef, tiltBy, XMAS, get snow() { return time < snowUntil; }, throwBall, popBalloon, get balloon() { return balloon; }, set balloonAt(v) { balloonAt = v; }, get ball() { return ballS; }, get sitting() { return sitting; }, get talking() { return talking; }, get time() { return time; }, cam, nextView, zoomBy, holes, HOMES, hasProgress, askReset, at, map, MW, MH, findPath, shaken, PLACES, tryGuess, openMbti, TRACKS, music, get actx() { return actx; }, get guess() { return guess; }, set guess(v) { guess = v; }, startDance, openPostcard, makePostcard, flags, tasksSeen, FRUIT_TREES, get fruit() { return fruit; }, get mode() { return mode; }, get shaking() { return shaking; }, get dancing() { return dancing; }, step(n) { for (let i = 0; i < n; i++) { update(0.05); if (i % 6 === 0 || i === n - 1) render(0.3); } }, spotAt, keys, player, dog, SPOTS, DIGS, RES, view, walkTo, openSpot, act, start, found, dug, caught, showItem, talkTo, petDog, get fishing() { return fishing; }, get action() { return action; } };
 })();

@@ -263,14 +263,37 @@ export function createView(world, canvas) {
     for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) if (!isLand(x + dx, y + dy)) shore = true;
     if (!shore) continue;
     const cx = x + 0.5, cz = y + 0.5;
-    S.add(box(1, 0.03, 1), '#8ed68a', cx, -0.02, cz);
-    S.add(box(1.05, 0.17, 1.05), '#62b868', cx, -0.115, cz);
-    S.add(box(1, 0.5, 1), '#dcb98a', cx, -0.4, cz);
-    S.add(box(1.03, 0.06, 1.03), '#c9a274', cx, -0.36, cz);
+    if (world.at(x, y) === world.SAND) { S.add(rbox(1.04, 0.56, 1.04, 0.16), '#f1dfae', cx, -0.3, cz); }        // the beach slopes into the water instead of ending in a bank
+    else {
+      S.add(box(1, 0.03, 1), '#8ed68a', cx, -0.02, cz);
+      S.add(box(1.05, 0.17, 1.05), '#62b868', cx, -0.115, cz);
+      S.add(box(1, 0.5, 1), '#dcb98a', cx, -0.4, cz);
+      S.add(box(1.03, 0.06, 1.03), '#c9a274', cx, -0.36, cz);
+    }
     S.add(box(1.75, 0.12, 1.75), '#f8e9b8', cx, WL, cz);
     S.add(box(2.15, 0.05, 2.15), '#eefbff', cx, WL - 0.005, cz);
     S.add(box(3.1, 0.02, 3.1), '#c4f1f4', cx, WL + 0.012, cz, { to: 'shallow' });
   }
+  // the shore: palms leaning over the sand, rocks on the beach and out in the shallows, shells and starfish
+  world.PALMS.forEach(pm => {
+    const x = pm.tx + 0.5, z = pm.ty + 0.5, lean = (pm.v - 0.5) * 0.9, hgt = 2.5 + pm.v * 0.7;
+    for (let k = 0; k < 6; k++) { const u = k / 5; S.add(cyl(0.11 - u * 0.03, 0.13 - u * 0.03, hgt / 6 + 0.04, 8), k % 2 ? '#b98f66' : '#a9805a', x + lean * u * u, 0.2 + u * hgt * 0.84, z, { rz: -lean * u * 0.7 }); }
+    const tx = x + lean, ty = hgt + 0.05;
+    for (let k = 0; k < 7; k++) { const a = k / 7 * Math.PI * 2 + pm.v * 3; S.add(sph(0.5), k % 2 ? '#4fae6a' : '#5fbd74', tx + Math.cos(a) * 0.62, ty - 0.12, z + Math.sin(a) * 0.62, { sx: 1.5, sy: 0.14, sz: 0.5, ry: -a, rz: -0.42 }); }
+    S.add(sph(0.2), '#57b46a', tx, ty + 0.02, z, { sy: 0.7 }); [0, 2.2, 4.3].forEach(a => S.add(sphS(0.11), '#8a6248', tx + Math.cos(a) * 0.17, ty - 0.2, z + Math.sin(a) * 0.17));
+  });
+  world.ROCKS.forEach(rk => {
+    const y0 = rk.sea ? WL - 0.1 : -0.05, c1 = rk.v < 0.5 ? '#b9b6c6' : '#aeb3bf', c2 = rk.v < 0.5 ? '#a5a1b4' : '#9ea4b2';
+    S.add(new THREE.IcosahedronGeometry(0.62 * rk.s, 1), c1, rk.x, y0 + 0.3 * rk.s, rk.y, { sy: 0.78, ry: rk.v * 6 });
+    S.add(new THREE.IcosahedronGeometry(0.4 * rk.s, 1), c2, rk.x + 0.5 * rk.s, y0 + 0.18 * rk.s, rk.y + 0.25 * rk.s, { sy: 0.7, ry: rk.v * 3 });
+    if (rk.v > 0.6) S.add(new THREE.IcosahedronGeometry(0.28 * rk.s, 1), c1, rk.x - 0.45 * rk.s, y0 + 0.12 * rk.s, rk.y + 0.3 * rk.s, { sy: 0.7 });
+    if (rk.sea) S.add(cyl(0.95 * rk.s, 0.95 * rk.s, 0.02, 14), '#eefbff', rk.x + 0.1, WL + 0.02, rk.y + 0.05);
+  });
+  world.SHELLS.forEach(sh => {
+    if (sh.k === 0) S.add(extrude(starPts(0.13, 0.06), 0.04, 0.01), '#ff9f7a', sh.x, 0.03, sh.y, { rx: -Math.PI / 2, rz: sh.x * 7 });
+    else if (sh.k === 1) { S.add(sphS(0.09), '#ffd9e6', sh.x, 0.03, sh.y, { sy: 0.5, sz: 0.8 }); S.add(sphS(0.05), '#fff6ee', sh.x + 0.05, 0.05, sh.y, { sy: 0.5 }); }
+    else S.add(cone(0.07, 0.16, 8), '#fff1cf', sh.x, 0.05, sh.y, { rz: 1.3, ry: sh.y * 5 });
+  });
   // residents' houses: each in its own group, shown when its owner has moved in; the lot always has a little sign
   const homes = world.HOMES.map(hm => {
     const b = builder(); house(hm, b); const g = b.group(); g.visible = false; scene.add(g);
@@ -413,7 +436,7 @@ export function createView(world, canvas) {
     for (let k = 0; k < 4; k++) S.add(box(1.0, 0.02, 0.03), WOOD, x + 0.5, 0.105, y + 0.12 + k * 0.25);
     if (world.at(x - 1, y) !== world.D) S.add(cyl(0.09, 0.09, 0.7, 8), WOOD, x + 0.02, 0.1, y + 0.85);
     if (world.at(x + 1, y) !== world.D) S.add(cyl(0.09, 0.09, 0.7, 8), WOOD, x + 0.98, 0.1, y + 0.85);
-    if (y < 28) [[0, -1], [0, 1], [-1, 0], [1, 0]].forEach(([dx, dy]) => {        // bridges get a handrail on every side that faces water
+    if (!(x >= world.PIER[0] && x < world.PIER[2] && y >= world.PIER[1] && y < world.PIER[3])) [[0, -1], [0, 1], [-1, 0], [1, 0]].forEach(([dx, dy]) => {        // bridges get a handrail on every side that faces water
       if (world.at(x + dx, y + dy) !== world.W) return;
       const rx = x + 0.5 + dx * 0.46, rz = y + 0.5 + dy * 0.46;
       S.add(dx ? box(0.07, 0.07, 1.0) : box(1.0, 0.07, 0.07), WOODL, rx, 0.52, rz);
@@ -544,25 +567,43 @@ export function createView(world, canvas) {
   }
   function makeCritter(def) {
     const g = new THREE.Group(), body = new THREE.Group(); g.add(body);
-    const fur = mat(def.color), light = mat(def.belly || '#fff6e6'), shirt = mat(def.accent), dk = mat('#3d3848', true);
-    part(sph(0.27), shirt, 0, 0.38, 0, body).scale.set(1, 1.1, 0.9);
-    [-1, 1].forEach(s => { part(sph(0.09), fur, s * 0.28, 0.44, 0.05, body); part(sph(0.11), fur, s * 0.12, 0.07, 0.05, body).scale.set(1, 0.6, 1.3); });
+    const sp = def.species, base = sp === 'panda' ? 'bear' : sp;
+    const fur = soft(def.color, 0.26), light = soft(def.belly || '#fff6e6', 0.3), shirt = soft(def.accent, 0.22), dk = mat('#3d3848', true), ink = soft('#4a4458', 0.15);
+    const limb = sp === 'panda' ? ink : fur;
+    part(sm(0.27), shirt, 0, 0.38, 0, body).scale.set(1, 1.1, 0.9);
+    part(new THREE.TorusGeometry(0.2, 0.035, 8, 22), light, 0, 0.6, 0, body).rotation.x = Math.PI / 2;                // collar
+    [-1, 1].forEach(s => { part(sm(0.09), limb, s * 0.28, 0.44, 0.05, body); part(sm(0.11), limb, s * 0.12, 0.07, 0.05, body).scale.set(1, 0.6, 1.3); });
     const head = new THREE.Group(); head.position.set(0, 0.86, 0); body.add(head);
-    part(sph(0.34), fur, 0, 0, 0, head).scale.set(1.06, 0.92, 0.95);
-    part(sph(0.14), light, 0, -0.08, 0.26, head).scale.set(1.15, 0.8, 0.7);
+    part(sm(0.34), fur, 0, 0, 0, head).scale.set(1.06, 0.92, 0.95);
+    part(sm(0.14), light, 0, -0.08, 0.26, head).scale.set(1.15, 0.8, 0.7);
     part(sphS(0.04), dk, 0, -0.04, 0.37, head);
-    const eyeY = def.species === 'frog' ? 0.27 : 0.03, eyeZ = def.species === 'frog' ? 0.2 : 0.3, eyeX = def.species === 'frog' ? 0.17 : 0.14;
-    if (def.species === 'frog') [-1, 1].forEach(s => part(sph(0.12), fur, s * 0.17, 0.24, 0.1, head));
-    [-1, 1].forEach(s => { part(sphS(0.042), dk, s * eyeX, eyeY, eyeZ, head).scale.set(1, 1.3, 0.6); part(sph(0.055), mat('#ffb3c4', true), s * 0.23, -0.1, 0.25, head).scale.set(1, 0.6, 0.3); });
-    if (def.species === 'cat') [-1, 1].forEach(s => { part(cone(0.12, 0.22, 4), fur, s * 0.2, 0.3, 0, head).rotation.z = -s * 0.25; part(cone(0.06, 0.12, 4), mat('#ffc9d6'), s * 0.2, 0.28, 0.04, head).rotation.z = -s * 0.25; });
-    if (def.species === 'bear') [-1, 1].forEach(s => { part(sph(0.12), fur, s * 0.26, 0.24, 0, head); part(sph(0.06), light, s * 0.26, 0.24, 0.08, head); });
-    if (def.species === 'bunny') [-1, 1].forEach(s => { part(cap(0.075, 0.34), fur, s * 0.13, 0.5, -0.02, head).rotation.z = -s * 0.12; part(cap(0.035, 0.26), mat('#ffc9d6'), s * 0.13, 0.5, 0.04, head).rotation.z = -s * 0.12; });
-    if (def.species === 'fox') {
-      [-1, 1].forEach(s => { part(cone(0.13, 0.3, 4), fur, s * 0.2, 0.33, 0, head).rotation.z = -s * 0.2; part(cone(0.07, 0.17, 4), mat('#4a3a34'), s * 0.2, 0.33, 0.045, head).rotation.z = -s * 0.2; });
-      const tl = part(cap(0.1, 0.3), fur, 0.14, 0.4, -0.34, body); tl.rotation.set(-0.7, 0, -0.4); part(sph(0.1), light, 0.2, 0.55, -0.47, body);
+    const smile = part(new THREE.TorusGeometry(0.035, 0.009, 6, 12, Math.PI), dk, 0, -0.095, 0.345, head); smile.rotation.z = Math.PI;
+    const eyeY = base === 'frog' ? 0.27 : 0.03, eyeZ = base === 'frog' ? 0.2 : 0.3, eyeX = base === 'frog' ? 0.17 : 0.14;
+    if (base === 'frog') [-1, 1].forEach(s => part(sm(0.12), fur, s * 0.17, 0.24, 0.1, head));
+    if (sp === 'panda') [-1, 1].forEach(s => { const pt = part(sm(0.085), ink, s * 0.14, 0.02, 0.265, head); pt.scale.set(0.9, 1.15, 0.5); pt.rotation.z = s * 0.3; });
+    [-1, 1].forEach(s => {
+      part(sphS(0.042), sp === 'panda' ? mat('#ffffff', true) : dk, s * eyeX, eyeY, eyeZ + (sp === 'panda' ? 0.02 : 0), head).scale.set(1, 1.3, 0.6);
+      part(sphS(0.014), sp === 'panda' ? dk : mat('#ffffff', true), s * eyeX + 0.012, eyeY + 0.02, eyeZ + 0.026, head);
+      part(sm(0.055), mat('#ffb3c4', true), s * 0.23, -0.1, 0.25, head).scale.set(1, 0.6, 0.3);
+    });
+    if (base === 'cat') [-1, 1].forEach(s => { part(cone(0.12, 0.22, 12), fur, s * 0.2, 0.3, 0, head).rotation.z = -s * 0.25; part(cone(0.06, 0.12, 10), soft('#ffc9d6', 0.3), s * 0.2, 0.28, 0.04, head).rotation.z = -s * 0.25; });
+    if (base === 'bear') [-1, 1].forEach(s => { part(sm(0.12), sp === 'panda' ? ink : fur, s * 0.26, 0.24, 0, head); if (sp !== 'panda') part(sm(0.06), light, s * 0.26, 0.24, 0.08, head); });
+    if (base === 'bunny') [-1, 1].forEach(s => { part(cap(0.075, 0.34), fur, s * 0.13, 0.5, -0.02, head).rotation.z = -s * 0.12; part(cap(0.035, 0.26), soft('#ffc9d6', 0.3), s * 0.13, 0.5, 0.04, head).rotation.z = -s * 0.12; });
+    if (base === 'dog') { [-1, 1].forEach(s => { const e = part(cap(0.085, 0.2), soft('#' + new THREE.Color(def.color).multiplyScalar(0.72).getHexString(), 0.22), s * 0.33, 0.0, -0.02, head); e.rotation.z = s * 0.28; }); part(sm(0.1), fur, 0.1, 0.4, -0.3, body); }
+    if (base === 'fox') {
+      [-1, 1].forEach(s => { part(cone(0.13, 0.3, 12), fur, s * 0.2, 0.33, 0, head).rotation.z = -s * 0.2; part(cone(0.07, 0.17, 10), ink, s * 0.2, 0.33, 0.045, head).rotation.z = -s * 0.2; });
+      const tl = part(cap(0.1, 0.3), fur, 0.14, 0.4, -0.34, body); tl.rotation.set(-0.7, 0, -0.4); part(sm(0.1), light, 0.2, 0.55, -0.47, body);
     }
-    if (def.species === 'cat') { const tl = part(cap(0.045, 0.34), fur, 0.12, 0.42, -0.3, body); tl.rotation.set(-0.5, 0, -0.4); }
-    if (def.species === 'bunny' || def.species === 'bear') part(sph(0.09), light, 0, 0.28, -0.26, body);
+    if (base === 'cat') { const tl = part(cap(0.045, 0.34), fur, 0.12, 0.42, -0.3, body); tl.rotation.set(-0.5, 0, -0.4); }
+    if (base === 'bunny' || base === 'bear') part(sm(0.09), sp === 'panda' ? ink : light, 0, 0.28, -0.26, body);
+    // something to wear
+    const acc = def.acc, top = base === 'bunny' ? 0.3 : 0.3;
+    if (acc === 'cap') { part(new THREE.SphereGeometry(0.3, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), shirt, 0, 0.13, 0, head).scale.set(1.08, 0.75, 1); part(rbox(0.36, 0.035, 0.26, 0.015), shirt, 0, 0.15, 0.33, head); part(sphS(0.035), light, 0, 0.36, 0, head); }
+    if (acc === 'bow') { [-1, 1].forEach(s => part(sm(0.085), soft('#f590b2', 0.25), 0.17 + s * 0.085, top, 0.12, head).scale.set(1, 0.8, 0.5)); part(sphS(0.04), soft('#e27aa0', 0.25), 0.17, top, 0.14, head); }
+    if (acc === 'crown') { part(cyl(0.17, 0.15, 0.1, 16), soft('#ffd166', 0.3), 0, 0.33, 0, head); for (let k = 0; k < 5; k++) { const a = k / 5 * Math.PI * 2; part(cone(0.045, 0.1, 6), soft('#ffd166', 0.3), Math.cos(a) * 0.14, 0.42, Math.sin(a) * 0.14, head); } part(sphS(0.03), soft('#f0766a', 0.3), 0, 0.33, 0.165, head); }
+    if (acc === 'flower') { for (let k = 0; k < 5; k++) { const a = k / 5 * Math.PI * 2; part(sm(0.05), soft('#ff9db8', 0.3), 0.2 + Math.cos(a) * 0.06, top - 0.03 + Math.sin(a) * 0.06, 0.16, head).scale.z = 0.5; } part(sphS(0.035), soft('#ffd166', 0.3), 0.2, top - 0.03, 0.19, head); }
+    if (acc === 'glasses') { [-1, 1].forEach(s => part(new THREE.TorusGeometry(0.075, 0.012, 6, 18), ink, s * eyeX, eyeY, eyeZ + 0.045, head)); part(rbox(eyeX * 2 - 0.14, 0.014, 0.014, 0.005), ink, 0, eyeY, eyeZ + 0.05, head); }
+    if (acc === 'scarf') { part(new THREE.TorusGeometry(0.21, 0.06, 8, 22), soft('#f0766a', 0.22), 0, 0.62, 0, body).rotation.x = Math.PI / 2; part(rbox(0.1, 0.24, 0.05, 0.02), soft('#f0766a', 0.22), 0.14, 0.48, 0.2, body); }
     g.visible = false;
     return { g, body, head, ang: 0, shown: 0 };
   }
