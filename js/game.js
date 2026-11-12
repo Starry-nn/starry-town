@@ -1,5 +1,5 @@
 /* Starry Town — a walkable portfolio island. The rules live here; view3d.js draws the picture. */
-import { createView } from './view3d.js?v=22';
+import { createView } from './view3d.js?v=23';
 (() => {
 'use strict';
 
@@ -32,7 +32,9 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
 const UI = {
   en: {
     kicker: "NAN YAO'S PORTFOLIO ISLAND",
-    sub: 'My portfolio is a little island you can walk around. Here is how it works:',
+    sub: 'My portfolio, built as a little island you can walk around.', by: 'Made by Nan Yao · AI, venture, product and operations',
+    keys: [['WASD', 'Move'], ['E', 'Interact'], ['Click', 'Walk there']], keysTouch: [['Tap', 'Walk there'], ['Tap a place', 'Open it'], ['Pinch', 'Zoom']], moreSum: 'All controls and things to do',
+    mapBtn: 'Island map', mapTitle: 'Island map', mapMeta: 'Click a place to walk there', mapYou: 'You are here', mapFound: 'visited', mapNew: 'not yet',
     enter: '▶ Enter the island', quickLong: 'Short on time? Visit my classic site ↗',
     how: [['🚶', 'Walk', 'Arrow keys or WASD, or click where you want to go. Scroll with two fingers (or the wheel) to tilt the camera, pinch or ＋ － to zoom.'], ['🏠', 'Visit', 'Walk up to a building with a “?” and press E, or just click it, to read about my work. My favourite pieces are in the Showcase across the river.'], ['⛏', 'Dig', 'Press E where the ground sparkles to dig up a fun fact.'], ['🎣', 'Fish', 'Press E next to water, press again when the float dips, then keep pressing to reel it in.'], ['🍑', 'And more', 'Shake fruit trees for fruit and hidden notes, guess my MBTI at the crystal ball, pet the dog, press Q to dance.']],
     howTouch: [['🚶', 'Walk', 'Tap where you want to go. Pinch or use ＋ － to zoom, 🎥 to change the camera angle.'], ['🏠', 'Visit', 'Tap a building with a “?” to read about my work. My favourite pieces are in the Showcase across the river.'], ['⛏', 'Dig', 'Tap a sparkle on the ground to dig up a fun fact.'], ['🎣', 'Fish', 'Stand by the water and tap the button, tap again when the float dips, then keep tapping to reel it in.'], ['🍑', 'And more', 'Shake fruit trees for fruit and hidden notes, guess my MBTI at the crystal ball, pet the dog, tap 💃 to dance.']],
@@ -66,7 +68,9 @@ const UI = {
   },
   zh: {
     kicker: '姚楠的作品集小岛',
-    sub: '我把作品集做成了一座可以逛的小岛。玩法很简单：',
+    sub: '我把作品集做成了一座可以逛的小岛。', by: '姚楠制作 · AI、创投、产品与运营',
+    keys: [['WASD', '移动'], ['E', '互动'], ['点击', '走过去']], keysTouch: [['点击', '走过去'], ['点地点', '打开'], ['捏合', '缩放']], moreSum: '全部操作和玩法',
+    mapBtn: '小岛地图', mapTitle: '小岛地图', mapMeta: '点一个地点，人物会走过去', mapYou: '你在这里', mapFound: '去过', mapNew: '还没去',
     enter: '▶ 进入小岛', quickLong: '赶时间？去看简洁版个人主页 ↗',
     how: [['🚶', '走路', '方向键或 WASD，也可以直接点击想去的地方。双指滑动（或滚轮）调视角，捏合或 ＋ － 缩放。'], ['🏠', '拜访', '走到带“?”的建筑前按 E，或者直接点它，看我的经历和项目。最满意的作品放在河对岸的精选作品馆。'], ['⛏', '挖宝', '在地上闪光的地方按 E，挖出一个 fun fact。'], ['🎣', '钓鱼', '站在水边按 E 抛竿，浮标下沉时再按一次，然后连按把鱼拉上来。'], ['🍑', '还有', '摇果树会掉水果和小纸条，去水晶球猜我的 MBTI，摸摸狗，按 Q 跳舞。']],
     howTouch: [['🚶', '走路', '点击想去的地方。双指或 ＋ － 缩放，点 🎥 切换视角。'], ['🏠', '拜访', '点带“?”的建筑，看我的经历和项目。最满意的作品放在河对岸的精选作品馆。'], ['⛏', '挖宝', '点地上闪光的地方，挖出一个 fun fact。'], ['🎣', '钓鱼', '站在水边点下方按钮，浮标下沉时再点一次，然后连点把鱼拉上来。'], ['🍑', '还有', '摇果树会掉水果和小纸条，去水晶球猜我的 MBTI，摸摸狗，点 💃 跳舞。']],
@@ -328,6 +332,13 @@ ground.width = MW * T * GS; ground.height = MH * T * GS;
   };
   const land = (x, y) => at(x, y) !== W && at(x, y) !== D;
   shape(land, 0, 0, C.grass);            // the shore itself (lip, bank, sand, foam) is modelled in 3D
+  c.save(); c.globalCompositeOperation = 'source-atop';          // broad, soft patches of lighter and deeper green, only where there is land
+  for (let k = 0; k < 150; k++) {
+    const px = hash(k, 1, 90) * MW * T, py = hash(k, 2, 91) * MH * T, rx = 18 + hash(k, 3, 92) * 34, ry = 12 + hash(k, 4, 93) * 22, light = hash(k, 5, 94) < 0.5;
+    const g = c.createRadialGradient(px, py, 0, px, py, rx); g.addColorStop(0, light ? 'rgba(178,232,160,.5)' : 'rgba(104,186,116,.34)'); g.addColorStop(1, light ? 'rgba(178,232,160,0)' : 'rgba(104,186,116,0)');
+    c.fillStyle = g; c.beginPath(); c.ellipse(px, py, rx, ry, hash(k, 6, 95) * 3, 0, TAU); c.fill();
+  }
+  c.restore();
   HOMES.forEach(h => rr(c, h.x * T + 3, h.y * T + 12, h.w * T - 6, h.h * T - 14, 7, C.pathD));
   for (let y = 2; y < 32; y++) for (let x = 2; x < MW - 2; x++) {
     if (!land(x, y)) continue;
@@ -684,9 +695,9 @@ function checkTasks() {
   const all = EX.tasks.every(q => taskDone(q.id));
   toast(all ? `<span>🎉 <b>${esc(t().allTasks)}</b></span><button class="btn" id="toastCard">📸 ${esc(t().postcard)}</button>` : `<span>✓ <b>${esc(t().taskDone)}</b> · ${k.icon} ${esc(k[lang])}</span>`, all ? 12000 : 2600);
   if (all) $('toastCard').onclick = () => { $('toast').hidden = true; openPostcard(); };
-  sfx('task'); renderQuest();
+  sfx('task'); renderQuest(); cheerAt = time;
 }
-let snowUntil = -1;
+let snowUntil = -1, cheerAt = null;
 let sitting = null, ballS = null, balloon = null, balloonAt = 22;
 function standUp() { if (sitting) { player.y = (sitting.ty + 1) * T + 10; sitting = null; } }
 function throwBall() {                      // fetch: the ball flies a few tiles ahead, the dog brings it back
@@ -698,7 +709,7 @@ function throwBall() {                      // fetch: the ball flies a few tiles
   sfx('throw');
 }
 function popBalloon() {
-  floatText(balloon.x, balloon.y, balloon.h + 0.8, '🎉', 'gold'); balloon = null; balloonAt = time + 55;
+  cheerAt = time; floatText(balloon.x, balloon.y, balloon.h + 0.8, '🎉', 'gold'); balloon = null; balloonAt = time + 55;
   fruit += 2; store.set('fruit', fruit); flag('balloon'); sfx('pop'); renderHud(); toast(`<span>🎈 <b>${esc(t().balloonGot)}</b></span>`, 3200);
 }
 function startDance() {
@@ -809,14 +820,14 @@ function update(dt) {
 
   if (digging) {
     digging.t += dt;
-    if (digging.t > 0.75) { const g = digging.g; digging = null; holes.add(g.i); store.set('holes', [...holes]);
+    if (digging.t > 0.75) { const g = digging.g; digging = null; cheerAt = time; holes.add(g.i); store.set('holes', [...holes]);
       const left = EX.dig.map((_, i) => i).filter(i => !dug.has(i)), i = left.length ? left[Math.floor(Math.random() * left.length)] : 0;
       dug.add(i); store.set('dug', [...dug]); showItem('dig', i, true); }
   }
   if (shaking) {
     shaking.t += dt;
     if (shaking.t > 0.45 && !shaking.got) {
-      shaking.got = true; fruit++; store.set('fruit', fruit); flag('fruit'); shaking.tree.ready = time + 40;
+      shaking.got = true; cheerAt = time; fruit++; store.set('fruit', fruit); flag('fruit'); shaking.tree.ready = time + 40;
       floatText(shaking.tree.tx * T + 8, shaking.tree.ty * T + 10, 1.4, shaking.tree.v < 0.5 ? '+🍑' : '+🍊', 'gold'); sfx('fruit'); renderHud();
       const left = EX.tree.map((_, i) => i).filter(i => !shaken.has(i));          // the first shake always drops a note, later ones often do
       if (left.length && (!shaken.size || Math.random() < 0.6)) shaking.note = left[Math.floor(Math.random() * left.length)];
@@ -915,7 +926,7 @@ function render(dt) {
   const gd = started ? guide() : null, nxt = gd && gd.spot || null;
   const far = gd && !cardEl.open && !dancing && Math.hypot(gd.x - player.x, gd.y - player.y) > 40;
   const talkNow = talking && !$('say').hidden ? { x: (player.x + talking.x) / 2, y: (player.y + talking.y) / 2 + 12 } : sitting ? { x: player.x, y: player.y - 6 } : null, quiet = !!(talking && talkNow);
-  view.render({ time, dt, snow: time < snowUntil, talk: talkNow, sit: !!sitting, ball: ballS, balloon, player, dog, digging, fishing, dug: holes, shaking, dancing, foundRatio: found.size / SPOTS.length, residents: RES,
+  view.render({ time, dt, cheer: cheerAt, snow: time < snowUntil, talk: talkNow, sit: !!sitting, ball: ballS, balloon, player, dog, digging, fishing, dug: holes, shaking, dancing, foundRatio: found.size / SPOTS.length, residents: RES,
     target: path && path.length ? path[path.length - 1] : null,
     next: far ? { x: gd.x, y: gd.y } : null });
   for (const s of PLACES) {
@@ -1119,6 +1130,8 @@ function openBag() {
 }
 $('cardBody').addEventListener('click', e => {
   const slot = e.target.closest('.slot[data-kind]'), btn = e.target.closest('[data-act]'), pick = e.target.closest('[data-mbti]');
+  const go = e.target.closest('[data-go]');
+  if (go) { const s = spotById[go.dataset.go]; cardEl.close(); if (s && !busy()) visitSpot(s); return; }
   const gp = e.target.closest('[data-g]');
   if (gp && draft) { const [k, v] = gp.dataset.g.split(/:(.+)/); draft.name = $('gName').value; draft[k] = v; sfx('pick'); openGuest('design'); return; }
   if (pick) { const v = pick.dataset.mbti; guess[+v[0]] = v[1]; sfx('pick'); openMbti(); return; }
@@ -1158,6 +1171,17 @@ function makePostcard() {
   c.fillText(`★ ${found.size}/${SPOTS.length}   ·   🎒 ${itemCount()}/${itemTotal}   ·   🏡 ${RES.filter(r => r.here).length}/${RES.length}   ·   ${d().name}`, 44, Hd - band + 108);
   c.textAlign = 'right'; c.fillStyle = '#46a368'; c.fillText('starry-nn.github.io/starry-town', Wd - 44, Hd - band + 108);
   return cv;
+}
+function openMap() {               // the whole island at a glance; click a place to walk there
+  const u = t(), Wm = 960, Hm = Math.round(Wm * MH / MW), cv = document.createElement('canvas'); cv.width = Wm; cv.height = Hm;
+  const c = cv.getContext('2d'); c.fillStyle = '#8fd8ee'; c.fillRect(0, 0, Wm, Hm); c.drawImage(ground, 0, 0, Wm, Hm);
+  const k = Wm / (MW * T);
+  BUILDINGS.concat(HOMES.filter(h => RES.find(r => r.def.id === h.id).here)).forEach(b => { c.fillStyle = b.roof || '#5d5b8a'; c.beginPath(); c.roundRect(b.x * T * k + 1, b.y * T * k + 1, b.w * T * k - 2, b.h * T * k - 2, 5); c.fill(); });
+  const pins = PLACES.filter(s => !s.badge || s === BOARD || s === GUESS).map(s => { const has = s.badge ? false : found.has(s.id);
+    return `<button class="pin${has ? ' has' : ''}${s.badge ? ' fun' : ''}" data-go="${s.id}" style="left:${(s.lab.x / (MW * T) * 100).toFixed(2)}%;top:${(s.lab.y / (MH * T) * 100).toFixed(2)}%"><i>${s.badge || (has ? '★' : '?')}</i><span>${esc(s.name[lang])}</span></button>`; }).join('');
+  showCard('🗺️', u.mapTitle, u.mapMeta, `<div class="map"><img src="${cv.toDataURL('image/jpeg', 0.85)}" alt="">${pins}
+    <span class="pin you" style="left:${(player.x / (MW * T) * 100).toFixed(2)}%;top:${(player.y / (MH * T) * 100).toFixed(2)}%"><i>●</i><span>${esc(u.mapYou)}</span></span></div>
+    <p class="caption center">★ ${esc(u.mapFound)} ${found.size}/${SPOTS.length} · ? ${esc(u.mapNew)}</p>`, 'wide', openMap);
 }
 function askReset() {
   const u = t();
@@ -1247,11 +1271,13 @@ function renderHud() {
   $('btnReset').hidden = started || !hasProgress(); $('btnReset').textContent = '↺ ' + u.restart;
   $('btnMute').hidden = !started; $('btnMute').innerHTML = soundOn || musicOn ? ICON.sound : ICON.mute; $('camCtl').hidden = !started; $('btnMute').setAttribute('aria-label', u.mute); $('btnMute').title = u.mute;
   [['btnView', u.viewBtn + (touch ? '' : ' (V)')], ['btnZoomIn', u.zoomIn], ['btnZoomOut', u.zoomOut]].forEach(([id, tip]) => { $(id).hidden = !started; $(id).title = tip; $(id).setAttribute('aria-label', tip); });
-  [['btnBall', u.ballBtn + (touch ? '' : ' (F)')], ['btnCard', u.postcard]].forEach(([id, tip]) => { $(id).hidden = !started; $(id).title = tip; $(id).setAttribute('aria-label', tip); });
+  [['btnBall', u.ballBtn + (touch ? '' : ' (F)')], ['btnCard', u.postcard], ['btnMap', u.mapBtn + (touch ? '' : ' (M)')]].forEach(([id, tip]) => { $(id).hidden = !started; $(id).title = tip; $(id).setAttribute('aria-label', tip); });
   $('btnDance').hidden = !started; $('btnDance').setAttribute('aria-label', u.dance); $('btnDance').title = u.dance + (touch ? '' : ' (Q)');
   $('btnCv').textContent = u.cv; $('btnCv').href = lang === 'zh' ? 'assets/Nan_Yao_Resume_CN.pdf' : 'assets/Nan_Yao_Resume_EN.pdf';
   $('btnLang').textContent = u.lang; $('btnLang2').textContent = u.lang;
   $('introKicker').textContent = u.kicker; $('introSub').textContent = hasProgress() ? u.subBack.replace('{a}', `${found.size}/${SPOTS.length}`).replace('{b}', `${itemCount()}/${itemTotal}`) : u.sub;
+  $('introBy').textContent = u.by; $('introMoreSum').textContent = u.moreSum;
+  $('introKeys').innerHTML = (touch ? u.keysTouch : u.keys).map(k => `<li><kbd>${esc(k[0])}</kbd>${esc(k[1])}</li>`).join('');
   $('introHow').innerHTML = (touch ? u.howTouch : u.how).map(h => `<li><span>${h[0]}</span><div><b>${esc(h[1])}</b>${esc(h[2])}</div></li>`).join('');
   $('sayName').textContent = sayWho || u.speaker; $('sayMore').textContent = u.next;
   renderPrompt(); renderQuest();
@@ -1290,6 +1316,7 @@ function start() {
 }
 $('btnView').onclick = () => { $('btnView').blur(); nextView(); };
 $('btnZoomIn').onclick = () => { $('btnZoomIn').blur(); zoomBy(1 / 1.2); }; $('btnZoomOut').onclick = () => { $('btnZoomOut').blur(); zoomBy(1.2); };
+$('btnMap').onclick = () => { $('btnMap').blur(); if (started && !cardEl.open) openMap(); };
 $('btnBall').onclick = () => { $('btnBall').blur(); throwBall(); };
 $('btnCard').onclick = () => { $('btnCard').blur(); if (started && !cardEl.open) openPostcard(); };
 $('btnStart').onclick = start; $('btnReset').onclick = askReset;
@@ -1311,6 +1338,7 @@ addEventListener('keydown', e => {
   if (e.key === 'v' || e.key === 'V') { e.preventDefault(); if (!e.repeat) nextView(); return; }
   if (e.key === '=' || e.key === '+') { e.preventDefault(); zoomBy(1 / 1.12); return; }
   if (e.key === '-' || e.key === '_') { e.preventDefault(); zoomBy(1.12); return; }
+  if (e.key === 'm' || e.key === 'M') { e.preventDefault(); if (!e.repeat) openMap(); return; }
   if (e.key === 'f' || e.key === 'F') { e.preventDefault(); if (!e.repeat) throwBall(); return; }
   if (e.key === 'q' || e.key === 'Q') { e.preventDefault(); if (!e.repeat) startDance(); return; }
   if (e.key === 'e' || e.key === 'E' || ((e.key === ' ' || e.key === 'Enter') && !onButton)) {
@@ -1406,5 +1434,5 @@ if (view) requestAnimationFrame(frame);
 else { $('btnStart').hidden = true; $('introHow').hidden = true; $('introSub').textContent = t().no3d; openQuick(); }
 
 // small hook for testing from the console
-window.__town = { openGuest, get guestLook() { return guestLook; }, ownerGuest, guestDef, tiltBy, XMAS, get snow() { return time < snowUntil; }, throwBall, popBalloon, get balloon() { return balloon; }, set balloonAt(v) { balloonAt = v; }, get ball() { return ballS; }, get sitting() { return sitting; }, get talking() { return talking; }, get time() { return time; }, cam, nextView, zoomBy, holes, HOMES, hasProgress, askReset, at, map, MW, MH, findPath, shaken, PLACES, tryGuess, openMbti, TRACKS, music, get actx() { return actx; }, get guess() { return guess; }, set guess(v) { guess = v; }, startDance, openPostcard, makePostcard, flags, tasksSeen, FRUIT_TREES, get fruit() { return fruit; }, get mode() { return mode; }, get shaking() { return shaking; }, get dancing() { return dancing; }, step(n) { for (let i = 0; i < n; i++) { update(0.05); if (i % 6 === 0 || i === n - 1) render(0.3); } }, spotAt, keys, player, dog, SPOTS, DIGS, RES, view, walkTo, openSpot, act, start, found, dug, caught, showItem, talkTo, petDog, get fishing() { return fishing; }, get action() { return action; } };
+window.__town = { openMap, openGuest, get guestLook() { return guestLook; }, ownerGuest, guestDef, tiltBy, XMAS, get snow() { return time < snowUntil; }, throwBall, popBalloon, get balloon() { return balloon; }, set balloonAt(v) { balloonAt = v; }, get ball() { return ballS; }, get sitting() { return sitting; }, get talking() { return talking; }, get time() { return time; }, cam, nextView, zoomBy, holes, HOMES, hasProgress, askReset, at, map, MW, MH, findPath, shaken, PLACES, tryGuess, openMbti, TRACKS, music, get actx() { return actx; }, get guess() { return guess; }, set guess(v) { guess = v; }, startDance, openPostcard, makePostcard, flags, tasksSeen, FRUIT_TREES, get fruit() { return fruit; }, get mode() { return mode; }, get shaking() { return shaking; }, get dancing() { return dancing; }, step(n) { for (let i = 0; i < n; i++) { update(0.05); if (i % 6 === 0 || i === n - 1) render(0.3); } }, spotAt, keys, player, dog, SPOTS, DIGS, RES, view, walkTo, openSpot, act, start, found, dug, caught, showItem, talkTo, petDog, get fishing() { return fishing; }, get action() { return action; } };
 })();

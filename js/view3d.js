@@ -26,6 +26,7 @@ export function createView(world, canvas) {
     glass: bend(new THREE.MeshBasicMaterial({ color: '#c7ecfa' })),
     lamp: bend(new THREE.MeshBasicMaterial({ color: '#fff6cf' })),
     net: bend(new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.3, side: THREE.DoubleSide })),
+    shallow: bend(new THREE.MeshBasicMaterial({ color: '#c4f1f4', transparent: true, opacity: 0.3, depthWrite: false })),
   };
   const matCache = {};
   const mat = (color, basic) => matCache[color + (basic ? 'b' : '')] || (matCache[color + (basic ? 'b' : '')] = bend(basic ? new THREE.MeshBasicMaterial({ color }) : new THREE.MeshLambertMaterial({ color })));
@@ -91,7 +92,7 @@ export function createView(world, canvas) {
     return out;
   }
   function builder() {
-    const lists = { main: [], glass: [], lamp: [], net: [] };
+    const lists = { main: [], glass: [], lamp: [], net: [], shallow: [] };
     const e = new THREE.Euler(), q = new THREE.Quaternion(), s = new THREE.Vector3(), p = new THREE.Vector3();
     const add = (g, color, x, y, z, o = {}) => {
       e.set(o.rx || 0, o.ry || 0, o.rz || 0); q.setFromEuler(e); s.set(o.sx || 1, o.sy || 1, o.sz || 1); p.set(x, y, z);
@@ -131,6 +132,9 @@ export function createView(world, canvas) {
   const water = new THREE.Mesh(new THREE.PlaneGeometry(560, 560, 110, 110), waterMat);
   water.rotation.x = -Math.PI / 2; water.position.set(MW / 2, WL, MH / 2); water.frustumCulled = false;
   scene.add(water);
+  const wtex2 = wtex.clone(); wtex2.needsUpdate = true; wtex2.repeat.set(41, 41);
+  const water2 = new THREE.Mesh(new THREE.PlaneGeometry(560, 560, 110, 110), bend(new THREE.MeshBasicMaterial({ map: wtex2, transparent: true, opacity: 0.35, depthWrite: false })));
+  water2.rotation.x = -Math.PI / 2; water2.position.set(MW / 2, WL + 0.01, MH / 2); water2.frustumCulled = false; water2.renderOrder = 0; scene.add(water2);
 
   /* ---------- static world ---------- */
   const S = builder();
@@ -183,6 +187,22 @@ export function createView(world, canvas) {
     if (bd.id === 'agent') { B.add(cyl(0.07, 0.07, 0.9, 8), WHITE, bd.x + W + 0.15, 0.45, wf + 0.2); for (let i = 0; i < 5; i++) B.add(rbox(0.28, 0.14, 0.1, 0.03), i % 2 ? WHITE : '#f590b2', bd.x + W + 0.36 + i * 0.28, 0.72, wf + 0.2); }
     if (bd.id === 'sync') { B.add(cyl(0.04, 0.04, 0.6, 6), WHITE, cx - W * 0.28, y0 + wallH + 1.3, cz); B.add(new THREE.SphereGeometry(0.34, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2), WHITE, cx - W * 0.28, y0 + wallH + 1.55, cz, { rx: Math.PI - 0.5 }); B.add(sphS(0.07), '#f0766a', cx - W * 0.28, y0 + wallH + 1.72, cz + 0.12); }
     if (bd.id === 'waves') for (let i = 0; i < 5; i++) B.add(rbox(0.3, 0.07, 0.75, 0.03), i % 2 ? WHITE : '#4fa8dc', dxc - 0.6 + i * 0.3, y0 + 1.82, wf + 0.42, { rx: 0.35 });
+    // details that make each house feel lived in: a plinth line, shutters, a door canopy with a lamp, shrubs at the corners
+    B.add(rbox(W - 0.42, 0.16, Dp - 0.22, 0.05), bd.roofL, cx, y0 + 0.1, cz);
+    for (let i = 0; i < W; i++) if (i !== bd.door) [-1, 1].forEach(sd => B.add(rbox(0.09, tall ? 0.5 : 0.52, 0.04, 0.015), bd.roof, bd.x + i + 0.5 + sd * 0.37, y0 + (tall ? 0.95 : 1.1), wf + 0.05));
+    B.add(rbox(0.95, 0.08, 0.5, 0.03), bd.roof, dxc, y0 + 1.72, wf + 0.26, { rx: 0.22 }); B.add(sphS(0.07), '#fff6cf', dxc + 0.52, y0 + 1.45, wf + 0.1, { to: 'lamp' });
+    [-1, 1].forEach(sd => { const bx = cx + sd * (W / 2 - 0.12); B.add(sph(0.3), '#5fb86e', bx, 0.3, wf + 0.32, { sy: 0.85 }); B.add(sph(0.2), '#74c97f', bx - sd * 0.25, 0.22, wf + 0.42); B.add(sphS(0.06), bd.sign === '#ffffff' ? '#ffd166' : bd.sign, bx - sd * 0.05, 0.52, wf + 0.5); });
+    if (bd.id === 'showcase') {            // the gallery: a portico with columns, banners and a gilded star
+      const pz = wf + 0.55;
+      B.add(rbox(3.4, 0.14, 1.0, 0.04), STONE, dxc, 0.25, pz); B.add(rbox(3.0, 0.12, 0.8, 0.04), '#fff6e6', dxc, 0.36, pz + 0.12);
+      [-1.4, -0.55, 0.55, 1.4].forEach(o => { B.add(cyl(0.11, 0.13, wallH - 0.25, 14), WHITE, dxc + o, y0 + (wallH - 0.25) / 2 + 0.2, pz + 0.3); B.add(rbox(0.32, 0.08, 0.32, 0.02), '#fff6e6', dxc + o, y0 + wallH + 0.02, pz + 0.3); });
+      B.add(frustum(3.5, 1.1, 0.4, 0.9, 0.7), bd.roofL, dxc, y0 + wallH + 0.42, pz + 0.05); B.add(rbox(3.6, 0.1, 1.2, 0.03), '#fff6e6', dxc, y0 + wallH + 0.08, pz + 0.05);
+      B.add(extrude(starPts(0.26, 0.12), 0.06, 0.02), '#fff3a8', dxc, y0 + wallH + 0.42, pz + 0.52, { to: 'lamp' });
+      [-1, 1].forEach(sd => { const fx = cx + sd * (W / 2 - 0.5); B.add(cyl(0.025, 0.025, 1.5, 6), WHITE, fx, y0 + wallH + 1.0, wf - 0.3); B.add(rbox(0.5, 0.7, 0.03, 0.02), sd < 0 ? '#f590b2' : '#7fd1c0', fx + 0.28, y0 + wallH + 1.3, wf - 0.3); });
+    }
+    if (bd.id === 'crossing') for (let i = 0; i < 8; i++) B.add(rbox(0.5, 0.07, 0.7, 0.02), i % 2 ? WHITE : '#f0766a', bd.x + 0.5 + i * 0.5 + 0.25 - (i > 3 ? 0 : 0), y0 + 1.95, wf + 0.36, { rx: 0.4 });
+    if (bd.id === 'linear') { B.add(cyl(0.03, 0.03, 1.4, 6), WHITE, bd.x + 0.5, y0 + wallH + 1.2, cz); B.add(rbox(0.6, 0.36, 0.03, 0.02), '#6f8fd8', bd.x + 0.82, y0 + wallH + 1.65, cz); B.add(rbox(0.6, 0.06, 0.035, 0.01), WHITE, bd.x + 0.82, y0 + wallH + 1.65, cz); }
+    if (bd.id === 'skills') { B.add(rbox(0.9, 0.5, 0.06, 0.05), '#7fd1c0', dxc + 1.3, y0 + 1.75, wf + 0.08); B.add(new THREE.TorusGeometry(0.13, 0.045, 6, 10), WHITE, dxc + 1.3, y0 + 1.75, wf + 0.13); }
     return { cx, cz, wf, y0, wallH, W, Dp, roofH };
   }
   function campus(bd) {
@@ -249,6 +269,7 @@ export function createView(world, canvas) {
     S.add(box(1.03, 0.06, 1.03), '#c9a274', cx, -0.36, cz);
     S.add(box(1.75, 0.12, 1.75), '#f8e9b8', cx, WL, cz);
     S.add(box(2.15, 0.05, 2.15), '#eefbff', cx, WL - 0.005, cz);
+    S.add(box(3.1, 0.02, 3.1), '#c4f1f4', cx, WL + 0.012, cz, { to: 'shallow' });
   }
   // residents' houses: each in its own group, shown when its owner has moved in; the lot always has a little sign
   const homes = world.HOMES.map(hm => {
@@ -467,7 +488,7 @@ export function createView(world, canvas) {
       part(new THREE.CapsuleGeometry(0.066, 0.2, 6, 14), hood, 0, -0.13, 0, pv); part(cyl(0.067, 0.067, 0.04, 16), hoodD, 0, -0.265, 0, pv); part(sm(0.058), skin, 0, -0.32, 0, pv);
       return pv;
     });
-    const head = new THREE.Group(); head.position.set(0, 1.22, 0); body.add(head);
+    const head = new THREE.Group(); head.position.set(0, 1.22, 0); body.add(head); const eyes = [];
     part(sm(0.37), skin, 0, 0, 0, head).scale.set(1.03, 0.95, 0.97);
     // hair: one smooth shell around the head, open at the face, with a parting and two curtain bangs
     part(new THREE.SphereGeometry(0.405, 44, 30, Math.PI / 2 + 1.0, Math.PI * 2 - 2.0, 0, Math.PI * 0.74), hair, 0, 0.0, -0.01, head).scale.set(1.03, 0.97, 1);
@@ -475,7 +496,7 @@ export function createView(world, canvas) {
     [-1, 1].forEach(s => {
       const bang = part(sm(0.2), hair, s * 0.2, 0.19, 0.24, head); bang.scale.set(1.0, 0.5, 0.42); bang.rotation.z = -s * 0.75;
       part(new THREE.CapsuleGeometry(0.05, 0.16, 6, 12), hair, s * 0.35, -0.07, 0.12, head).rotation.z = s * 0.1;
-      part(sm(0.048), dark, s * 0.135, -0.04, 0.33, head).scale.set(0.95, 1.38, 0.5);
+      const eye = part(sm(0.048), dark, s * 0.135, -0.04, 0.33, head); eye.scale.set(0.95, 1.38, 0.5); eyes.push(eye);
       part(sphS(0.017), white, s * 0.135 + 0.016, -0.005, 0.356, head); part(sphS(0.009), white, s * 0.135 - 0.014, -0.065, 0.354, head);
       part(new THREE.CapsuleGeometry(0.01, 0.07, 3, 6), hairD, s * 0.135, 0.07, 0.342, head).rotation.z = Math.PI / 2 + s * 0.16;
       part(sm(0.06), mat('#ffb9c6', true), s * 0.235, -0.13, 0.28, head).scale.set(1, 0.52, 0.3);
@@ -489,7 +510,7 @@ export function createView(world, canvas) {
     part(cyl(0.022, 0.022, 0.7, 8), mat('#a9785a'), 0, 0.2, 0, shovel); part(rbox(0.2, 0.24, 0.04, 0.02), mat('#b9c2cc'), 0, 0.62, 0, shovel); part(rbox(0.12, 0.04, 0.05, 0.015), mat('#f0766a'), 0, -0.15, 0, shovel);
     const rod = new THREE.Group(); rod.position.set(0.24, 0.62, 0.14); rod.rotation.x = 0.85; g.add(rod);
     part(cyl(0.012, 0.028, 1.6, 8), mat('#a9785a'), 0, 0.8, 0, rod); part(cyl(0.035, 0.035, 0.16, 10), mat('#f0766a'), 0, 0.1, 0, rod);
-    return { g, body, legs, arms, head, shovel, rod, ang: 0 };
+    return { g, body, legs, arms, head, shovel, rod, eyes, smile, ang: 0 };
   }
   function makeDog() {      // 苹果 / Bingo, a Samoyed: one soft white shape, round face, small ears, tail curled over the back
     const g = new THREE.Group(), body = new THREE.Group(); g.add(body);
@@ -499,12 +520,12 @@ export function createView(world, canvas) {
     part(sm(0.3), w, 0, 0.54, 0.28, body).scale.set(1.08, 1.12, 0.95);                                            // deep chest and mane as one piece
     const collar = part(new THREE.TorusGeometry(0.215, 0.026, 8, 28), red, 0, 0.7, 0.4, body); collar.rotation.x = 1.2;
     part(sm(0.048), red, 0, 0.5, 0.56, body); part(cone(0.018, 0.05, 6), soft('#63bf72', 0.2), 0.014, 0.555, 0.56, body).rotation.z = -0.5;
-    const head = new THREE.Group(); head.position.set(0, 0.86, 0.48); body.add(head);
+    const head = new THREE.Group(); head.position.set(0, 0.86, 0.48); body.add(head); const eyes = [];
     part(sm(0.27), w, 0, 0, 0, head).scale.set(1.24, 1.0, 1.0);                                                   // wide, fluffy face
     part(sm(0.2), w, 0, -0.1, 0.04, head).scale.set(1.35, 0.8, 0.95);
     part(sm(0.12), w, 0, -0.07, 0.21, head).scale.set(1.08, 0.8, 1.1);
     [-1, 1].forEach(s => {
-      part(sm(0.036), dk, s * 0.108, 0.035, 0.236, head).scale.set(1.12, 1.0, 0.6); part(sphS(0.012), mat('#ffffff', true), s * 0.108 + 0.012, 0.05, 0.257, head);
+      const eye = part(sm(0.036), dk, s * 0.108, 0.035, 0.236, head); eye.scale.set(1.12, 1.0, 0.6); eyes.push(eye); part(sphS(0.012), mat('#ffffff', true), s * 0.108 + 0.012, 0.05, 0.257, head);
       const ear = part(cone(0.085, 0.17, 18), w, s * 0.19, 0.25, -0.03, head); ear.rotation.z = -s * 0.3;
       part(cone(0.045, 0.1, 12), pink, s * 0.19, 0.238, 0.008, head).rotation.z = -s * 0.3;
     });
@@ -519,7 +540,7 @@ export function createView(world, canvas) {
       part(new THREE.CapsuleGeometry(0.076, 0.12, 6, 14), w, 0, -0.12, 0, pv); part(sm(0.095), w2, 0, -0.25, 0.03, pv).scale.set(1.05, 0.58, 1.3);
       return pv;
     });
-    return { g, body, head, tail, legs, tongue, ang: 0 };
+    return { g, body, head, tail, legs, tongue, eyes, ang: 0 };
   }
   function makeCritter(def) {
     const g = new THREE.Group(), body = new THREE.Group(); g.add(body);
@@ -589,21 +610,34 @@ export function createView(world, canvas) {
   const fishLine = new THREE.Line(lineGeo, bend(new THREE.LineBasicMaterial({ color: '#ffffff' }))); fishLine.frustumCulled = false; scene.add(fishLine);
   const ripple = new THREE.Mesh(new THREE.RingGeometry(0.2, 0.25, 24), bend(new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.7, depthWrite: false }))); ripple.rotation.x = -Math.PI / 2; scene.add(ripple);
 
+  // warm halos and pools of light around the street lamps; they fade in at dusk and glow at night
+  const glowMat = bend(new THREE.MeshBasicMaterial({ color: '#ffe6a0', transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }));
+  const poolMat = bend(new THREE.MeshBasicMaterial({ color: '#ffd98a', transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }));
+  (() => {
+    const lamps = world.OBJECTS.filter(o => o.kind === 'lamp'); if (!lamps.length) return;
+    const halo = new THREE.InstancedMesh(new THREE.SphereGeometry(0.46, 14, 10), glowMat, lamps.length), pool = new THREE.InstancedMesh(new THREE.CircleGeometry(1.5, 28), poolMat, lamps.length);
+    const m = new THREE.Matrix4(), flat = new THREE.Matrix4().makeRotationX(-Math.PI / 2);
+    lamps.forEach((o, i) => { halo.setMatrixAt(i, m.makeTranslation(o.tx + 0.5, 2.05, o.ty + 0.5)); pool.setMatrixAt(i, m.makeTranslation(o.tx + 0.5, 0.05, o.ty + 0.5).multiply(flat)); });
+    halo.frustumCulled = pool.frustumCulled = false; halo.renderOrder = pool.renderOrder = 3; scene.add(halo, pool);
+  })();
+  scene.fog = new THREE.Fog('#dff4fb', 60, 150);
+
   /* ---------- light + time of day ---------- */
-  const hemi = new THREE.HemisphereLight('#ffffff', '#b9e0b0', 1.9); scene.add(hemi);
+  const hemi = new THREE.HemisphereLight('#ffffff', '#b9e0b0', 1.7); scene.add(hemi);
   const sun = new THREE.DirectionalLight('#fff1d6', 2.4); sun.castShadow = true;
-  sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -0.0006; sun.shadow.normalBias = 0.04;
+  sun.shadow.mapSize.set(2048, 2048); sun.shadow.radius = 3.5; sun.shadow.bias = -0.0006; sun.shadow.normalBias = 0.04;
   Object.assign(sun.shadow.camera, { left: -22, right: 22, top: 22, bottom: -22, near: 1, far: 60 });
   scene.add(sun, sun.target);
   const MODES = {
-    day: { sky: '#ffffff', gnd: '#b9e0b0', hi: 1.9, sun: '#fff1d6', si: 2.4, glass: '#c7ecfa', lamp: '#fff6cf', water: '#ffffff' },
-    dusk: { sky: '#ffd9c4', gnd: '#c2a9c9', hi: 1.65, sun: '#ffab6b', si: 2.3, glass: '#ffe9a6', lamp: '#fff0b0', water: '#ffd9cc' },
-    night: { sky: '#c3ccff', gnd: '#7584c4', hi: 2.0, sun: '#d6dcff', si: 1.5, glass: '#ffe08a', lamp: '#fff3b8', water: '#6f88d0' },
+    day: { sky: '#fdfbf4', gnd: '#a9dba6', hi: 1.72, sun: '#fff0d0', si: 2.55, glass: '#c7ecfa', lamp: '#fff6cf', water: '#ffffff', fog: '#e3f5fb', glow: 0, pool: 0 },
+    dusk: { sky: '#ffd2b4', gnd: '#b99bc4', hi: 1.5, sun: '#ff9d5c', si: 2.6, glass: '#ffe9a6', lamp: '#fff0b0', water: '#ffd3c2', fog: '#ffe2c6', glow: 0.26, pool: 0.07 },
+    night: { sky: '#9fb0ff', gnd: '#5262b4', hi: 1.36, sun: '#c9d2ff', si: 1.2, glass: '#ffe08a', lamp: '#fff3b8', water: '#6f88d0', fog: '#3f4f9c', glow: 0.42, pool: 0.13 },
   };
   function setMode(name) {
     const m = MODES[name] || MODES.day;
     hemi.color.set(m.sky); hemi.groundColor.set(m.gnd); hemi.intensity = m.hi; sun.color.set(m.sun); sun.intensity = m.si;
-    M.glass.color.set(m.glass); M.lamp.color.set(m.lamp); waterMat.color.set(m.water);
+    M.glass.color.set(m.glass); M.lamp.color.set(m.lamp); waterMat.color.set(m.water); water2.material.color.set(m.water);
+    scene.fog.color.set(m.fog); glowMat.opacity = m.glow; poolMat.opacity = m.pool; M.shallow.opacity = name === 'night' ? 0.14 : 0.3;
   }
 
   /* ---------- camera, projection, picking ---------- */
@@ -676,6 +710,7 @@ export function createView(world, canvas) {
   /* ---------- per-frame ---------- */
   const turn = (cur, target, k) => { let dlt = target - cur; while (dlt > Math.PI) dlt -= Math.PI * 2; while (dlt < -Math.PI) dlt += Math.PI * 2; return cur + dlt * k; };
   const DIRANG = { down: 0, right: Math.PI / 2, up: Math.PI, left: -Math.PI / 2 };
+  let walkAmt = 0;
   function render(st) {
     const t = st.time, dt = st.dt, P = st.player, k = 1 - Math.exp(-dt * 12);
     const px = P.x / 16, pz = P.y / 16;
@@ -689,21 +724,34 @@ export function createView(world, canvas) {
     camera.position.set(camT.x, 0.8 + Math.sin(camS.pitch) * cd, camT.z - 0.6 + Math.cos(camS.pitch) * cd); camera.lookAt(camT.x, 0.8, camT.z - 0.6);
     camera.updateMatrixWorld(); bendU.z0.value = camera.position.distanceTo(v.set(camT.x, 0.8, camT.z - 0.6));
     bendU.k.value = 0.002 / (f * Math.max(0.75, camS.zoom));
+    scene.fog.near = cd * 1.9; scene.fog.far = cd * (4.2 + (1.38 - camS.pitch) * 2.2);        // distance haze: the far sea melts into the sky
     sun.position.set(camT.x - 9, 17, camT.z + 9); sun.target.position.set(camT.x, 0, camT.z - 2); sun.target.updateMatrixWorld();
-    if (!reduceMotion) wtex.offset.set(t * 0.012, t * 0.007);
+    if (!reduceMotion) { wtex.offset.set(t * 0.012, t * 0.007); wtex2.offset.set(-t * 0.008, t * 0.011); }
 
     // player
-    const sw = P.moving ? Math.sin(P.anim * 15) : 0, idle = reduceMotion ? 0 : Math.sin(t * 2.2);
+    const idle = reduceMotion ? 0 : Math.sin(t * 2.2);
+    walkAmt += ((P.moving ? 1 : 0) - walkAmt) * (1 - Math.exp(-dt * 14));                      // eases in and out of the walk, so stopping never snaps
+    const ph = P.anim * 13.5, sw = Math.sin(ph) * walkAmt, bounce = Math.abs(Math.cos(ph)) * walkAmt;
     person.ang = turn(person.ang, P.face != null ? P.face : DIRANG[P.dir], k); person.g.position.set(px, 0, pz); person.g.rotation.y = person.ang;
-    person.legs[0].rotation.x = sw * 0.75; person.legs[1].rotation.x = -sw * 0.75;
-    person.arms[0].rotation.x = -sw * 0.7; person.arms[1].rotation.x = sw * 0.7;
-    person.body.position.y = P.moving ? Math.abs(sw) * 0.05 : 0; person.body.scale.y = 1 + (P.moving ? 0 : idle * 0.012);
-    person.head.rotation.z = P.moving ? sw * 0.04 : 0;
+    person.legs[0].rotation.x = sw * 0.8; person.legs[1].rotation.x = -sw * 0.8;
+    person.arms[0].rotation.x = -sw * 0.75; person.arms[1].rotation.x = sw * 0.75;
+    person.arms[0].rotation.z = -0.2 - walkAmt * 0.08 - idle * 0.015 * (1 - walkAmt); person.arms[1].rotation.z = 0.2 + walkAmt * 0.08 + idle * 0.015 * (1 - walkAmt);
+    person.body.position.y = bounce * 0.055; person.body.scale.y = 1 + idle * 0.012 * (1 - walkAmt);
+    person.body.rotation.z = sw * 0.035; person.body.rotation.y = sw * 0.06;
+    person.head.rotation.z = -sw * 0.03 + (reduceMotion ? 0 : Math.sin(t * 0.9) * 0.03 * (1 - walkAmt));
+    person.head.rotation.y = reduceMotion ? 0 : Math.sin(t * 0.47) * 0.16 * (1 - walkAmt);       // looks around a little when standing
+    person.head.position.y = 1.22 + bounce * 0.012;
+    const cheerK = st.cheer != null && t - st.cheer < 0.9 && t >= st.cheer ? Math.sin((t - st.cheer) / 0.9 * Math.PI) : 0;        // a small happy hop with both arms up
+    const blink = reduceMotion ? 1 : ((t * 0.31) % 1 > 0.965 || ((t * 0.31 + 0.42) % 1 > 0.985) ? 0.12 : 1);
+    person.eyes.forEach(e => { e.scale.y = 1.38 * blink * (cheerK > 0 ? 0.55 : 1); });
+    dogM.eyes.forEach(e => { e.scale.y = (reduceMotion ? 1 : ((t * 0.27 + 0.6) % 1 > 0.965 ? 0.12 : 1)); });
+    if (cheerK > 0) { person.body.position.y += cheerK * 0.22; person.arms[0].rotation.x = person.arms[1].rotation.x = Math.PI * cheerK * 0.92; person.arms[0].rotation.z = -0.2 - cheerK * 0.3; person.arms[1].rotation.z = 0.2 + cheerK * 0.3; person.head.rotation.z = Math.sin(t * 18) * 0.06 * cheerK; }
+    person.smile.scale.setScalar(1 + cheerK * 0.6);
     if (st.dancing) {
       const dt2 = st.dancing.t;
       person.ang = dt2 * 7.5; person.g.rotation.y = person.ang;
       person.body.position.y = Math.abs(Math.sin(dt2 * 9)) * 0.14;
-      person.arms[0].rotation.x = person.arms[1].rotation.x = Math.PI + Math.sin(dt2 * 9) * 0.35;
+      person.arms[0].rotation.x = Math.PI + Math.sin(dt2 * 9) * 0.5; person.arms[1].rotation.x = Math.PI - Math.sin(dt2 * 9) * 0.5; person.arms[0].rotation.z = -0.5; person.arms[1].rotation.z = 0.5; person.body.rotation.z = Math.sin(dt2 * 9) * 0.12; person.head.rotation.y = 0;
       person.legs[0].rotation.x = Math.sin(dt2 * 9) * 0.5; person.legs[1].rotation.x = -Math.sin(dt2 * 9) * 0.5;
       person.head.rotation.z = Math.sin(dt2 * 9) * 0.12;
     }
