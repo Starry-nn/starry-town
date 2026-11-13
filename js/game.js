@@ -1,5 +1,5 @@
 /* Starry Town — a walkable portfolio island. The rules live here; view3d.js draws the picture. */
-import { createView } from './view3d.js?v=24';
+import { createView } from './view3d.js?v=25';
 (() => {
 'use strict';
 
@@ -460,8 +460,9 @@ function waterDir() {
 }
 
 /* dig spots: eight random patches of grass that can be walked to, different for every visitor and kept until they start over */
+const reach = new Uint8Array(MW * MH);      // every tile that can be walked to from the plaza; the map never changes, so this is worked out once
 (function placeDigs() {
-  const reach = new Uint8Array(MW * MH), q = [I(HOME[0], HOME[1])]; reach[q[0]] = 1;
+  const q = [I(HOME[0], HOME[1])]; reach[q[0]] = 1;
   for (let qi = 0; qi < q.length; qi++) {
     const cx = q[qi] % MW, cy = (q[qi] / MW) | 0;
     for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = cx + dx, ny = cy + dy; if (!tileSolid(nx, ny) && !reach[I(nx, ny)]) { reach[I(nx, ny)] = 1; q.push(I(nx, ny)); } }
@@ -689,7 +690,7 @@ const taskDone = id => !!(TASK_DONE[id] && TASK_DONE[id]());
 const currentTask = () => EX.tasks.find(k => !taskDone(k.id)) || null;
 const closest = (list, fx, fy) => list.reduce((b, o) => { const dd = Math.hypot(fx(o) - player.x, fy(o) - player.y); return !b || dd < b.d ? { o, d: dd } : b; }, null);
 function treeSide(tr) {           // a free tile next to a tree, the one nearest the player
-  const c = [[0, 1], [-1, 0], [1, 0], [0, -1]].map(([dx, dy]) => [tr.tx + dx, tr.ty + dy]).filter(([x, y]) => !tileSolid(x, y) && findPath(...playerTile(), x, y));
+  const c = [[0, 1], [-1, 0], [1, 0], [0, -1]].map(([dx, dy]) => [tr.tx + dx, tr.ty + dy]).filter(([x, y]) => inMap(x, y) && reach[I(x, y)]);
   return closest(c, q => q[0] * T + 8, q => q[1] * T + 10);
 }
 function goShake(tr) {
