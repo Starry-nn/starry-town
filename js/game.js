@@ -1,5 +1,5 @@
 /* Starry Town — a walkable portfolio island. The rules live here; view3d.js draws the picture. */
-import { createView } from './view3d.js?v=25';
+import { createView } from './view3d.js?v=26';
 (() => {
 'use strict';
 
@@ -18,14 +18,14 @@ function dressGuest(d) {
   if (d.name) guestDef.name = { en: d.name, zh: d.name };
   guestDef.lines = d.line ? { en: [d.line, ...guestLines.en], zh: [d.line, ...guestLines.zh] } : { en: guestLines.en.slice(), zh: guestLines.zh.slice() };      // their own catchphrase comes first
 }
-const T = 16, MW = 84, MH = 54, OX = 10, OY = 10;      // the town keeps its own tile coordinates and sits OX / OY tiles into a larger island
+const T = 16, MW = 100, MH = 60, OX = 10, OY = 10;      // the town keeps its own tile coordinates and sits OX / OY tiles into a larger island
 const $ = id => document.getElementById(id);
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const store = {
   get(k, f) { try { const v = localStorage.getItem('starry-town-' + k); return v == null ? f : JSON.parse(v); } catch (e) { return f; } },
   set(k, v) { try { localStorage.setItem('starry-town-' + k, JSON.stringify(v)); } catch (e) {} },
 };
-if (store.get('layout', 0) !== 3) { ['pos', 'digs'].forEach(k => { try { localStorage.removeItem('starry-town-' + k); } catch (e) {} }); store.set('layout', 3); }   // the island grew: old positions no longer fit
+if (store.get('layout', 0) !== 4) { ['pos', 'digs'].forEach(k => { try { localStorage.removeItem('starry-town-' + k); } catch (e) {} }); store.set('layout', 4); }   // the island grew: old positions no longer fit
 if (!CanvasRenderingContext2D.prototype.roundRect) {
   CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
     const q = Array.isArray(r) ? r : [r, r, r, r], [a, b, c2, d2] = q.length === 4 ? q : [q[0], q[0], q[0], q[0]];
@@ -170,11 +170,16 @@ function hash(x, y, s = 0) {
 function rect(x, y, w, h, v, arr = map) {
   for (let j = y; j < y + h; j++) for (let i = x; i < x + w; i++) if (inMap(i, j)) arr[I(i, j)] = v;
 }
+// The town was drawn on a tight 64 x 34 grid. To give the buildings room, empty columns and rows are inserted at the seams
+// below: everything keeps its original "town" coordinates and is moved through tx() / ty(), so streets stretch and houses drift apart.
+const SEAM_X = [9, 13, 19, 28, 35, 42, 51, 57], SEAM_Y = [13, 18, 26], GAP = 2;
+const tx = x => x + SEAM_X.filter(q => q <= Math.floor(x)).length * GAP + OX, ty = y => y + SEAM_Y.filter(q => q <= Math.floor(y)).length * GAP + OY;
+const TW = 64 + SEAM_X.length * GAP, TH = 34 + SEAM_Y.length * GAP;
+const R = (x, y, w, h, v, arr) => rect(tx(x), ty(y), tx(x + w - 1) - tx(x) + 1, ty(y + h - 1) - ty(y) + 1, v, arr);
 // The island: an organic outline around the town, with a beach all the way round.
-const TW = 64, TH = 34, R = (x, y, w, h, v, arr) => rect(x + OX, y + OY, w, h, v, arr);
 const coastA = (x, y) => Math.atan2(y + 0.5 - (OY + TH / 2), x + 0.5 - (OX + TW / 2));
 function coast(x, y) {            // below 0: grass. A little above 0: sand. Beyond that: sea.
-  const hx = TW / 2 + 2.5, hy = TH / 2 + 2.5, r = 11;
+  const hx = TW / 2 + 2.5, hy = TH / 2 + 2.5, r = 12;
   const qx = Math.abs(x + 0.5 - (OX + TW / 2)) - (hx - r), qy = Math.abs(y + 0.5 - (OY + TH / 2)) - (hy - r);
   const sdf = Math.hypot(Math.max(qx, 0), Math.max(qy, 0)) + Math.min(Math.max(qx, qy), 0) - r, a = coastA(x, y);
   return sdf - (1.3 * Math.sin(3 * a + 1) + 0.9 * Math.sin(5 * a + 2.3) + 0.6 * Math.sin(9 * a + 0.7));
@@ -183,29 +188,31 @@ const beachW = (x, y) => 2.7 + 1.0 * Math.sin(7 * coastA(x, y) + 2) + 0.5 * Math
 for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) { const c = coast(x, y); map[I(x, y)] = c < 0 ? G : c < beachW(x, y) ? SAND : W; }
 // the harbour: a cove cut into the south shore, open to the sea
 R(27, 29, 10, 3, W);
-for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) if (((x - OX - 32) / 6.2) ** 2 + ((y - OY - 36) / 8.5) ** 2 <= 1 && y - OY >= 31) map[I(x, y)] = W;
+for (let y = ty(31); y < MH; y++) for (let x = 0; x < MW; x++) if (((x - tx(32)) / 7.5) ** 2 + ((y - ty(36)) / 8.5) ** 2 <= 1) map[I(x, y)] = W;
 R(4, 16, 56, 2, P); R(4, 24, 56, 2, P);
 R(22, 11, 2, 17, P);
 R(10, 16, 2, 10, P); R(33, 16, 2, 10, P);
 R(19, 14, 8, 6, Z);
-[5, 10, 16, 31, 38].forEach(x => R(x, 13, 1, 3, P));
-[6, 15, 30, 38].forEach(x => R(x, 23, 1, 1, P));
+const PLAZA = [tx(19), ty(14), tx(26) - tx(19) + 1, ty(19) - ty(14) + 1];
 R(11, 26, 1, 4, P); R(8, 29, 8, 1, P);
 R(30, 26, 2, 3, P); R(30, 29, 2, 2, D);
 // east bank: the Showcase and the residents' village
-R(54, 16, 2, 10, P); R(54, 13, 1, 3, P); R(55, 26, 1, 3, P); R(47, 29, 13, 1, P); R(59, 15, 1, 1, P); R(58, 23, 1, 1, P);
+R(54, 16, 2, 10, P); R(55, 26, 1, 3, P); R(47, 29, 13, 1, P);
 // footpaths down to the beach at both ends of the main road and south from the campsite lane
-R(-2, 16, 6, 2, P); R(60, 24, 6, 2, P); R(11, 30, 1, 6, P);
+R(-2, 16, 6, 2, P); R(60, 24, 8, 2, P); R(11, 30, 1, 7, P);
+for (const sy of SEAM_Y) for (let x = 0; x < MW; x++) { const y0 = ty(sy) - GAP; if (map[I(x, y0 - 1)] === P && map[I(x, y0 + GAP)] === P) rect(x, y0, 1, GAP, P); }      // lanes that met across a seam still meet
 for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) if (map[I(x, y)] === P && coast(x, y) >= 0) map[I(x, y)] = SAND;      // paths end where the sand begins
 // a river splits the island from shore to shore, widening into a lake between the two roads; a pond sits south of the plaza
-for (let y = 0; y < MH; y++) { const cx = OX + 45 + Math.round(Math.sin((y - OY) * 0.45)); for (let x = cx - 1; x <= cx + 1; x++) if (inMap(x, y)) map[I(x, y)] = W; }
-for (let y = 17; y < 24; y++) for (let x = 44; x < 54; x++) if (((x - 48.5) / 3.9) ** 2 + ((y - 20.5) / 2.7) ** 2 <= 1) map[I(x + OX, y + OY)] = W;
-R(24, 21, 3, 2, W); map[I(25 + OX, 20 + OY)] = W;
+const RIVER = tx(45), LAKE = [tx(48) + 0.5, (ty(17) + ty(23) + 1) / 2];
+for (let y = 0; y < MH; y++) { const cx = RIVER + Math.round(Math.sin((y - OY) * 0.38)); for (let x = cx - 1; x <= cx + 1; x++) if (inMap(x, y)) map[I(x, y)] = W; }
+for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) if (((x + 0.5 - LAKE[0] - 0.5) / 4.6) ** 2 + ((y + 0.5 - LAKE[1]) / 3.4) ** 2 <= 1) map[I(x, y)] = W;
+const POND = [tx(24), ty(21)];
+rect(POND[0], POND[1], 3, 2, W); map[I(POND[0] + 1, POND[1] - 1)] = W;
 // bridges: the two roads cross the river, and a plank walk crosses the lake
-for (const y of [16, 17, 24, 25]) for (let x = 42; x < 49; x++) if (map[I(x + OX, y + OY)] === W) map[I(x + OX, y + OY)] = D;
-for (let y = 17; y < 24; y++) if (map[I(49 + OX, y + OY)] === W) map[I(49 + OX, y + OY)] = D;
-const PIER = [30 + OX, 29 + OY, 32 + OX, 31 + OY];
-const LILIES = [[46.6, 19.6], [47.3, 21.7], [50.6, 19.2], [51.4, 21.4], [50.3, 22.3], [46.2, 21.2], [24.6, 21.5], [26.3, 22.4], [25.5, 20.6]].map(([x, y]) => [x + OX, y + OY]);
+for (const y of [ty(16), ty(17), ty(24), ty(25)]) for (let x = RIVER - 4; x <= RIVER + 9; x++) if (map[I(x, y)] === W) map[I(x, y)] = D;
+for (let y = ty(17) + 1; y < ty(24); y++) if (map[I(Math.round(LAKE[0]) + 1, y)] === W) map[I(Math.round(LAKE[0]) + 1, y)] = D;
+const PIER = [tx(30), ty(29), tx(30) + 2, ty(29) + 2];
+const LILIES = [[-2.4, -1.3], [-1.6, 1.4], [2.3, -1.8], [3.0, 1.2], [1.2, 2.2], [-3.2, 0.6]].map(([dx, dy]) => [LAKE[0] + dx, LAKE[1] + dy]).concat([[0.6, 0.5], [2.3, 1.4], [1.5, -0.4]].map(([dx, dy]) => [POND[0] + dx, POND[1] + dy]));
 
 const BUILDINGS = [
   { id: 'skills',   kind: 'house',  x: 4,  y: 9,  w: 4, h: 4, door: 1, wall: '#f3d9a8', roof: '#b9825a', roofL: '#cf9a70', doorC: '#8a5a3c', sign: '#7fd1c0' },
@@ -220,13 +227,13 @@ const BUILDINGS = [
   { id: 'showcase', kind: 'house',  x: 51, y: 8,  w: 6, h: 5, door: 3, wall: '#fffaf0', roof: '#f5b01a', roofL: '#ffd166', doorC: '#b9825a', sign: '#fff3a8' },
   { id: 'edu',      kind: 'campus', x: 35, y: 18, w: 7, h: 5, door: 3, wall: '#fbf1dc', roof: '#9a6fd6', roofL: '#b390e6', doorC: '#7a4fb8', sign: '#e6d6ff' },
 ];
-BUILDINGS.forEach(b => { b.x += OX; b.y += OY; });
+BUILDINGS.forEach(b => { b.x = tx(b.x); b.y = ty(b.y); });
 // one house per resident, east of the river; it is built when its owner moves in
-const HOME_AT = { mochi: [47, 26], pip: [51, 26], bao: [57, 26], rana: [57, 20], kiki: [58, 12], guest: [47, 8] };
+const HOME_AT = { mochi: [47, 26], pip: [51, 26], bao: [57, 26], rana: [57, 20], kiki: [58, 9], guest: [47, 8] };
 let guestLook = ownerGuest || store.get('guest', null);
 if (guestLook) { guestLook = Object.assign(GA.clean(guestLook), { message: guestLook.message }); dressGuest(guestLook); }
 if (ownerGuest) { const L = [ownerGuest.message || '…'].concat(ownerGuest.line ? [ownerGuest.line] : []); guestDef.lines = { en: L, zh: L }; }
-const HOMES = EX.residents.filter(r => HOME_AT[r.id]).map(r => ({ id: r.id, kind: 'house', x: HOME_AT[r.id][0] + OX, y: HOME_AT[r.id][1] + OY, w: 3, h: 3, door: 1,
+const HOMES = EX.residents.filter(r => HOME_AT[r.id]).map(r => ({ id: r.id, kind: 'house', x: tx(HOME_AT[r.id][0]), y: ty(HOME_AT[r.id][1]), w: 3, h: 3, door: 1,
   wall: '#fffaf0', roof: r.accent, roofL: r.accent, doorC: '#a9785a', sign: r.color }));
 EX.residents.forEach(r => { const h = HOMES.find(q => q.id === r.id); if (h) r.home = [h.x + 1, h.y + 3]; });
 const TRIG = {
@@ -234,7 +241,6 @@ const TRIG = {
   sync: [6, 23], agent: [15, 23], wavo: [30, 23], edu: [38, 23],
   about: [20, 16], focus: [25, 16], mbti: [24, 15], guest: [21, 15], showcase: [54, 13], xmas: [26, 18], manus: [26, 14], life: [13, 29], odyssey: [31, 30], contact: [23, 27],
 };
-Object.values(TRIG).forEach(v => { v[0] += OX; v[1] += OY; });
 const OBJECTS = [
   { kind: 'sign',     tx: 20, ty: 15, fw: 1, fh: 1, spot: 'about' },
   { kind: 'scope',    tx: 25, ty: 15, fw: 1, fh: 1, spot: 'focus' },
@@ -260,7 +266,17 @@ const OBJECTS = [
 ];
 [[7, 15], [13, 15], [18, 15], [28, 15], [35, 15], [41, 15], [9, 23], [18, 23], [27, 23], [36, 23], [21, 12], [24, 12], [12, 26], [21, 27], [29, 27], [50, 15], [57, 15], [53, 23], [60, 23], [41, 23], [53, 28]]
   .forEach(([tx, ty]) => OBJECTS.push({ kind: 'lamp', tx, ty, fw: 1, fh: 1 }));
-OBJECTS.forEach(o => { o.tx += OX; o.ty += OY; });
+OBJECTS.forEach(o => {            // a thing you stand next to keeps its standing spot at the same offset once it has moved
+  const nx = tx(o.tx), ny = ty(o.ty);
+  if (o.spot) TRIG[o.spot] = [TRIG[o.spot][0] - o.tx + nx, TRIG[o.spot][1] - o.ty + ny];
+  o.tx = nx; o.ty = ny;
+});
+BUILDINGS.forEach(b => { TRIG[b.id] = [b.x + b.door, b.y + b.h]; });       // buildings are entered from the tile in front of the door
+BUILDINGS.concat(HOMES).forEach(b => {                                   // and a path runs from each door to the nearest street
+  const x = b.x + b.door; let y = b.y + b.h, n = 0;
+  while (n < 9 && map[I(x, y + n)] === G) n++;
+  if (n < 9 && (map[I(x, y + n)] === P || map[I(x, y + n)] === Z)) rect(x, y, 1, n, P);
+});
 const DIGS = [];   // filled in further down, once paths can be checked
 
 for (let i = 0; i < map.length; i++) if (map[i] === W) solid[i] = 1;
@@ -315,7 +331,7 @@ for (let y = 1; y < MH - 1; y++) for (let x = 1; x < MW - 1; x++) {
 
 // a few fruit trees in easy reach, so shaking one is never a hunt
 [[20, 22], [19, 27], [36, 27], [3, 18], [51, 15], [57, 23], [50, 27]].forEach(([tx0, ty0]) => {
-  const x = tx0 + OX, y = ty0 + OY, i = I(x, y);
+  const x = tx(tx0), y = ty(ty0), i = I(x, y);
   if (map[i] !== G || solid[i]) return;
   TREES.push({ tx: x, ty: y, type: 'fruit', v: hash(x, y, 8) }); solid[i] = 1; flowers[i] = 0;
 });
@@ -342,7 +358,7 @@ const C = {
 };
 
 /* ------------------------------------------------------------------ ground cache */
-const GS = 3;
+const GS = 2.5;
 const ground = document.createElement('canvas');
 ground.width = MW * T * GS; ground.height = MH * T * GS;
 (function paintGround() {
@@ -391,16 +407,16 @@ ground.width = MW * T * GS; ground.height = MH * T * GS;
   // plaza cobbles
   const isZ = (x, y) => at(x, y) === Z;
   shape(isZ, -0.5, 6, C.plazaD);
-  c.save(); c.beginPath(); c.roundRect((19 + OX) * T + 1, (14 + OY) * T + 1, 8 * T - 2, 6 * T - 2, 5); c.clip();
-  for (let j = 0; j < 12; j++) for (let i = -1; i < 17; i++) rr(c, (19 + OX) * T + i * 8 + (j % 2 ? 4 : 0) + 0.8, (14 + OY) * T + j * 8 + 0.8, 6.4, 6.4, 2, hash(i, j, 70) < 0.5 ? C.plaza : C.plazaL);
+  c.save(); c.beginPath(); c.roundRect(PLAZA[0] * T + 1, PLAZA[1] * T + 1, PLAZA[2] * T - 2, PLAZA[3] * T - 2, 5); c.clip();
+  for (let j = 0; j < PLAZA[3] * 2; j++) for (let i = -1; i < PLAZA[2] * 2 + 1; i++) rr(c, PLAZA[0] * T + i * 8 + (j % 2 ? 4 : 0) + 0.8, PLAZA[1] * T + j * 8 + 0.8, 6.4, 6.4, 2, hash(i, j, 70) < 0.5 ? C.plaza : C.plazaL);
   c.restore();
-  rr(c, (13 + OX) * T + 4, (30 + OY) * T + 13.5, 5 * T - 8, 1, 0.5, 'rgba(255,255,255,.75)');
+  rr(c, tx(13) * T + 4, ty(30) * T + 13.5, 5 * T - 8, 1, 0.5, 'rgba(255,255,255,.75)');
 })();
 
-const FISHES = [[33, 33.5, 30], [40, 43, 44], [10, 43, 50], [45, 12, 0], [45, 24, 0], [-8, 18, 0], [22, 43.5, 60], [28.5, 30.2, 8], [47.5, 20, 22], [51, 21.3, 14], [45, 8, 0], [44, 28, 0], [72, 14, 0]].map(([fx, fy, span], i) => ({ x: (fx + OX) * T, y: (fy + OY) * T, span, p: i * 1.7, vert: span === 0 }));
+const FISHES = [[tx(33), ty(33) + 0.5, 30], [tx(40), MH - 5, 44], [tx(10), MH - 5, 50], [RIVER, ty(11), 0], [RIVER, ty(28), 0], [3, ty(18), 0], [tx(22), MH - 4.5, 60], [tx(28) + 0.5, ty(30) + 0.2, 8], [LAKE[0] - 1, LAKE[1] - 0.6, 26], [LAKE[0] + 1.5, LAKE[1] + 1, 18], [RIVER, ty(6), 0], [MW - 4, ty(14), 0]].map(([fx, fy, span], i) => ({ x: fx * T, y: fy * T, span, p: i * 1.7, vert: span === 0 }));
 
 /* ------------------------------------------------------------------ player / dog */
-const HOME = [21 + OX, 18 + OY];
+const HOME = [tx(21), ty(17) + 1];
 const player = { x: HOME[0] * T + 8, y: HOME[1] * T + 10, dir: 'down', moving: false, anim: 0 };
 const dog = { x: player.x - 16, y: player.y + 2, hx: 1, hy: 0, anim: 0, moving: false, pet: 0 };
 const trail = [];
@@ -712,7 +728,7 @@ function taskTarget(k) {            // where the guide arrow points, and what cl
     case 'dance': return { x: player.x, y: player.y, go: startDance };
     case 'stars': { const c = closest(SPOTS.filter(s => !found.has(s.id)), s => s.trig[0] * T + 8, s => s.trig[1] * T + 10); return c && spot(c.o.id); }
     case 'dig': { const c = closest(DIGS.filter(g => !holes.has(g.i)), g => g.x, g => g.y); return c && { x: c.o.x, y: c.o.y, go: () => walkTo(c.o.tx, c.o.ty, () => { action = currentAction(); if (action && action.type === 'dig') act(); }) }; }
-    case 'fish': return { x: (30 + OX) * T + 8, y: (30 + OY) * T + 10, go: () => walkTo(30 + OX, 30 + OY, () => { player.dir = 'down'; }) };
+    case 'fish': return { x: PIER[0] * T + 8, y: (PIER[1] + 1) * T + 10, go: () => walkTo(PIER[0], PIER[1] + 1, () => { player.dir = 'down'; }) };
     case 'fruit': return tree();
     case 'neighbor': return res();
     case 'gift': return fruit > 0 ? res() : tree();
@@ -1468,5 +1484,5 @@ if (view) requestAnimationFrame(frame);
 else { $('btnStart').hidden = true; $('introHow').hidden = true; $('introSub').textContent = t().no3d; openQuick(); }
 
 // small hook for testing from the console
-window.__town = { OX, OY, HOME, PALMS, ROCKS, openMap, openGuest, get guestLook() { return guestLook; }, ownerGuest, guestDef, tiltBy, XMAS, get snow() { return time < snowUntil; }, throwBall, popBalloon, get balloon() { return balloon; }, set balloonAt(v) { balloonAt = v; }, get ball() { return ballS; }, get sitting() { return sitting; }, get talking() { return talking; }, get time() { return time; }, cam, nextView, zoomBy, holes, HOMES, hasProgress, askReset, at, map, MW, MH, findPath, shaken, PLACES, tryGuess, openMbti, TRACKS, music, get actx() { return actx; }, get guess() { return guess; }, set guess(v) { guess = v; }, startDance, openPostcard, makePostcard, flags, tasksSeen, FRUIT_TREES, get fruit() { return fruit; }, get mode() { return mode; }, get shaking() { return shaking; }, get dancing() { return dancing; }, step(n) { for (let i = 0; i < n; i++) { update(0.05); if (i % 6 === 0 || i === n - 1) render(0.3); } }, spotAt, keys, player, dog, SPOTS, DIGS, RES, view, walkTo, openSpot, act, start, found, dug, caught, showItem, talkTo, petDog, get fishing() { return fishing; }, get action() { return action; } };
+window.__town = { tx, ty, PIER, OX, OY, HOME, PALMS, ROCKS, openMap, openGuest, get guestLook() { return guestLook; }, ownerGuest, guestDef, tiltBy, XMAS, get snow() { return time < snowUntil; }, throwBall, popBalloon, get balloon() { return balloon; }, set balloonAt(v) { balloonAt = v; }, get ball() { return ballS; }, get sitting() { return sitting; }, get talking() { return talking; }, get time() { return time; }, cam, nextView, zoomBy, holes, HOMES, hasProgress, askReset, at, map, MW, MH, findPath, shaken, PLACES, tryGuess, openMbti, TRACKS, music, get actx() { return actx; }, get guess() { return guess; }, set guess(v) { guess = v; }, startDance, openPostcard, makePostcard, flags, tasksSeen, FRUIT_TREES, get fruit() { return fruit; }, get mode() { return mode; }, get shaking() { return shaking; }, get dancing() { return dancing; }, step(n) { for (let i = 0; i < n; i++) { update(0.05); if (i % 6 === 0 || i === n - 1) render(0.3); } }, spotAt, keys, player, dog, SPOTS, DIGS, RES, view, walkTo, openSpot, act, start, found, dug, caught, showItem, talkTo, petDog, get fishing() { return fishing; }, get action() { return action; } };
 })();
