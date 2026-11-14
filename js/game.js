@@ -1,5 +1,5 @@
 /* Starry Town — a walkable portfolio island. The rules live here; view3d.js draws the picture. */
-import { createView } from './view3d.js?v=26';
+import { createView } from './view3d.js?v=27';
 (() => {
 'use strict';
 
@@ -58,7 +58,7 @@ const UI = {
     treeTitle: 'A note fell out of the tree!', notes: 'Shaken out of trees', lockedMbti: 'Moves in when the MBTI is guessed', lockedGuest: 'This one is you: sign the guest board',
     gName: 'Your name', gSpecies: 'Who are you?', gFur: 'Colour', gShirt: 'Shirt', gAcc: 'Something to wear', gLine: 'Your catchphrase (your character will say it)', gLineEx: 'e.g. Nice to meet you!', gJoin: 'Move in', gEdit: 'Change my look', gNote: 'Leave Nan a note', gMsg: 'Your note', gContact: 'Email or any way to reach you (optional)', gSend: 'Write the email', gLater: 'Maybe later', gCopy: 'Copy the note', gCopied: 'Copied', gSaveCard: 'Get a postcard to attach', gNeedName: 'Give your character a name first.', gNeedMsg: 'Write a few words first.', gYours: 'Your character lives on the island.', guess: 'Guess', socials: 'Find me elsewhere', xhs: 'Xiaohongshu', modes: { day: 'Day', dusk: 'Dusk', night: 'Night' }, postcard: 'Postcard',
     postcardTitle: 'A postcard from the island', postcardMeta: 'Save it or send it to a friend', save: 'Save image', greet: 'Greetings from Starry Town', back: 'Back to backpack',
-    quick: 'Quick view', cv: 'CV', lang: '中文', bag: 'Backpack',
+    quick: 'Classic site ↗', cv: 'CV', lang: '中文', bag: 'Backpack',
     goSee: 'Take me there', visit: 'Visit', talk: 'Talk to', movedIn: 'just moved to the island! Go say hi.', neighbours: 'Residents', lockedRes: 'Moves in after {n} finds', no3d: 'This browser cannot show the 3D island, so here is everything on one page.', dig: 'Dig here', fish: 'Go fishing', wait: 'Waiting for a bite…', pull: 'Pull!',
     hello: "Hi, I'm Nan! Welcome to my island. The to-do list in the top left will show you around. Bingo insists on coming along.",
     next: 'tap or press any key ▸', speaker: 'Nan',
@@ -67,7 +67,7 @@ const UI = {
     dugTitle: 'You dug something up!', fishTitle: 'You caught something!', writeMe: 'Write to me',
     quickKicker: 'Quick view',
     sec: { show: 'Featured work', exp: 'Experience', work: 'Selected work', focus: 'How I work', edu: 'Education', skills: 'Capabilities', life: 'Beyond the desk', contact: 'Contact' },
-    kick: { showcase: 'Featured work', about: 'Welcome', job: 'Experience', project: 'Selected work', focus: 'How I work', edu: 'Education', skills: 'Capabilities', life: 'Beyond the desk', contact: 'Contact' },
+    kick: { showcase: 'Featured work', piece: 'Selected work', about: 'Welcome', job: 'Experience', project: 'Selected work', focus: 'How I work', edu: 'Education', skills: 'Capabilities', life: 'Beyond the desk', contact: 'Contact' },
     aboutTitle: "Hi, I'm Nan Yao", eduTitle: 'Education', contactTitle: 'Get in touch', phone: 'Phone', github: 'GitHub',
     bagTitle: 'Backpack', bagMeta: 'What you have found so far', route: 'Your route', treasures: 'Dug up', catches: 'Caught', unknown: 'Not found yet',
     toolsText: 'Dig where the ground sparkles. Stand next to water and press E to fish, press again when the float dips, then keep pressing to reel it in. Fruit trees sometimes drop a note.',
@@ -94,7 +94,7 @@ const UI = {
     treeTitle: '树上掉下一张纸条！', notes: '树上摇下来的', lockedMbti: '猜对 MBTI 后搬来', lockedGuest: '这是你：去留言板签个名',
     gName: '你的名字', gSpecies: '你是谁？', gFur: '颜色', gShirt: '衣服', gAcc: '配饰', gLine: '口头禅（你的形象会说这句话）', gLineEx: '比如：很高兴认识你！', gJoin: '搬进小岛', gEdit: '修改形象', gNote: '给姚楠留言', gMsg: '想说的话', gContact: '邮箱或其他联系方式（选填）', gSend: '写成邮件', gLater: '以后再说', gCopy: '复制留言', gCopied: '已复制', gSaveCard: '拍张明信片附上', gNeedName: '先给你的形象起个名字。', gNeedMsg: '先写几句话吧。', gYours: '你的形象已经住在岛上了。', guess: '猜一下', socials: '在别处找到我', xhs: '小红书', modes: { day: '白天', dusk: '黄昏', night: '夜晚' }, postcard: '明信片',
     postcardTitle: '一张小岛明信片', postcardMeta: '保存下来，或者发给朋友', save: '保存图片', greet: '来自 Starry Town 的问候', back: '回到背包',
-    quick: '快速浏览', cv: '简历', lang: 'EN', bag: '背包',
+    quick: '简洁版主页 ↗', cv: '简历', lang: 'EN', bag: '背包',
     goSee: '带我过去', visit: '拜访', talk: '聊聊', movedIn: '搬到岛上来了！去打个招呼吧。', neighbours: '居民', lockedRes: '找到 {n} 样东西后搬来', no3d: '这个浏览器显示不了 3D 小岛，所以把全部内容放在这一页。', dig: '挖一挖', fish: '钓鱼', wait: '等鱼上钩…', pull: '拉！',
     hello: '嗨，我是姚楠！欢迎来我的小岛。左上角的任务清单会带你逛一圈。苹果一定要跟着。',
     next: '点击或按任意键 ▸', speaker: '姚楠',
@@ -103,7 +103,7 @@ const UI = {
     dugTitle: '挖到东西了！', fishTitle: '钓到了！', writeMe: '给我写信',
     quickKicker: '快速浏览',
     sec: { show: '精选作品', exp: '工作经历', work: '代表作品', focus: '工作方法', edu: '教育背景', skills: '能力与工具', life: '工作之外', contact: '联系方式' },
-    kick: { showcase: '精选作品', about: '欢迎', job: '工作经历', project: '代表作品', focus: '工作方法', edu: '教育背景', skills: '能力与工具', life: '工作之外', contact: '联系方式' },
+    kick: { showcase: '精选作品', piece: '代表作品', about: '欢迎', job: '工作经历', project: '代表作品', focus: '工作方法', edu: '教育背景', skills: '能力与工具', life: '工作之外', contact: '联系方式' },
     aboutTitle: '嗨，我是姚楠', eduTitle: '教育背景', contactTitle: '联系我', phone: '电话', github: 'GitHub',
     bagTitle: '背包', bagMeta: '你目前找到的东西', route: '你的路线', treasures: '挖到的', catches: '钓到的', unknown: '还没找到',
     toolsText: '地上闪光的地方可以挖。站在水边按 E 抛竿，浮标下沉时再按一次，然后连按收线。果树有时会掉下小纸条。',
@@ -125,7 +125,9 @@ const SPOTS = [
   { id: 'waves',    kind: 'job', i: 4,    name: { en: '36Kr · Waves', zh: '36氪 暗涌' } },
   { id: 'orbit',    kind: 'project', i: 0, name: { en: 'Orbit', zh: 'Orbit' } },
   { id: 'sync',     kind: 'project', i: 1, name: { en: 'Adaptive Sync', zh: 'Adaptive Sync' } },
-  { id: 'agent',    kind: 'project', i: 2, name: { en: 'Agent Boundaries', zh: 'Agent Boundaries' } },
+  { id: 'giftsense', kind: 'piece', i: 1,  name: { en: 'GiftSense', zh: 'GiftSense' } },
+  { id: 'profile',  kind: 'piece', i: 2,   name: { en: 'Profile Studio', zh: 'Profile Studio' } },
+  { id: 'autopsy',  kind: 'piece', i: 3,   name: { en: 'Startup Autopsy', zh: '失败档案馆' } },
   { id: 'wavo',     kind: 'project', i: 3, name: { en: 'Wavo! Open Course', zh: 'Wavo! 开放课' } },
   { id: 'odyssey',  kind: 'project', i: 4, name: { en: 'Waves Odyssey', zh: 'Waves Odyssey' } },
   { id: 'focus',    kind: 'focus',        name: { en: 'Lookout', zh: '观察镜' } },
@@ -190,11 +192,11 @@ for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) { const c = coast(x, y
 R(27, 29, 10, 3, W);
 for (let y = ty(31); y < MH; y++) for (let x = 0; x < MW; x++) if (((x - tx(32)) / 7.5) ** 2 + ((y - ty(36)) / 8.5) ** 2 <= 1) map[I(x, y)] = W;
 R(4, 16, 56, 2, P); R(4, 24, 56, 2, P);
-R(22, 11, 2, 17, P);
+R(22, 11, 2, 19, P);
 R(10, 16, 2, 10, P); R(33, 16, 2, 10, P);
 R(19, 14, 8, 6, Z);
 const PLAZA = [tx(19), ty(14), tx(26) - tx(19) + 1, ty(19) - ty(14) + 1];
-R(11, 26, 1, 4, P); R(8, 29, 8, 1, P);
+R(11, 26, 1, 4, P); R(8, 29, 19, 1, P);
 R(30, 26, 2, 3, P); R(30, 29, 2, 2, D);
 // east bank: the Showcase and the residents' village
 R(54, 16, 2, 10, P); R(55, 26, 1, 3, P); R(47, 29, 13, 1, P);
@@ -222,7 +224,9 @@ const BUILDINGS = [
   { id: 'crossing', kind: 'house',  x: 29, y: 8,  w: 5, h: 5, door: 2, wall: '#fff1cf', roof: '#f0766a', roofL: '#f89a8c', doorC: '#c9584e', sign: '#ffd166' },
   { id: 'waves',    kind: 'house',  x: 36, y: 8,  w: 5, h: 5, door: 2, wall: '#f1f8fc', roof: '#4fa8dc', roofL: '#78c2ec', doorC: '#3a86b8', sign: '#bfe9fa' },
   { id: 'sync',     kind: 'house',  x: 5,  y: 19, w: 4, h: 4, door: 1, wall: '#f6f1e6', roof: '#f5a25a', roofL: '#fbbd82', doorC: '#c97a3a', sign: '#ffd9b0' },
-  { id: 'agent',    kind: 'house',  x: 13, y: 19, w: 5, h: 4, door: 2, wall: '#fbf3dc', roof: '#6cc08a', roofL: '#8fd6a6', doorC: '#4a9a68', sign: '#d6f5cf' },
+  { id: 'giftsense', kind: 'house', x: 13, y: 19, w: 5, h: 4, door: 2, wall: '#fff6ee', roof: '#e8697f', roofL: '#f393a4', doorC: '#c94d63', sign: '#ffd166' },
+  { id: 'profile',  kind: 'house',  x: 18, y: 26, w: 4, h: 3, door: 1, wall: '#f3fbfa', roof: '#3fb0a5', roofL: '#74cfc5', doorC: '#2f8f86', sign: '#d6f5f0' },
+  { id: 'autopsy',  kind: 'house',  x: 25, y: 26, w: 4, h: 3, door: 1, wall: '#f4f1ea', roof: '#5a566b', roofL: '#7d7892', doorC: '#454156', sign: '#ffd9b0' },
   { id: 'wavo',     kind: 'house',  x: 28, y: 19, w: 5, h: 4, door: 2, wall: '#fff3d6', roof: '#f590b2', roofL: '#fab0c8', doorC: '#cf6088', sign: '#ffd9e6' },
   { id: 'showcase', kind: 'house',  x: 51, y: 8,  w: 6, h: 5, door: 3, wall: '#fffaf0', roof: '#f5b01a', roofL: '#ffd166', doorC: '#b9825a', sign: '#fff3a8' },
   { id: 'edu',      kind: 'campus', x: 35, y: 18, w: 7, h: 5, door: 3, wall: '#fbf1dc', roof: '#9a6fd6', roofL: '#b390e6', doorC: '#7a4fb8', sign: '#e6d6ff' },
@@ -238,7 +242,7 @@ const HOMES = EX.residents.filter(r => HOME_AT[r.id]).map(r => ({ id: r.id, kind
 EX.residents.forEach(r => { const h = HOMES.find(q => q.id === r.id); if (h) r.home = [h.x + 1, h.y + 3]; });
 const TRIG = {
   skills: [5, 13], orbit: [10, 13], linear: [16, 13], monolith: [22, 11], crossing: [31, 13], waves: [38, 13],
-  sync: [6, 23], agent: [15, 23], wavo: [30, 23], edu: [38, 23],
+  sync: [6, 23], wavo: [30, 23], edu: [38, 23],
   about: [20, 16], focus: [25, 16], mbti: [24, 15], guest: [21, 15], showcase: [54, 13], xmas: [26, 18], manus: [26, 14], life: [13, 29], odyssey: [31, 30], contact: [23, 27],
 };
 const OBJECTS = [
@@ -264,7 +268,7 @@ const OBJECTS = [
   { kind: 'bench',    tx: 19, ty: 19, fw: 2, fh: 1 },
   { kind: 'bench',    tx: 25, ty: 19, fw: 2, fh: 1 },
 ];
-[[7, 15], [13, 15], [18, 15], [28, 15], [35, 15], [41, 15], [9, 23], [18, 23], [27, 23], [36, 23], [21, 12], [24, 12], [12, 26], [21, 27], [29, 27], [50, 15], [57, 15], [53, 23], [60, 23], [41, 23], [53, 28]]
+[[7, 15], [13, 15], [18, 15], [28, 15], [35, 15], [41, 15], [9, 23], [18, 23], [27, 23], [36, 23], [21, 12], [24, 12], [12, 26], [29, 27], [50, 15], [57, 15], [53, 23], [60, 23], [41, 23], [53, 28]]
   .forEach(([tx, ty]) => OBJECTS.push({ kind: 'lamp', tx, ty, fw: 1, fh: 1 }));
 OBJECTS.forEach(o => {            // a thing you stand next to keeps its standing spot at the same offset once it has moved
   const nx = tx(o.tx), ny = ty(o.ty);
@@ -869,7 +873,7 @@ function update(dt) {
   if (digging) {
     digging.t += dt;
     if (digging.t > 0.75) { const g = digging.g; digging = null; cheerAt = time; holes.add(g.i); store.set('holes', [...holes]);
-      const left = EX.dig.map((_, i) => i).filter(i => !dug.has(i)), i = left.length ? left[Math.floor(Math.random() * left.length)] : 0;
+      const left = EX.dig.map((_, i) => i).filter(i => !dug.has(i)), i = left.length ? left[0] : 0;      // in list order: the most telling facts come first
       dug.add(i); store.set('dug', [...dug]); showItem('dig', i, true); }
   }
   if (shaking) {
@@ -878,7 +882,7 @@ function update(dt) {
       shaking.got = true; cheerAt = time; fruit++; store.set('fruit', fruit); flag('fruit'); shaking.tree.ready = time + 40;
       floatText(shaking.tree.tx * T + 8, shaking.tree.ty * T + 10, 1.4, shaking.tree.v < 0.5 ? '+🍑' : '+🍊', 'gold'); sfx('fruit'); renderHud();
       const left = EX.tree.map((_, i) => i).filter(i => !shaken.has(i));          // the first shake always drops a note, later ones often do
-      if (left.length && (!shaken.size || Math.random() < 0.6)) shaking.note = left[Math.floor(Math.random() * left.length)];
+      if (left.length && (!shaken.size || Math.random() < 0.6)) shaking.note = left[0];
     }
     if (shaking.t > 0.85) { const n = shaking.note; shaking = null; if (n != null) { shaken.add(n); store.set('shaken', [...shaken]); showItem('tree', n, true); } }
   }
@@ -936,7 +940,7 @@ function act() {
       fishing.p += 0.16; sfx('reel');
       if (fishing.p >= 1) {
         const left = EX.fish.map((_, i) => i).filter(i => !caught.has(i));
-        fishing.isNew = left.length > 0; fishing.item = left.length ? left[Math.floor(Math.random() * left.length)] : Math.floor(Math.random() * EX.fish.length);
+        fishing.isNew = left.length > 0; fishing.item = left.length ? left[0] : Math.floor(Math.random() * EX.fish.length);
         fishing.phase = 'land'; fishing.t = 0; sfx('catch');
       }
     }
@@ -979,8 +983,8 @@ function render(dt) {
     next: far ? { x: gd.x, y: gd.y } : null });
   for (const s of PLACES) {
     const game = !!s.badge, has = s === GUESS ? flags.has('mbti') : game ? false : found.has(s.id), isN = s === nxt, isA = action && action.spot === s;
-    const away = Math.hypot(s.lab.x - player.x, s.lab.y - player.y), farAway = !isN && !isA && away > 120;       // nearby places show their name, further ones shrink to a dot, distant ones are left out
-    place(label(s.id, () => { if (!paused() && !busy()) visitSpot(s); }), started && !quiet && (isN || away < 340) ? view.project(s.lab.x, s.lab.y, s.lab.h) : OFF,
+    const away = Math.hypot(s.lab.x - player.x, s.lab.y - player.y), farAway = false;       // nearby places show their name, further ones shrink to a dot, distant ones are left out
+    place(label(s.id, () => { if (!paused() && !busy()) visitSpot(s); }), started && !quiet && (isN || away < 520) ? view.project(s.lab.x, s.lab.y, s.lab.h) : OFF,
       s.name[lang], (has ? 'has ' : '') + (isN ? 'next ' : '') + (isA ? 'on ' : '') + (farAway ? 'far' : ''), game ? (has ? '✓' : s.badge) : has ? '★' : isN ? '!' : '?');
   }
   if (fishing && fishing.phase === 'reel') $('prompt').style.setProperty('--p', Math.round(Math.min(1, fishing.p) * 100) + '%');
@@ -1011,6 +1015,11 @@ function content(s) {
         `<div class="about-grid"><img src="assets/profile.jpg" alt="${esc(D_.name)}" width="150" height="200" loading="lazy"><div>
         <p class="lead">${esc(D_.deck)}</p><p>${esc(D_.about)}</p>${tagRow([D_.status], true)}</div></div>
         <div class="rows">${D_.profileAxes.map(a => `<div class="row"><b>${esc(a[0])}</b><span>${esc(a[1])}</span></div>`).join('')}</div>` };
+    case 'piece': {                    // one piece from the Showcase, in its own building
+      const it = EX.showcase.items[s.i];
+      return { title: it.name, meta: it[lang][0], body: `<div class="item-big" aria-hidden="true">${it.icon}</div><p class="lead">${esc(it[lang][1])}</p>${tagRow(it.tags)}
+        ${it.links.length ? `<div class="links">${it.links.map((l, i) => ext(l.url, l[lang], i === 0)).join('')}</div>` : ''}` };
+    }
     case 'showcase': {
       const S_ = EX.showcase;
       return { title: S_.title[lang], meta: S_.meta[lang], body: S_.items.map(it => `<div class="show"><div class="show-ico" aria-hidden="true">${it.icon}</div><div>
@@ -1255,7 +1264,7 @@ function openQuick() {
   }).join('')}</section>`;
   showCard(u.quickKicker, d().name, d().place,
     group(u.aboutTitle, ['about']) + group(u.sec.show, ['showcase']) + group(u.sec.exp, ['monolith', 'manus', 'crossing', 'linear', 'waves']) +
-    group(u.sec.work, ['orbit', 'sync', 'agent', 'wavo', 'odyssey']) + group(u.sec.focus, ['focus']) +
+    group(u.sec.work, ['orbit', 'giftsense', 'profile', 'autopsy', 'sync', 'wavo', 'odyssey']) + group(u.sec.focus, ['focus']) +
     group(u.sec.edu, ['edu']) + group(u.sec.skills, ['skills']) + group(u.sec.life, ['life']) + group(u.sec.contact, ['contact']), 'wide', openQuick);
 }
 function toast(html, ms) {
@@ -1372,7 +1381,7 @@ $('btnCard').onclick = () => { $('btnCard').blur(); if (started && !cardEl.open)
 $('btnStart').onclick = start; $('btnReset').onclick = askReset;
 $('btnDance').onclick = () => { $('btnDance').blur(); startDance(); };
 $('btnMute').onclick = () => { $('btnMute').blur(); const on = !(soundOn || musicOn); soundOn = on; store.set('sound', on); setMusic(on); renderHud(); };
-$('btnQuick').onclick = openQuick;
+$('btnQuick').onclick = () => { $('btnQuick').blur(); window.open('https://starry-nn.github.io/', '_blank', 'noopener'); };
 $('btnBag').onclick = openBag;
 $('btnLang').onclick = setLang; $('btnLang2').onclick = setLang;
 $('say').onclick = hideSay;

@@ -6,7 +6,7 @@ Nan Yao's portfolio as a small island you can walk around.
 
 A small 3D island. Walk with the arrow keys or WASD (or click / tap where you want to go) and press `E` or `Space` to act.
 
-- **17 places** cover experience, selected work, education, capabilities, life and contact. The **Showcase** across the river holds the featured pieces (`showcase` in `js/extras.js`).
+- **19 places** cover experience, selected work, education, capabilities, life and contact. The **Showcase** across the river holds the featured pieces (`showcase` in `js/extras.js`).
 - A river with two bridges splits the island; there is a lake with a plank walk, a pond by the plaza, and a village east of the river where each resident's house is built when they move in.
 - **Dig** where the ground sparkles (the eight spots are random for every visitor), **fish** by the water (wait for the bite, then keep pressing to reel it in) and **shake fruit trees** to collect 20 fun facts.
 - **Guess the MBTI** at the crystal ball on the plaza; the right answer brings a fifth resident. Accepted answers are set in `js/extras.js` (`mbti.answers`).

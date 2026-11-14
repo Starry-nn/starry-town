@@ -73,21 +73,21 @@ window.DATA = {
   "demoLink": "Open Interactive Demo",
   "close": "Close Dialog",
   "jobs": [
-   [
+    [
     "Dec 2025 — Present",
     "Beijing",
     "Monolith Capital",
     "Investment & Investment Operations Intern",
-    "Deal & Talent Sourcing · AI Research · Investment Operations",
-    "Supports AI investment work from thesis-led sourcing and first-pass screening through diligence preparation and reusable internal systems, with a focus on finding promising companies and the people behind them.",
+    "Deal Sourcing · Founder Meetings · Sector Research",
+    "Works across the investment process on the AI team: sourcing early-stage companies, meeting founders, getting to know sectors in depth, and supporting screening and diligence.",
     [
-     "Translated investment themes across foundation models, AI agents, and AI-native applications into target sectors, company profiles, and practical screening criteria for proactive sourcing.",
-     "Identified potential investments through databases, product launches, industry media, founder communities, events, and referrals, then maintained a structured pipeline with source context, priority, status, and next steps.",
-     "Mapped founders, technical operators, repeat entrepreneurs, and domain experts by company, track record, product focus, and geography, turning fragmented people signals into reusable talent and relationship intelligence.",
-     "Conducted first-pass screening across team, product, market, financing history, technical approach, competitive position, and commercial signals; distilled findings into company profiles, market maps, and concise memos for internal discussion.",
-     "Supported diligence preparation by validating sources, comparing peers, tracing founder backgrounds, organizing key questions, and flagging information gaps or risks for further verification.",
-     "Independently designed an internal AI startup and product tracking tool covering field structure, tagging logic, source records, update rules, and review states; it is now used for recurring team tracking and reused across projects.",
-     "Documented sourcing, data collection, validation, and handoff SOPs to reduce duplicated research, missing fields, and context loss between projects."
+     "Sourced early-stage AI companies across foundation models, agents, and AI-native applications through product launches, founder communities, events, databases, and referrals, and kept a live pipeline with source, priority, status, and next steps.",
+     "Reached out to founders and joined first conversations: prepared background and questions beforehand, then wrote up team, product, traction, and financing for the investment team.",
+     "Built a working view of each sector by mapping the players, technical routes, business models, and recent financings, and followed launches, industry news, and expert conversations to keep that view current.",
+     "Ran first-pass screening on team, product, market, competition, and commercial signals, and wrote company profiles and short memos for internal discussion.",
+     "Supported due diligence by verifying key facts and sources, comparing peers, tracing founder backgrounds, and listing open questions and risks.",
+     "Mapped founders, technical leads, repeat entrepreneurs, and domain experts into a long-term talent and relationship network used for sourcing and reference checks.",
+     "Independently designed the team's internal tracker for AI startups and products (fields, tags, sources, update rules, review states); it is now used for recurring tracking and reused across projects."
     ]
    ],
    [
@@ -379,21 +379,21 @@ window.DATA = {
   "demoLink": "打开交互 Demo",
   "close": "关闭",
   "jobs": [
-   [
+    [
     "2025.12 — 至今",
     "北京",
     "Monolith 砺思资本",
     "投资 & 投资运营实习生",
-    "项目与人才 Sourcing · AI 研究 · 投资运营",
-    "围绕 AI 方向参与项目发现、初筛和尽调准备，同时负责团队的投资信息与跟踪系统；既从行业变化中寻找值得继续研究的公司，也围绕创始人、技术人才和行业专家建立持续更新的人才图谱。",
+    "项目 Sourcing · 创始人沟通 · 行业研究",
+    "在 AI 方向参与投资全流程：找早期项目、和创始人交流、深入了解赛道，并支持项目初筛和尽调。",
     [
-     "根据基础模型、AI Agent 和 AI 原生应用等投资主题，拆解目标赛道、公司画像和筛选标准，为主动寻找项目提供清晰方向。",
-     "通过数据库、产品发布、行业媒体、创业者社区、活动和推荐等渠道发现潜在项目，并记录来源、优先级、当前进展和下一步动作，持续维护项目管线。",
-     "围绕创始人、技术负责人、连续创业者和行业专家建立人才图谱，按所在公司、过往经历、产品方向和地域整理信息，支持团队找人、判断团队和长期维护关系。",
-     "从团队、产品、市场、融资历史、技术路线、竞争位置和商业信号等维度完成项目初筛，并整理公司卡片、赛道图谱和简短研究 memo，支持内部讨论。",
-     "参与尽调准备，核验关键信息和来源，对比同类公司，梳理创始团队背景与重点问题，并标记仍需确认的信息缺口和潜在风险。",
-     "独立设计内部 AI 项目与产品跟踪工具，完成字段结构、标签规则、信息来源、更新要求和审核状态设计；目前已用于团队定期跟踪，并在不同项目中持续复用。",
-     "把项目 sourcing、资料收集、信息核验和交接要求整理成 SOP，减少重复查找、字段遗漏和跨项目的信息断层。"
+     "围绕基础模型、AI Agent 和 AI 原生应用寻找早期项目，渠道包括产品发布、创业者社区、行业活动、数据库和推荐；持续维护项目管线，记录来源、优先级、进展和下一步动作。",
+     "主动联系创始人并参与首次沟通：会前准备背景资料和问题清单，会后整理团队、产品、数据和融资情况，同步给投资团队。",
+     "通过梳理玩家、技术路线、商业模式和近期融资建立对赛道的整体认识，并持续跟进新品发布、行业动态和专家交流，保持判断更新。",
+     "从团队、产品、市场、竞争和商业信号等维度完成项目初筛，撰写公司卡片和简短 memo，支持内部讨论。",
+     "参与尽调支持：核验关键信息和来源，对比同类公司，梳理创始团队背景，列出待确认的问题和风险。",
+     "围绕创始人、技术负责人、连续创业者和行业专家建立长期的人才与关系网络，用于找项目和背景访谈。",
+     "独立设计团队内部的 AI 项目与产品跟踪工具（字段、标签、来源、更新规则、审核状态），目前已用于定期跟踪，并在不同项目中复用。"
     ]
    ],
    [
