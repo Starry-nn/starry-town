@@ -415,9 +415,9 @@ button.slot:hover { background: #fff1b8; }
 
 /* ---- welcome, second pass: the island stays visible behind a lighter veil; the card is quieter and led by an emblem ---- */
 .intro { background: radial-gradient(ellipse at 50% 45%, rgba(255, 250, 240, .18) 0, rgba(190, 232, 226, .5) 60%, rgba(150, 214, 220, .72) 100%); backdrop-filter: blur(2.5px) saturate(1.08); }
-.intro-card { width: min(470px, 100%); border-radius: 40px; padding: 78px 34px 22px; margin-top: 40px; background: linear-gradient(#fffdf7, var(--cream)); box-shadow: 0 2px 0 #fff inset, var(--lift-3); animation: intro-in .5s cubic-bezier(.2, 1.2, .4, 1) both; }
+.intro-card { width: min(470px, 100%); border-radius: 40px; padding: 86px 34px 22px; margin-top: 46px; background: linear-gradient(#fffdf7, var(--cream)); box-shadow: 0 2px 0 #fff inset, var(--lift-3); animation: intro-in .5s cubic-bezier(.2, 1.2, .4, 1) both; }
 .intro-card::before { display: none; }
-.intro-emblem { position: absolute !important; left: 50%; top: -52px; transform: translateX(-50%); width: 116px; height: 116px; border-radius: 50%; background: var(--cream); display: grid; place-items: center; box-shadow: 0 6px 0 rgba(107, 79, 58, .12), 0 14px 30px rgba(60, 90, 80, .2); }
+.intro-emblem { position: absolute !important; left: 50%; top: -46px; transform: translateX(-50%); width: 116px; height: 116px; border-radius: 50%; background: var(--cream); display: grid; place-items: center; box-shadow: 0 6px 0 rgba(107, 79, 58, .12), 0 14px 30px rgba(60, 90, 80, .2); }
 .intro-emblem svg { border-radius: 50%; animation: bobble 4s ease-in-out infinite; }
 .intro-kicker { letter-spacing: .16em; margin-bottom: 6px; color: #4a9c68; }
 .intro-title { font-size: clamp(42px, 10.5vw, 60px); line-height: 1.02; }
@@ -433,5 +433,5 @@ button.slot:hover { background: #fff1b8; }
 .intro-foot { margin-top: 4px; }
 @keyframes intro-in { from { transform: translateY(18px) scale(.97); } }
 @keyframes bobble { 50% { transform: translateY(-3px) rotate(-1.5deg); } }
-@media (max-width: 640px) { .intro-card { padding: 74px 22px 18px; border-radius: 34px; } }
+@media (max-width: 640px) { .intro-card { padding: 84px 22px 18px; border-radius: 34px; } }
 @media (prefers-reduced-motion: reduce) { .intro-card, .intro-emblem svg { animation: none; } }

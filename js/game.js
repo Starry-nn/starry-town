@@ -1,5 +1,5 @@
 /* Starry Town — a walkable portfolio island. The rules live here; view3d.js draws the picture. */
-import { createView } from './view3d.js?v=28';
+import { createView } from './view3d.js?v=29';
 (() => {
 'use strict';
 
@@ -515,7 +515,7 @@ const reach = new Uint8Array(MW * MH);      // every tile that can be walked to 
 let leaving = false;
 const savePos = () => { if (started && !leaving) store.set('pos', playerTile()); };
 setInterval(savePos, 2000); addEventListener('pagehide', savePos);
-const hasProgress = () => found.size + itemCount() + flags.size > 0;
+const hasProgress = () => found.size + itemCount() > 0 || flags.has('guest') || flags.has('mbti');      // something a returning visitor would recognise
 
 /* ------------------------------------------------------------------ view + residents */
 const canvas = $('game');
@@ -981,11 +981,19 @@ function render(dt) {
   view.render({ time, dt, cheer: cheerAt, snow: time < snowUntil, talk: talkNow, sit: !!sitting, ball: ballS, balloon, player, dog, digging, fishing, dug: holes, shaking, dancing, foundRatio: found.size / SPOTS.length, residents: RES,
     target: path && path.length ? path[path.length - 1] : null,
     next: far ? { x: gd.x, y: gd.y } : null });
-  for (const s of PLACES) {
+  // Every place keeps its name. Where two names would sit on top of each other, the one further from the player steps back to a dot.
+  const kept = [], order = PLACES.map(s => ({ s, away: Math.hypot(s.lab.x - player.x, s.lab.y - player.y) })).sort((q1, q2) => q1.away - q2.away);
+  for (const { s, away } of order) {
     const game = !!s.badge, has = s === GUESS ? flags.has('mbti') : game ? false : found.has(s.id), isN = s === nxt, isA = action && action.spot === s;
-    const away = Math.hypot(s.lab.x - player.x, s.lab.y - player.y), farAway = false;       // nearby places show their name, further ones shrink to a dot, distant ones are left out
-    place(label(s.id, () => { if (!paused() && !busy()) visitSpot(s); }), started && !quiet && (isN || away < 520) ? view.project(s.lab.x, s.lab.y, s.lab.h) : OFF,
-      s.name[lang], (has ? 'has ' : '') + (isN ? 'next ' : '') + (isA ? 'on ' : '') + (farAway ? 'far' : ''), game ? (has ? '✓' : s.badge) : has ? '★' : isN ? '!' : '?');
+    const pr = started && !quiet && (isN || away < 520) ? view.project(s.lab.x, s.lab.y, s.lab.h) : OFF;
+    let crowded = false;
+    if (pr.ok) {
+      const name = s.name[lang], wd = 44 + [...name].reduce((n, ch) => n + (ch.charCodeAt(0) > 255 ? 14 : 7.6), 0), box = [pr.x - wd / 2, pr.y - 32, pr.x + wd / 2, pr.y];
+      crowded = !isN && !isA && kept.some(k => box[0] < k[2] + 4 && box[2] > k[0] - 4 && box[1] < k[3] + 3 && box[3] > k[1] - 3);
+      if (!crowded) kept.push(box);
+    }
+    place(label(s.id, () => { if (!paused() && !busy()) visitSpot(s); }), pr,
+      s.name[lang], (has ? 'has ' : '') + (isN ? 'next ' : '') + (isA ? 'on ' : '') + (crowded ? 'far' : ''), game ? (has ? '✓' : s.badge) : has ? '★' : isN ? '!' : '?');
   }
   if (fishing && fishing.phase === 'reel') $('prompt').style.setProperty('--p', Math.round(Math.min(1, fishing.p) * 100) + '%');
   place(label('dog', () => { if (!paused() && !busy()) petDog(); }), started && !quiet ? view.project(dog.x, dog.y, 1.2) : OFF, lang === 'zh' ? '苹果' : 'Bingo', 'res pet', '🐶');
