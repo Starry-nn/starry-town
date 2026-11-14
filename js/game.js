@@ -1,5 +1,5 @@
 /* Starry Town — a walkable portfolio island. The rules live here; view3d.js draws the picture. */
-import { createView } from './view3d.js?v=27';
+import { createView } from './view3d.js?v=28';
 (() => {
 'use strict';
 

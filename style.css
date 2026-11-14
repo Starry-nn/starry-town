@@ -412,3 +412,26 @@ button.slot:hover { background: #fff1b8; }
 .g-stage { width: 172px; height: 172px; margin: 8px auto 4px; border-radius: 50%; background: radial-gradient(circle at 50% 38%, #fff 0, var(--butter) 55%, #ffe7a8 100%); box-shadow: inset 0 -10px 0 rgba(107, 79, 58, .06), var(--lift-1); }
 .g-stage svg { filter: drop-shadow(0 6px 0 rgba(107, 79, 58, .12)); }
 .g-sp button { font-family: "Apple Color Emoji", "Segoe UI Emoji", var(--font); }
+
+/* ---- welcome, second pass: the island stays visible behind a lighter veil; the card is quieter and led by an emblem ---- */
+.intro { background: radial-gradient(ellipse at 50% 45%, rgba(255, 250, 240, .18) 0, rgba(190, 232, 226, .5) 60%, rgba(150, 214, 220, .72) 100%); backdrop-filter: blur(2.5px) saturate(1.08); }
+.intro-card { width: min(470px, 100%); border-radius: 40px; padding: 78px 34px 22px; margin-top: 40px; background: linear-gradient(#fffdf7, var(--cream)); box-shadow: 0 2px 0 #fff inset, var(--lift-3); animation: intro-in .5s cubic-bezier(.2, 1.2, .4, 1) both; }
+.intro-card::before { display: none; }
+.intro-emblem { position: absolute !important; left: 50%; top: -52px; transform: translateX(-50%); width: 116px; height: 116px; border-radius: 50%; background: var(--cream); display: grid; place-items: center; box-shadow: 0 6px 0 rgba(107, 79, 58, .12), 0 14px 30px rgba(60, 90, 80, .2); }
+.intro-emblem svg { border-radius: 50%; animation: bobble 4s ease-in-out infinite; }
+.intro-kicker { letter-spacing: .16em; margin-bottom: 6px; color: #4a9c68; }
+.intro-title { font-size: clamp(42px, 10.5vw, 60px); line-height: 1.02; }
+.intro-title::after { content: ""; }
+.intro-sub { font-size: 17px; color: var(--ink); margin: 12px auto 4px; }
+.intro-by { margin-bottom: 24px; }
+.intro-btns { flex-direction: column; align-items: center; gap: 12px; }
+.intro-btns .btn-main { width: min(300px, 100%); justify-content: center; font-size: 20px; padding: 16px 28px; border-radius: 22px; }
+.intro-btns .btn:not(.btn-main) { background: transparent; box-shadow: none; color: var(--green-d); padding: 4px 10px; font-size: 14px; text-decoration: underline; text-decoration-color: rgba(70, 163, 104, .35); text-underline-offset: 4px; }
+.intro-btns .btn:not(.btn-main):hover { background: var(--mint); }
+.keys { margin: 24px 0 2px; padding: 12px 14px; background: var(--cream-2); border-radius: 18px; gap: 8px 16px; }
+.intro-more summary { color: var(--ink-soft); font-weight: 700; }
+.intro-foot { margin-top: 4px; }
+@keyframes intro-in { from { transform: translateY(18px) scale(.97); } }
+@keyframes bobble { 50% { transform: translateY(-3px) rotate(-1.5deg); } }
+@media (max-width: 640px) { .intro-card { padding: 74px 22px 18px; border-radius: 34px; } }
+@media (prefers-reduced-motion: reduce) { .intro-card, .intro-emblem svg { animation: none; } }

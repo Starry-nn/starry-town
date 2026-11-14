@@ -651,12 +651,20 @@ export function createView(world, canvas) {
   const fishLine = new THREE.Line(lineGeo, bend(new THREE.LineBasicMaterial({ color: '#ffffff' }))); fishLine.frustumCulled = false; scene.add(fishLine);
   const ripple = new THREE.Mesh(new THREE.RingGeometry(0.2, 0.25, 24), bend(new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.7, depthWrite: false }))); ripple.rotation.x = -Math.PI / 2; scene.add(ripple);
 
-  // warm halos and pools of light around the street lamps; they fade in at dusk and glow at night
-  const glowMat = bend(new THREE.MeshBasicMaterial({ color: '#ffe6a0', transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }));
-  const poolMat = bend(new THREE.MeshBasicMaterial({ color: '#ffd98a', transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }));
+  // Light from the street lamps: a soft glow around each bulb and a pool on the ground, both fading out from the centre.
+  // They come in at dusk and are brightest at night.
+  const glowTex = (() => {
+    const cv = document.createElement('canvas'); cv.width = cv.height = 128; const c = cv.getContext('2d'), g = c.createRadialGradient(64, 64, 0, 64, 64, 64);
+    g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(0.18, 'rgba(255,255,255,.62)'); g.addColorStop(0.45, 'rgba(255,255,255,.2)'); g.addColorStop(0.75, 'rgba(255,255,255,.05)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+    c.fillStyle = g; c.fillRect(0, 0, 128, 128); return new THREE.CanvasTexture(cv);
+  })();
+  const glowMat = bend(new THREE.MeshBasicMaterial({ color: '#ffd9a0', map: glowTex, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, fog: false }));
+  const poolMat = bend(new THREE.MeshBasicMaterial({ color: '#ffc27a', map: glowTex, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }));
+  let halo = null;
   (() => {
     const lamps = world.OBJECTS.filter(o => o.kind === 'lamp'); if (!lamps.length) return;
-    const halo = new THREE.InstancedMesh(new THREE.SphereGeometry(0.46, 14, 10), glowMat, lamps.length), pool = new THREE.InstancedMesh(new THREE.CircleGeometry(1.5, 28), poolMat, lamps.length);
+    halo = new THREE.InstancedMesh(new THREE.PlaneGeometry(2.6, 2.6), glowMat, lamps.length); halo.userData.at = lamps.map(o => [o.tx + 0.5, 2.05, o.ty + 0.5]);
+    const pool = new THREE.InstancedMesh(new THREE.PlaneGeometry(7.5, 7.5), poolMat, lamps.length);
     const m = new THREE.Matrix4(), flat = new THREE.Matrix4().makeRotationX(-Math.PI / 2);
     lamps.forEach((o, i) => { halo.setMatrixAt(i, m.makeTranslation(o.tx + 0.5, 2.05, o.ty + 0.5)); pool.setMatrixAt(i, m.makeTranslation(o.tx + 0.5, 0.05, o.ty + 0.5).multiply(flat)); });
     halo.frustumCulled = pool.frustumCulled = false; halo.renderOrder = pool.renderOrder = 3; scene.add(halo, pool);
@@ -671,8 +679,8 @@ export function createView(world, canvas) {
   scene.add(sun, sun.target);
   const MODES = {
     day: { sky: '#fdfbf4', gnd: '#a9dba6', hi: 1.72, sun: '#fff0d0', si: 2.55, glass: '#c7ecfa', lamp: '#fff6cf', water: '#ffffff', fog: '#e3f5fb', glow: 0, pool: 0 },
-    dusk: { sky: '#ffd2b4', gnd: '#b99bc4', hi: 1.5, sun: '#ff9d5c', si: 2.6, glass: '#ffe9a6', lamp: '#fff0b0', water: '#ffd3c2', fog: '#ffe2c6', glow: 0.26, pool: 0.07 },
-    night: { sky: '#9fb0ff', gnd: '#5262b4', hi: 1.36, sun: '#c9d2ff', si: 1.2, glass: '#ffe08a', lamp: '#fff3b8', water: '#6f88d0', fog: '#3f4f9c', glow: 0.42, pool: 0.13 },
+    dusk: { sky: '#ffd2b4', gnd: '#b99bc4', hi: 1.5, sun: '#ff9d5c', si: 2.6, glass: '#ffe9a6', lamp: '#fff0b0', water: '#ffd3c2', fog: '#ffe2c6', glow: 0.5, pool: 0.22 },
+    night: { sky: '#9fb0ff', gnd: '#5262b4', hi: 1.36, sun: '#c9d2ff', si: 1.2, glass: '#ffe08a', lamp: '#fff3b8', water: '#6f88d0', fog: '#3f4f9c', glow: 0.85, pool: 0.5 },
   };
   function setMode(name) {
     const m = MODES[name] || MODES.day;
@@ -751,7 +759,7 @@ export function createView(world, canvas) {
   /* ---------- per-frame ---------- */
   const turn = (cur, target, k) => { let dlt = target - cur; while (dlt > Math.PI) dlt -= Math.PI * 2; while (dlt < -Math.PI) dlt += Math.PI * 2; return cur + dlt * k; };
   const DIRANG = { down: 0, right: Math.PI / 2, up: Math.PI, left: -Math.PI / 2 };
-  let walkAmt = 0;
+  let walkAmt = 0, haloPitch = -1;
   function render(st) {
     const t = st.time, dt = st.dt, P = st.player, k = 1 - Math.exp(-dt * 12);
     const px = P.x / 16, pz = P.y / 16;
@@ -765,6 +773,10 @@ export function createView(world, canvas) {
     camera.position.set(camT.x, 0.8 + Math.sin(camS.pitch) * cd, camT.z - 0.6 + Math.cos(camS.pitch) * cd); camera.lookAt(camT.x, 0.8, camT.z - 0.6);
     camera.updateMatrixWorld(); bendU.z0.value = camera.position.distanceTo(v.set(camT.x, 0.8, camT.z - 0.6));
     bendU.k.value = 0.002 / (f * Math.max(0.75, camS.zoom));
+    if (halo && Math.abs(haloPitch - camS.pitch) > 0.01) {          // the glow cards tilt back as the camera rises, so they always face it
+      haloPitch = camS.pitch; const mt = new THREE.Matrix4(), rx = new THREE.Matrix4().makeRotationX(-(Math.PI / 2 - camS.pitch));
+      halo.userData.at.forEach((q, i) => halo.setMatrixAt(i, mt.makeTranslation(q[0], q[1], q[2]).multiply(rx))); halo.instanceMatrix.needsUpdate = true;
+    }
     scene.fog.near = cd * 1.9; scene.fog.far = cd * (4.2 + (1.38 - camS.pitch) * 2.2);        // distance haze: the far sea melts into the sky
     sun.position.set(camT.x - 9, 17, camT.z + 9); sun.target.position.set(camT.x, 0, camT.z - 2); sun.target.updateMatrixWorld();
     if (!reduceMotion) { wtex.offset.set(t * 0.012, t * 0.007); wtex2.offset.set(-t * 0.008, t * 0.011); }
