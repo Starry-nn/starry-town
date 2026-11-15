@@ -38,7 +38,7 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
 const UI = {
   en: {
     kicker: "NAN YAO'S PORTFOLIO ISLAND",
-    sub: 'My portfolio, built as a little island you can walk around.', by: 'Made by Nan Yao · AI, venture, product and operations',
+    sub: 'My portfolio, built as a little island you can walk around.', by: 'AI Builder, VC, Startup, GTM',
     keys: [['WASD', 'Move'], ['E', 'Interact'], ['Click', 'Walk there']], keysTouch: [['Tap', 'Walk there'], ['Tap a place', 'Open it'], ['Pinch', 'Zoom']], moreSum: 'All controls and things to do',
     mapBtn: 'Island map', mapTitle: 'Island map', mapMeta: 'Click a place to walk there', mapYou: 'You are here', mapFound: 'visited', mapNew: 'not yet',
     enter: '▶ Enter the island', quickLong: 'Short on time? Visit my classic site ↗',
@@ -74,7 +74,7 @@ const UI = {
   },
   zh: {
     kicker: '姚楠的作品集小岛',
-    sub: '我把作品集做成了一座可以逛的小岛。', by: '姚楠制作 · AI、创投、产品与运营',
+    sub: '我把作品集做成了一座可以逛的小岛。', by: 'AI Builder、创投、GTM',
     keys: [['WASD', '移动'], ['E', '互动'], ['点击', '走过去']], keysTouch: [['点击', '走过去'], ['点地点', '打开'], ['捏合', '缩放']], moreSum: '全部操作和玩法',
     mapBtn: '小岛地图', mapTitle: '小岛地图', mapMeta: '点一个地点，人物会走过去', mapYou: '你在这里', mapFound: '去过', mapNew: '还没去',
     enter: '▶ 进入小岛', quickLong: '赶时间？去看简洁版个人主页 ↗',
