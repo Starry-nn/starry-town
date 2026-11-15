@@ -1,5 +1,5 @@
 /* Starry Town — a walkable portfolio island. The rules live here; view3d.js draws the picture. */
-import { createView } from './view3d.js?v=29';
+import { createView } from './view3d.js?v=30';
 (() => {
 'use strict';
 
@@ -68,7 +68,7 @@ const UI = {
     quickKicker: 'Quick view',
     sec: { show: 'Featured work', exp: 'Experience', work: 'Selected work', focus: 'How I work', edu: 'Education', skills: 'Capabilities', life: 'Beyond the desk', contact: 'Contact' },
     kick: { showcase: 'Featured work', piece: 'Selected work', about: 'Welcome', job: 'Experience', project: 'Selected work', focus: 'How I work', edu: 'Education', skills: 'Capabilities', life: 'Beyond the desk', contact: 'Contact' },
-    aboutTitle: "Hi, I'm Nan Yao", eduTitle: 'Education', contactTitle: 'Get in touch', phone: 'Phone', github: 'GitHub',
+    aboutTitle: "Hi, I'm Nan Yao", eduTitle: 'Education', contactTitle: 'Get in touch', github: 'GitHub',
     bagTitle: 'Backpack', bagMeta: 'What you have found so far', route: 'Your route', treasures: 'Dug up', catches: 'Caught', unknown: 'Not found yet',
     toolsText: 'Dig where the ground sparkles. Stand next to water and press E to fish, press again when the float dips, then keep pressing to reel it in. Fruit trees sometimes drop a note.',
   },
@@ -104,7 +104,7 @@ const UI = {
     quickKicker: '快速浏览',
     sec: { show: '精选作品', exp: '工作经历', work: '代表作品', focus: '工作方法', edu: '教育背景', skills: '能力与工具', life: '工作之外', contact: '联系方式' },
     kick: { showcase: '精选作品', piece: '代表作品', about: '欢迎', job: '工作经历', project: '代表作品', focus: '工作方法', edu: '教育背景', skills: '能力与工具', life: '工作之外', contact: '联系方式' },
-    aboutTitle: '嗨，我是姚楠', eduTitle: '教育背景', contactTitle: '联系我', phone: '电话', github: 'GitHub',
+    aboutTitle: '嗨，我是姚楠', eduTitle: '教育背景', contactTitle: '联系我', github: 'GitHub',
     bagTitle: '背包', bagMeta: '你目前找到的东西', route: '你的路线', treasures: '挖到的', catches: '钓到的', unknown: '还没找到',
     toolsText: '地上闪光的地方可以挖。站在水边按 E 抛竿，浮标下沉时再按一次，然后连按收线。果树有时会掉下小纸条。',
   },
@@ -1059,7 +1059,6 @@ function content(s) {
           <a class="row" href="mailto:${esc(D_.mail)}"><small>${esc(D_.email)}</small><b>${esc(D_.mail)}</b></a>
           <a class="row" href="${esc(D_.linkedin)}" target="_blank" rel="noopener noreferrer"><small>LinkedIn</small><b>linkedin.com/in/yaonanstarry ↗</b></a>
           <a class="row" href="https://github.com/Starry-nn" target="_blank" rel="noopener noreferrer"><small>${u.github}</small><b>github.com/Starry-nn ↗</b></a>
-          <a class="row" href="tel:${esc(D_.phone.replace(/\s/g, ''))}"><small>${u.phone}</small><b>${esc(D_.phone)}</b></a>
         </div>
         <h3>${esc(u.socials)}</h3>
         <div class="rows">
