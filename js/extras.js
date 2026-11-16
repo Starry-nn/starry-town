@@ -160,6 +160,8 @@ window.EXTRAS = {
     { id: 'gift',     icon: '🎁', en: 'Give a resident some fruit', zh: '送居民一个水果' },
     { id: 'dance',    icon: '💃', en: 'Dance', zh: '跳一支舞' },
     { id: 'mbti',     icon: '🔮', en: 'Guess Nan\'s MBTI at the crystal ball', zh: '去水晶球那儿猜姚楠的 MBTI' },
+    { id: 'avatar',   icon: '🧑‍🎨', en: 'Make your own character at the guest board', zh: '去留言板捏一个自己的小形象' },
+    { id: 'note',     icon: '✍️', en: 'Leave Nan a note', zh: '给姚楠留言' },
     { id: 'hello',    icon: '💌', en: 'Find the mailbox', zh: '找到信箱' },
     { id: 'stars',    icon: '⭐', en: 'Find all 19 stars', zh: '集齐 19 颗星' },
   ],

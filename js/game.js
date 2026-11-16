@@ -704,7 +704,7 @@ const TASK_DONE = {
   project: () => SPOTS.some(s => s.kind === 'project' && found.has(s.id)),
   dig: () => dug.size > 0, fish: () => caught.size > 0,
   pet: () => flags.has('pet'), fruit: () => flags.has('fruit'), neighbor: () => flags.has('neighbor'), gift: () => flags.has('gift'), dance: () => flags.has('dance'),
-  showcase: () => found.has('showcase'), mbti: () => flags.has('mbti'), hello: () => found.has('contact'), stars: () => found.size === SPOTS.length,
+  showcase: () => found.has('showcase'), mbti: () => flags.has('mbti'), avatar: () => flags.has('guest') && !!guestLook, note: () => flags.has('noted'), hello: () => found.has('contact'), stars: () => found.size === SPOTS.length,
 };
 const taskDone = id => !!(TASK_DONE[id] && TASK_DONE[id]());
 const currentTask = () => EX.tasks.find(k => !taskDone(k.id)) || null;
@@ -728,6 +728,7 @@ function taskTarget(k) {            // where the guide arrow points, and what cl
     case 'hello': return spot('contact');
     case 'mbti': return spot('mbti');
     case 'showcase': return spot('showcase');
+    case 'avatar': case 'note': return spot('guest');
     case 'pet': return { x: dog.x, y: dog.y, go: petDog };
     case 'dance': return { x: player.x, y: player.y, go: startDance };
     case 'stars': { const c = closest(SPOTS.filter(s => !found.has(s.id)), s => s.trig[0] * T + 8, s => s.trig[1] * T + 10); return c && spot(c.o.id); }
@@ -1126,7 +1127,7 @@ function sendNote() {            // opens the visitor's own mail app with the no
   const link = 'https://starry-nn.github.io/starry-town/#g=' + code;
   lastMail = [message, '', '— ' + guestLook.name + ' (' + GA.icon(guestLook.species) + ')', contact ? G.mailContact[lang] + contact : '', '', G.mailLink[lang], link].filter((x, i) => x !== '' || i === 1 || i === 4).join('\n');
   const subject = G.mailSubject[lang].replace('{n}', guestLook.name);
-  sfx('item'); openGuest('sent');
+  sfx('item'); flag('noted'); renderHud(); openGuest('sent');
   const url = 'mailto:' + d().mail + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(lastMail);
   if (window.__town.openMail) window.__town.openMail(url); else location.href = url;
 }
