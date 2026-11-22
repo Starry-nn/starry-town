@@ -4,6 +4,8 @@ import { createView } from './view3d.js?v=30';
 'use strict';
 
 const DATA = window.DATA, EX = window.EXTRAS, GA = window.GuestAvatar;
+// Web3Forms access key (public by design; it only lets this form email Nan). Empty = notes open the visitor's own email app instead.
+const NOTE_KEY = '';
 // The guest resident takes the look the visitor designed. A link from the private town (#g=...) shows one visitor's avatar and note instead;
 // that data sits in the part of the address that is never sent to a server. The link arrives in the visitor's email.
 const guestDef = EX.residents.find(r => r.id === 'guest');
@@ -56,7 +58,7 @@ const UI = {
     fruitLine: 'Fruit in your pocket', fruitHint: 'Shake a fruit tree, then give the fruit to a resident.',
     settings: 'Island settings', soundOn: 'Sound effects: on', soundOff: 'Sound effects: off', musicOn: 'Music: on', musicOff: 'Music: off', mute: 'Sound on / off',
     treeTitle: 'A note fell out of the tree!', notes: 'Shaken out of trees', lockedMbti: 'Moves in when the MBTI is guessed', lockedGuest: 'This one is you: sign the guest board',
-    gName: 'Your name', gSpecies: 'Who are you?', gFur: 'Colour', gShirt: 'Shirt', gAcc: 'Something to wear', gLine: 'Your catchphrase (your character will say it)', gLineEx: 'e.g. Nice to meet you!', gJoin: 'Move in', gEdit: 'Change my look', gNote: 'Leave Nan a note', gMsg: 'Your note', gContact: 'Email or any way to reach you (optional)', gSend: 'Write the email', gLater: 'Maybe later', gCopy: 'Copy the note', gCopied: 'Copied', gSaveCard: 'Get a postcard to attach', gNeedName: 'Give your character a name first.', gNeedMsg: 'Write a few words first.', gYours: 'Your character lives on the island.', guess: 'Guess', socials: 'Find me elsewhere', xhs: 'Xiaohongshu', modes: { day: 'Day', dusk: 'Dusk', night: 'Night' }, postcard: 'Postcard',
+    gName: 'Your name', gSpecies: 'Who are you?', gFur: 'Colour', gShirt: 'Shirt', gAcc: 'Something to wear', gLine: 'Your catchphrase (your character will say it)', gLineEx: 'e.g. Nice to meet you!', gJoin: 'Move in', gEdit: 'Change my look', gNote: 'Leave Nan a note', gMsg: 'Your note', gContact: 'Email or any way to reach you (optional)', gSend: 'Write the email', gSendDirect: 'Send', gSending: 'Sending…', gLater: 'Maybe later', gCopy: 'Copy the note', gCopied: 'Copied', gSaveCard: 'Get a postcard to attach', gNeedName: 'Give your character a name first.', gNeedMsg: 'Write a few words first.', gYours: 'Your character lives on the island.', guess: 'Guess', socials: 'Find me elsewhere', xhs: 'Xiaohongshu', modes: { day: 'Day', dusk: 'Dusk', night: 'Night' }, postcard: 'Postcard',
     postcardTitle: 'A postcard from the island', postcardMeta: 'Save it or send it to a friend', save: 'Save image', greet: 'Greetings from Starry Town', back: 'Back to backpack',
     quick: 'Classic site ↗', cv: 'CV', lang: '中文', bag: 'Backpack',
     goSee: 'Take me there', visit: 'Visit', talk: 'Talk to', movedIn: 'just moved to the island! Go say hi.', neighbours: 'Residents', lockedRes: 'Moves in after {n} finds', no3d: 'This browser cannot show the 3D island, so here is everything on one page.', dig: 'Dig here', fish: 'Go fishing', wait: 'Waiting for a bite…', pull: 'Pull!',
@@ -92,7 +94,7 @@ const UI = {
     fruitLine: '口袋里的水果', fruitHint: '摇一摇果树，再把水果送给居民。',
     settings: '小岛设置', soundOn: '音效：开', soundOff: '音效：关', musicOn: '音乐：开', musicOff: '音乐：关', mute: '声音开关',
     treeTitle: '树上掉下一张纸条！', notes: '树上摇下来的', lockedMbti: '猜对 MBTI 后搬来', lockedGuest: '这是你：去留言板签个名',
-    gName: '你的名字', gSpecies: '你是谁？', gFur: '颜色', gShirt: '衣服', gAcc: '配饰', gLine: '口头禅（你的形象会说这句话）', gLineEx: '比如：很高兴认识你！', gJoin: '搬进小岛', gEdit: '修改形象', gNote: '给姚楠留言', gMsg: '想说的话', gContact: '邮箱或其他联系方式（选填）', gSend: '写成邮件', gLater: '以后再说', gCopy: '复制留言', gCopied: '已复制', gSaveCard: '拍张明信片附上', gNeedName: '先给你的形象起个名字。', gNeedMsg: '先写几句话吧。', gYours: '你的形象已经住在岛上了。', guess: '猜一下', socials: '在别处找到我', xhs: '小红书', modes: { day: '白天', dusk: '黄昏', night: '夜晚' }, postcard: '明信片',
+    gName: '你的名字', gSpecies: '你是谁？', gFur: '颜色', gShirt: '衣服', gAcc: '配饰', gLine: '口头禅（你的形象会说这句话）', gLineEx: '比如：很高兴认识你！', gJoin: '搬进小岛', gEdit: '修改形象', gNote: '给姚楠留言', gMsg: '想说的话', gContact: '邮箱或其他联系方式（选填）', gSend: '写成邮件', gSendDirect: '发送', gSending: '发送中…', gLater: '以后再说', gCopy: '复制留言', gCopied: '已复制', gSaveCard: '拍张明信片附上', gNeedName: '先给你的形象起个名字。', gNeedMsg: '先写几句话吧。', gYours: '你的形象已经住在岛上了。', guess: '猜一下', socials: '在别处找到我', xhs: '小红书', modes: { day: '白天', dusk: '黄昏', night: '夜晚' }, postcard: '明信片',
     postcardTitle: '一张小岛明信片', postcardMeta: '保存下来，或者发给朋友', save: '保存图片', greet: '来自 Starry Town 的问候', back: '回到背包',
     quick: '简洁版主页 ↗', cv: '简历', lang: 'EN', bag: '背包',
     goSee: '带我过去', visit: '拜访', talk: '聊聊', movedIn: '搬到岛上来了！去打个招呼吧。', neighbours: '居民', lockedRes: '找到 {n} 样东西后搬来', no3d: '这个浏览器显示不了 3D 小岛，所以把全部内容放在这一页。', dig: '挖一挖', fish: '钓鱼', wait: '等鱼上钩…', pull: '拉！',
@@ -1102,9 +1104,11 @@ function openGuest(step, msg) {
   if (step === 'note') {
     return showCard('✍️', G.name[lang], '', `<div class="g-face">${GA.svg(guestLook, 84)}</div><p class="lead center">${esc(G.askNote[lang].replace('{n}', guestLook.name))}</p>
       <label class="g-l">${esc(u.gMsg)}<textarea id="gMsg" maxlength="500" rows="4"></textarea></label><label class="g-l">${esc(u.gContact)}<input id="gContact" maxlength="120" autocomplete="email"></label>
-      <p class="caption">${esc(G.privacy[lang])}</p>${note}
-      <div class="links center"><button class="btn btn-main" data-act="g-send">${esc(u.gSend)} ✉</button><button class="btn" data-act="close">${esc(u.gLater)}</button></div>`, 'mini', () => openGuest('note'));
+      <p class="caption">${esc((NOTE_KEY ? G.privacyDirect : G.privacy)[lang])}</p>${note}
+      <div class="links center"><button class="btn btn-main" data-act="g-send" id="gSendBtn">${esc(NOTE_KEY ? u.gSendDirect : u.gSend)} ✉</button><button class="btn" data-act="close">${esc(u.gLater)}</button></div>`, 'mini', () => openGuest('note'));
   }
+  if (step === 'delivered') return showCard('✍️', G.name[lang], '', `<div class="item-big" aria-hidden="true">💌</div><p class="lead center">${esc(G.sentDirect[lang])}</p>
+    <div class="links center"><button class="btn" data-act="postcard">📸 ${esc(u.gSaveCard)}</button></div>`, 'mini', () => openGuest('delivered'));
   if (step === 'sent') return showCard('✍️', G.name[lang], '', `<div class="item-big" aria-hidden="true">💌</div><p class="lead center">${esc(G.sent[lang])}</p>
     <p class="caption center">${esc(G.fallback[lang].replace('{mail}', d().mail))}</p><textarea class="g-copy" id="gCopy" readonly rows="5">${esc(lastMail)}</textarea>
     <div class="links center"><button class="btn" data-act="g-copy">${esc(u.gCopy)}</button><button class="btn" data-act="postcard">📸 ${esc(u.gSaveCard)}</button></div>`, 'mini', () => openGuest('sent'));
@@ -1127,9 +1131,18 @@ function sendNote() {            // opens the visitor's own mail app with the no
   const link = 'https://starry-nn.github.io/starry-town/#g=' + code;
   lastMail = [message, '', '— ' + guestLook.name + ' (' + GA.icon(guestLook.species) + ')', contact ? G.mailContact[lang] + contact : '', '', G.mailLink[lang], link].filter((x, i) => x !== '' || i === 1 || i === 4).join('\n');
   const subject = G.mailSubject[lang].replace('{n}', guestLook.name);
-  sfx('item'); flag('noted'); renderHud(); openGuest('sent');
-  const url = 'mailto:' + d().mail + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(lastMail);
-  if (window.__town.openMail) window.__town.openMail(url); else location.href = url;
+  const viaMail = () => {
+    sfx('item'); flag('noted'); renderHud(); openGuest('sent');
+    const url = 'mailto:' + d().mail + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(lastMail);
+    if (window.__town.openMail) window.__town.openMail(url); else location.href = url;
+  };
+  if (!NOTE_KEY) return viaMail();
+  const btn = $('gSendBtn'); if (btn) { if (btn.disabled) return; btn.disabled = true; btn.textContent = u.gSending; }
+  fetch('https://api.web3forms.com/submit', { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify({ access_key: NOTE_KEY, subject, from_name: 'Starry Town · ' + guestLook.name, message: lastMail, contact: contact || '-', botcheck: '' }) })
+    .then(r => r.json()).then(j => { if (!j.success) throw new Error(j.message || 'failed');
+      sfx('item'); flag('noted'); renderHud(); openGuest('delivered'); })
+    .catch(() => { toast(`<span>✉ ${esc(G.sendFailed[lang])}</span>`, 4000); viaMail(); });
 }
 let guess = ['', '', '', ''];
 function openMbti(msg, cls) {
