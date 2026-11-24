@@ -5,7 +5,7 @@ import { createView } from './view3d.js?v=30';
 
 const DATA = window.DATA, EX = window.EXTRAS, GA = window.GuestAvatar;
 // Web3Forms access key (public by design; it only lets this form email Nan). Empty = notes open the visitor's own email app instead.
-const NOTE_KEY = '';
+const NOTE_KEY = 'a2e6c76d-1329-42c5-afcc-5f27f937a1c1';
 // The guest resident takes the look the visitor designed. A link from the private town (#g=...) shows one visitor's avatar and note instead;
 // that data sits in the part of the address that is never sent to a server. The link arrives in the visitor's email.
 const guestDef = EX.residents.find(r => r.id === 'guest');
